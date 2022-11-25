@@ -69,8 +69,8 @@ setup(
     python_requires=">=3.6",
     package_dir={'': 'src'},
     project_urls={
-        'Bug Reports':'https://github.com/prividentity/PrivateIdentity/issues',
-        'Source': 'https://github.com/openinfer/privateid-cryptonets-sdk'
+        'Bug Reports':'https://github.com/prividentity/cryptonets-python-sdk/issues',
+        'Source': 'https://github.com/prividentity/cryptonets-python-sdk'
     },
     classifiers=[
         "Intended Audience :: Developers",
