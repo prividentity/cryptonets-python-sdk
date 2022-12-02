@@ -35,7 +35,13 @@ Import and Usage
 
 Check Validity of the image
 ----------------------------
+| Replies in 50ms
+| Operates locally, does not call server
+| Acceptable head rotation: -22.5 to 22.5 degrees 
+| Pose: uncontrolled, does not accept profile images
 
+.. image:: images/isvalid_example.png
+   :width: 600
 .. code-block:: py
 
     # Check if the image is valid
@@ -46,12 +52,50 @@ Output:
 
 .. code-block:: py
 
-    is_valid_handle.status # Status of the operation
+    is_valid_handle.error # Error code of the operation
     is_valid_handle.message # Message of the operation
+    is_valid_handle.face_objects # List of Face objects with results
 
-Check Age of the image
+Example:
+
+.. image:: images/test.jpeg
+   :width: 400
+.. code-block:: py
+
+   	#Create a Face factor class instance
+	face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)
+	
+	is_valid_handle = face_factor.is_valid(image_path=img_path)
+	for index, face in enumerate(is_valid_handle.face_objects):
+            print("Face#:{}\nReturn Code:{}\nMessage:{}\nBBox TL:{}\nBBox BR:{}\n".format(index + 1,face.return_code,face.message,face.bounding_box.top_left_coordinate.__str__(), face.bounding_box.bottom_right_coordinate.__str__()))  
+        
+Output:
+
+.. code-block:: py
+
+	Face#:1
+	Return Code:0
+	Message:ValidBiometric
+	BBox TL:Point(257.5,151.0)
+	BBox BR:Point(430.5,313.0)
+
+	Face#:2
+	Return Code:0
+	Message:ValidBiometric
+	BBox TL:Point(130.0,45.5)
+	BBox BR:Point(290.0,212.5)
+
+	
+Check Age of the image	
 ----------------------------
+| Replies in 50ms
+| Operates locally, does not call server
+| Acceptable head rotation: -22.5 to 22.5 degrees 
+| Pose: uncontrolled, does not accept profile images
 
+.. image:: images/age_example.png
+   :width: 600
+   
 .. code-block:: py
 
     # Estimate age of the image
@@ -62,10 +106,40 @@ Output:
 
 .. code-block:: py
 
-    age_handle.status # Status of the operation
+    age_handle.error # Error code of the operation
     age_handle.message # Message of the operation
-    age_handle.age # Predicted age from the model
+    age_handle.face_objects # List of Face objects with results
+    
+Example:
 
+.. image:: images/test.jpeg
+   :width: 400
+.. code-block:: py
+
+   	#Create a Face factor class instance
+	face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)
+	
+	age_handle = face_factor.estimate_age(image_path=img_path)
+	for index, face in enumerate(age_handle.face_objects):
+    		print("Face#:{}\nReturn Code:{}\nMessage:{}\nAge:{}\nBBox TL:{}\nBBox BR:{}\n".format(index + 1,face.return_code,face.message,face.age,face.bounding_box.top_left_coordinate.__str__(),face.bounding_box.bottom_right_coordinate.__str__())) 
+        
+Output:
+
+.. code-block:: py
+
+	Face#:1
+	Return Code:0
+	Message:ValidBiometric
+	Age:29.490659713745117
+	BBox TL:Point(257.5,151.0)
+	BBox BR:Point(430.5,313.0)
+
+	Face#:2
+	Return Code:0
+	Message:ValidBiometric
+	Age:20.64322280883789
+	BBox TL:Point(130.0,45.5)
+	BBox BR:Point(290.0,212.5)
 
 Compare identity of the image
 -----------------------------

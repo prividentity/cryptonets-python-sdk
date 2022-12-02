@@ -9,8 +9,7 @@ This section covers how to use the result objects from the operations.
 .. toctree::
    :maxdepth: 2
 
-   IsValidResult
-   AgeEstimateResult
+   FaceValidationResult
    CompareResult
    EnrollPredictResult
    DeleteResult

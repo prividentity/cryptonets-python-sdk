@@ -34,8 +34,8 @@ NAME = "cryptonets_python_sdk"
 DESCRIPTION = "Cryptonets SDK Library for Python"
 AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
-URL = "https://github.com/prividentity/PrivateIdentity/wiki"
-VERSION = "1.0.0"
+URL = "https://private.id/"
+VERSION = "1.0.7"
 REQUIRES = [
     "numpy >= 1.23.0",
     "pillow >= 9.0.0"
@@ -46,10 +46,6 @@ if os.path.exists('./README.md'):
     with open("README.md", encoding='utf-8') as fp:
         LONG_DESCRIPTION = fp.read()
 
-LICENSE = ''
-if os.path.exists('./LICENSE'):
-    with open("LICENSE", encoding='utf-8') as fp:
-        LICENSE = fp.read()
 
 setup(
     name=NAME,
@@ -59,7 +55,7 @@ setup(
     long_description_content_type='text/markdown',
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
-    license=LICENSE,
+    license="",
     url=URL,
     keywords=["privateid", "cryptonets", "face identification"],
     packages=find_packages(where='src', exclude=["tests*"]),
@@ -69,7 +65,7 @@ setup(
     python_requires=">=3.6",
     package_dir={'': 'src'},
     project_urls={
-        'Bug Reports':'https://github.com/prividentity/cryptonets-python-sdk/issues',
+        'Bug Reports':'https://github.com/prividentity/PrivateIdentity/issues',
         'Source': 'https://github.com/prividentity/cryptonets-python-sdk'
     },
     classifiers=[

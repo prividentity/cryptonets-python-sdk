@@ -3,6 +3,8 @@
 import os
 import pathlib
 import traceback
+
+from typing import List
 from typing import Any
 
 import numpy as np
@@ -13,8 +15,7 @@ from .helper.result_objects.compareResult import FaceCompareResult
 from .helper.result_objects.deleteResult import FaceDeleteResult
 from .helper.result_objects.enrollPredictResult import FaceEnrollPredictResult
 from .helper.result_objects.isValidDeprecatedResult import FaceIsValidDeprecatedResult
-from .helper.result_objects.isValidResult import FaceIsValidResult
-from .helper.result_objects.ageEstimateResult import FaceAgeResult
+from .helper.result_objects.faceValidationResult import FaceValidationResult
 from .helper.messages import Message
 from .helper.utils import image_path_to_array
 from .settings.loggingLevel import LoggingLevel
@@ -95,7 +96,7 @@ class FaceFactor(metaclass=Singleton):
 
         Returns
         -------
-        FaceIsValidResult
+        FaceValidationResult
             status: int [0 if successful -1 if unsuccessful]
 
             message: str [Message from the operation]
@@ -126,7 +127,7 @@ class FaceFactor(metaclass=Singleton):
             print(e, traceback.format_exc())
             return FaceIsValidDeprecatedResult(message=self.message.IS_VALID_ERROR)
 
-    def is_valid(self, image_path: str = None, image_data: np.array = None) -> FaceIsValidResult:
+    def is_valid(self, image_path: str = None, image_data: np.array = None) -> FaceValidationResult:
         """Check if the image is valid for using in the face recognition
 
         Parameters
@@ -139,33 +140,34 @@ class FaceFactor(metaclass=Singleton):
 
         Returns
         -------
-        FaceIsValidResult
-            status: int
+        FaceValidationResult
+            error: int [0 if successful -1 if any error]
 
             message: str [Message from the operation]
 
+            face_objects: FaceObjectResult
 
         """
         try:
             if (image_path is not None and image_data is not None) or (image_path is None and image_data is None):
-                return FaceIsValidResult(message="Specify either image_path or image_data")
+                return FaceValidationResult(message="Specify either image_path or image_data")
             img_data = None
             if image_data is not None:
                 if not isinstance(image_data, np.ndarray):
-                    return FaceIsValidResult(message="Required numpy array in RGB format")
+                    return FaceValidationResult(message="Required numpy array in RGB format")
                 img_data = image_data
             if image_path is not None and len(image_path) > 0:
                 if not os.path.exists(image_path):
-                    return FaceIsValidResult(message=self.message.get_message(101))
+                    return FaceValidationResult(message=self.message.get_message(101))
                 img_data = image_path_to_array(image_path)
             if img_data is None:
-                return FaceIsValidResult(message=self.message.IS_VALID_ERROR)
+                return FaceValidationResult(message=self.message.IS_VALID_ERROR)
             return self.face_factor.is_valid(image_data=img_data)
         except Exception as e:
             print(e, traceback.format_exc())
-            return FaceIsValidResult(message=self.message.IS_VALID_ERROR)
+            return FaceValidationResult(message=self.message.IS_VALID_ERROR)
 
-    def estimate_age(self, image_path: str, image_data: np.array = None) -> FaceAgeResult:
+    def estimate_age(self, image_path: str, image_data: np.array = None) -> FaceValidationResult:
         """Check if the image is valid and returns the age of the image
 
         Parameters
@@ -178,31 +180,32 @@ class FaceFactor(metaclass=Singleton):
 
         Returns
         -------
-        FaceAgeResult
-            status: int
+        FaceValidationResult
+            error: int [0 if successful -1 if any error]
 
             message: str [Message from the operation]
 
-            age: float [As returned from the model directly]
+            face_objects: FaceObjectResult
+
         """
         try:
             if (image_path is not None and image_data is not None) or (image_path is None and image_data is None):
-                return FaceAgeResult(message="Specify either image_path or image_data")
+                return FaceValidationResult(message="Specify either image_path or image_data")
             img_data = None
             if image_data is not None:
                 if not isinstance(image_data, np.ndarray):
-                    return FaceAgeResult(message="Required numpy array in RGB format")
+                    return FaceValidationResult(message="Required numpy array in RGB format")
                 img_data = image_data
             if image_path is not None and len(image_path) > 0:
                 if not os.path.exists(image_path):
-                    return FaceAgeResult(message=self.message.get_message(101))
+                    return FaceValidationResult(message=self.message.get_message(101))
                 img_data = image_path_to_array(image_path)
             if img_data is None:
-                return FaceAgeResult(message=self.message.AGE_ESTIMATE_ERROR)
+                return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
             return self.face_factor.estimate_age(image_data=img_data)
         except Exception as e:
             print(e, traceback.format_exc())
-            return FaceAgeResult(message=self.message.AGE_ESTIMATE_ERROR)
+            return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
 
     def enroll(self, image_path: str = None, image_data: np.array = None) -> FaceEnrollPredictResult:
         """Enrolls the image in the face recognition server

@@ -4,7 +4,7 @@ class FaceDeleteResult:
         self._message = message
 
     @property
-    def status(self):
+    def status(self) -> int:
         """
         Returns the status of the operation
 
@@ -16,7 +16,7 @@ class FaceDeleteResult:
         return self._status
 
     @property
-    def message(self):
+    def message(self) -> str:
         """
         Returns the message of the operation
         """

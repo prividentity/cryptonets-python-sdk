@@ -1,4 +1,4 @@
-## Cryptonets Python SDK
+## CryptoNets Python SDK
 
 ## Project description
 
@@ -42,7 +42,7 @@ See the [installation](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-
 
 ## Usage
 
-You will have the Server URL and apiKey once you sign up for the product.
+You will receive the Server URL and apiKey when you subscribe.
 
 ### Import Face factor
 `from cryptonets_python_sdk.factor import FaceFactor`

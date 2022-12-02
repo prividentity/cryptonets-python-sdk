@@ -14,6 +14,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../../src'))
 sys.path.insert(0, os.path.abspath('../../src/cryptonets_python_sdk'))
+sys.path.insert(0, os.path.abspath('../../src/cryptonets_python_sdk/helper'))
 sys.path.insert(0, os.path.abspath('../../src/cryptonets_python_sdk/helper/result_objects'))
 sys.path.insert(0, os.path.abspath('../..'))
 # sys.path.append(os.path.abspath('../../src'))
@@ -28,7 +29,7 @@ copyright = '2021, Private Identity'
 author = 'Private Identity'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0'
+release = '1.0.6'
 
 
 # -- General configuration ---------------------------------------------------

@@ -14,7 +14,7 @@ class FaceCompareResult:
         self._second_validation_result = second_validation_result
 
     @property
-    def status(self):
+    def status(self) -> int:
         """
         Returns the status of the operation
 
@@ -26,21 +26,21 @@ class FaceCompareResult:
         return self._status
 
     @property
-    def result(self):
+    def result(self) -> int:
         """
         Returns the result of the operation
         """
         return self._result
 
     @property
-    def message(self):
+    def message(self) -> str:
         """
         Returns the message of the operation
         """
         return self._message
 
     @property
-    def distance_min(self):
+    def distance_min(self) -> float:
         """
         Returns the minimum distance
 
@@ -50,7 +50,7 @@ class FaceCompareResult:
         return self._distance_min
 
     @property
-    def distance_mean(self):
+    def distance_mean(self) -> float:
         """
         Returns the average distance
 
@@ -60,7 +60,7 @@ class FaceCompareResult:
         return self._distance_mean
 
     @property
-    def distance_max(self):
+    def distance_max(self) -> float:
         """
         Returns the maximum distance
 
@@ -70,14 +70,14 @@ class FaceCompareResult:
         return self._distance_max
 
     @property
-    def first_validation_result(self):
+    def first_validation_result(self) -> int:
         """
         Returns the validation result of first image
         """
         return self._first_validation_result
 
     @property
-    def second_validation_result(self):
+    def second_validation_result(self) -> int:
         """
         Returns the validation result of second image
         """

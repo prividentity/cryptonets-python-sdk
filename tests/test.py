@@ -1,7 +1,10 @@
+import glob
 import pathlib
 import sys
+from timeit import default_timer
+
 from PIL import Image
-import glob
+from termcolor import colored
 
 src_path = pathlib.Path(__file__).parent.parent.resolve()
 sys.path.append(str(src_path))
@@ -20,99 +23,86 @@ imagesfiles = []
 imagesfiles.extend(glob.glob("{}/*.png".format(images_files_path)))
 imagesfiles.extend(sorted(glob.glob("{}/*.jpg".format(images_files_path))))
 imagesfiles.extend(sorted(glob.glob("{}/*.jpeg".format(images_files_path))))
-SERVER_URL = ""
 
+SERVER_URL = ""
 api_key = ""
+
 if __name__ == "__main__":
     face_factor = FaceFactor(
         server_url=SERVER_URL, api_key=api_key,
-        logging_level=LoggingLevel.full.value)
+        logging_level=LoggingLevel.off.value)
     for img_path in imagesfiles:
-        print("...........Performing operations for image {} : ...........\n", img_path)
-        ## By Image Path
-        print("...........Calling functions by using image path  : ...........\n")
-        print("...........Calling isvalid : ...........\n")
+        print(colored("\nImage:{}\n".format(img_path), "red"))
+
+        print(colored("{}\n{}".format("Is Valid", "=" * 25), "green"))
+        start_time = default_timer()
         is_valid_handle = face_factor.is_valid(image_path=img_path)
-        print("Is_valid=>Status:{}, Message:{}".format(is_valid_handle.status, is_valid_handle.message))
-        print("........... isvalid completed ...........\n\n")
+        print("Duration:", default_timer() - start_time, "\n")
 
-        print("...........Calling estimate_age: ...........\n")
+        print("Error:{}\nMessage:{}".format(is_valid_handle.error, is_valid_handle.message))
+        for index, face in enumerate(is_valid_handle.face_objects):
+            print(
+                "Face#:{}\n{}\nReturn Code:{}\nMessage:{}\nAge:{}\nBBox TL:{}\nBBox BR:{}\n".format(index + 1, '-' * 7,
+                                                                                                    face.return_code,
+                                                                                                    face.message,
+                                                                                                    face.age,
+                                                                                                    face.bounding_box.top_left_coordinate.__str__(),
+                                                                                                    face.bounding_box.bottom_right_coordinate.__str__()))
+        if len(is_valid_handle.face_objects) == 0:
+            print("No Faces found!!\n")
+
+        print(colored("{}\n{}".format("Age Estimation", "=" * 25), "green"))
+        start_time = default_timer()
         age_handle = face_factor.estimate_age(image_path=img_path)
-        print("estimate_age=>Status:{} , Age:{}, Message:{}".format(age_handle.status, age_handle.age,
-                                                                    age_handle.message))
-        print("........... estimate_age completed ...........\n\n")
-        print("........... Calling Compare : ...........\n")
-        compare_handle = face_factor.compare(image_path_1=img_path, image_path_2=img_path)
-        print("Compare=>Status:{}, Result:{}, Message:{}, Min:{}, Mean:{}, Max:{}, 1VR:{}, 2VR:{}".format(
-            compare_handle.status,
-            compare_handle.result, compare_handle.message, compare_handle.distance_min, compare_handle.distance_mean,
-            compare_handle.distance_max, compare_handle.first_validation_result,
-            compare_handle.second_validation_result))
-        print("........... Compare completed ...........\n\n")
+        print("Duration:", default_timer() - start_time, "\n")
+        print("Error:{}\nMessage:{}".format(age_handle.error, age_handle.message))
+        for index, face in enumerate(age_handle.face_objects):
+            print(
+                "Face#:{}\n{}\nReturn Code:{}\nMessage:{}\nAge:{}\nBBox TL:{}\nBBox BR:{}\n".format(index + 1, '-' * 7,
+                                                                                                    face.return_code,
+                                                                                                    face.message,
+                                                                                                    face.age,
+                                                                                                    face.bounding_box.top_left_coordinate.__str__(),
+                                                                                                    face.bounding_box.bottom_right_coordinate.__str__()))
 
-        print("........... Calling Enroll : ...........\n")
-        enroll_handle = face_factor.enroll(image_path=img_path)
-        print("Enroll=>Status:{}, Message:{}, Enroll Level:{}, UUID:{}, GUID:{}, Token:{}".format(enroll_handle.status,
-                                                                                                  enroll_handle.message,
-                                                                                                  enroll_handle.enroll_level,
-                                                                                                  enroll_handle.uuid,
-                                                                                                  enroll_handle.guid,
-                                                                                                  enroll_handle.token))
-        print("........... Enroll Completed : ...........\n\n")
+        if len(age_handle.face_objects) == 0:
+            print("No Faces found!!\n")
 
-        print("........... Calling Predict : ...........\n")
-        predict_handle = face_factor.predict(image_path=img_path)
-        print(
-            "Predict=>Status:{}, Message:{}, Enroll Level:{}, UUID:{}, GUID:{}, Token:{}".format(predict_handle.status,
-                                                                                                 predict_handle.message,
-                                                                                                 predict_handle.enroll_level,
-                                                                                                 predict_handle.uuid,
-                                                                                                 predict_handle.guid,
-                                                                                                 predict_handle.token))
-        print("........... Predict Completed : ...........\n\n")
-        print("...........  Calling Delete for uuid:\n", predict_handle.uuid)
-        delete_handle = face_factor.delete(predict_handle.uuid)
-        print("Delete=>Status:{}, Message:{}".format(delete_handle.status, delete_handle.message))
-        print("........... Delete completed : ...........\n\n")
-
-        ## By PIL Image
-        # print("...........Calling functions by using image data  : ...........\n")
-        # print("...........Calling isvalid : ...........\n")
-        # is_valid_handle = face_factor.is_valid(image_data=img_data)
-        # print("Is_valid=>Status:{}, Message:{}".format(is_valid_handle.status, is_valid_handle.message))
-        # print("........... isvalid completed ...........\n\n")
-
-        # print("........... Calling Compare : ...........\n")
-        # compare_handle = face_factor.compare(image_data_1=img_data, image_data_2=img_data)
-        # print("Compare=>Status:{}, Result:{}, Message:{}, Min:{}, Mean:{}, Max:{}, 1VR:{}, 2VR:{}".format(
+        # print(colored("{}\n{}".format("Compare", "=" * 25), "green"))
+        # start_time = default_timer()
+        # compare_handle = face_factor.compare(image_path_1=img_path, image_path_2=img_path)
+        # print("Duration:", default_timer() - start_time, "\n")
+        # print("Status:{}\nResult:{}\nMessage:{}\nMin:{}\nMean:{}\nMax:{}\n1VR:{}\n2VR:{}\n".format(
         #     compare_handle.status,
-        #     compare_handle.result, compare_handle.message, compare_handle.distance_min, compare_handle.distance_mean,
-        #     compare_handle.distance_max, compare_handle.first_validation_result, compare_handle.second_validation_result))
-        # print("........... Compare completed ...........\n\n")
-
-        # print("........... Calling Enroll : ...........\n")
-        # enroll_handle = face_factor.enroll(image_data=img_data)
-        # print("Enroll=>Status:{}, Message:{}, Enroll Level:{}, UUID:{}, GUID:{}, Token:{}".format(enroll_handle.status,
-        #                                                                                         enroll_handle.message,
-        #                                                                                         enroll_handle.enroll_level,
-        #                                                                                         enroll_handle.uuid,
-        #                                                                                         enroll_handle.guid,
-        #                                                                                         enroll_handle.token))
-        # print("........... Enroll Completed : ...........\n\n")
-
-        # print("........... Calling Predict : ...........\n")
-        # predict_handle = face_factor.predict(image_data=img_data)
-        # print("Predict=>Status:{}, Message:{}, Enroll Level:{}, UUID:{}, GUID:{}, Token:{}".format(enroll_handle.status,
-        #                                                                                         enroll_handle.message,
-        #                                                                                         enroll_handle.enroll_level,
-        #                                                                                         enroll_handle.uuid,
-        #                                                                                         enroll_handle.guid,
-        #                                                                                         enroll_handle.token))
-        # print("........... Predict Completed : ...........\n\n")
-
-        # print("...........  Calling Delete for uuid:\n", predict_handle.uuid)
+        #     compare_handle.result, compare_handle.message, compare_handle.distance_min,
+        #     compare_handle.distance_mean,
+        #     compare_handle.distance_max, compare_handle.first_validation_result,
+        #     compare_handle.second_validation_result))
+        #
+        # print(colored("{}\n{}".format("Enroll", "=" * 25), "green"))
+        # start_time = default_timer()
+        # enroll_handle = face_factor.enroll(image_path=img_path)
+        # print("Duration:", default_timer() - start_time, "\n")
+        # print("Status:{}\nMessage:{}\nEnroll Level:{}\nUUID:{}\nGUID:{}\nToken:{}\n".format(enroll_handle.status,
+        #                                                                                     enroll_handle.message,
+        #                                                                                     enroll_handle.enroll_level,
+        #                                                                                     enroll_handle.uuid,
+        #                                                                                     enroll_handle.guid,
+        #                                                                                     enroll_handle.token))
+        #
+        # print(colored("{}\n{}".format("Predict", "=" * 25), "green"))
+        # start_time = default_timer()
+        # predict_handle = face_factor.predict(image_path=img_path)
+        # print("Duration:", default_timer() - start_time, "\n")
+        # print("Status:{}\nMessage:{}\nEnroll Level:{}\nUUID:{}\nGUID:{}\nToken:{}\n".format(predict_handle.status,
+        #                                                                                     predict_handle.message,
+        #                                                                                     predict_handle.enroll_level,
+        #                                                                                     predict_handle.uuid,
+        #                                                                                     predict_handle.guid,
+        #                                                                                     predict_handle.token))
+        #
+        # print(colored("{}\n{}".format("Delete", "=" * 25), "green"))
+        # start_time = default_timer()
         # delete_handle = face_factor.delete(predict_handle.uuid)
-        # print("Delete=>Status:{}, Message:{}".format(delete_handle.status, delete_handle.message))
-        # print("........... Delete completed : ...........\n\n")
-        print("........... Completed Performing operations for image {} : ...........\n", img_path)
-        pass
+        # print("Duration:", default_timer() - start_time, "\n")
+        # print("Status:{}\nMessage:{}".format(delete_handle.status, delete_handle.message))

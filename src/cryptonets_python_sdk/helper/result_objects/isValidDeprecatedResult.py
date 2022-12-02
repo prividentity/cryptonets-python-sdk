@@ -7,7 +7,7 @@ class FaceIsValidDeprecatedResult:
         self._output_image_data = output_image_data
 
     @property
-    def status(self):
+    def status(self) -> int:
         """
         Returns the status of the operation
 
@@ -19,21 +19,21 @@ class FaceIsValidDeprecatedResult:
         return self._status
 
     @property
-    def message(self):
+    def message(self) -> str:
         """
         Returns the message of the operation
         """
         return self._message
 
     @property
-    def result(self):
+    def result(self) -> int:
         """
         Returns the result of the operation
         """
         return self._result
 
     @property
-    def age_factor(self):
+    def age_factor(self) -> float:
         """
         Returns the predicted age of the image
 

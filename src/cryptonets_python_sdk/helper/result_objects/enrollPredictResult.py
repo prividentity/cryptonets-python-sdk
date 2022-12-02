@@ -8,7 +8,7 @@ class FaceEnrollPredictResult:
         self._message = message
 
     @property
-    def enroll_level(self):
+    def enroll_level(self) -> int:
         """
         Returns the enroll_level of the user
         0 - one-factor authentication
@@ -18,7 +18,7 @@ class FaceEnrollPredictResult:
         return self._enroll_level
 
     @property
-    def uuid(self):
+    def uuid(self) -> str:
         """
         Returns the UUID of the user
 
@@ -27,7 +27,7 @@ class FaceEnrollPredictResult:
         return self._uuid
 
     @property
-    def guid(self):
+    def guid(self) -> str:
         """
         Returns the GUID of the user
 
@@ -36,7 +36,7 @@ class FaceEnrollPredictResult:
         return self._guid
 
     @property
-    def token(self):
+    def token(self) -> str:
         """
         Returns the token for verifying the operation
 
@@ -45,7 +45,7 @@ class FaceEnrollPredictResult:
         return self._token
 
     @property
-    def status(self):
+    def status(self) -> int:
         """
         Returns the status of the operation
 
@@ -57,7 +57,7 @@ class FaceEnrollPredictResult:
         return self._status
 
     @property
-    def message(self):
+    def message(self) -> str:
         """
         Returns the message of the operation
         """
