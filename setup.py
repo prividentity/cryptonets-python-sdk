@@ -39,7 +39,7 @@ URL = "https://private.id/"
 VERSION = "1.0.10"
 REQUIRES = [
     "numpy >= 1.23.0",
-    "Pillow >= 9.0.0"
+    "Pillow >= 9.1.0"
 ]
 
 LONG_DESCRIPTION = ''
