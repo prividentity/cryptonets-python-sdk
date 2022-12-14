@@ -21,6 +21,7 @@
 """
 
 import os
+
 from setuptools import setup, find_packages
 
 """
@@ -35,7 +36,7 @@ DESCRIPTION = "Cryptonets SDK Library for Python"
 AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
 URL = "https://private.id/"
-VERSION = "1.0.7"
+VERSION = "1.0.0"
 REQUIRES = [
     "numpy >= 1.23.0",
     "pillow >= 9.0.0"
@@ -45,7 +46,6 @@ LONG_DESCRIPTION = ''
 if os.path.exists('./README.md'):
     with open("README.md", encoding='utf-8') as fp:
         LONG_DESCRIPTION = fp.read()
-
 
 setup(
     name=NAME,
@@ -65,8 +65,10 @@ setup(
     python_requires=">=3.6",
     package_dir={'': 'src'},
     project_urls={
-        'Bug Reports':'https://github.com/prividentity/PrivateIdentity/issues',
-        'Source': 'https://github.com/prividentity/cryptonets-python-sdk'
+        "Bug Reports": 'https://github.com/prividentity/cryptonets-python-sdk/issues',
+        "Source": 'https://github.com/prividentity/cryptonets-python-sdk',
+        "Documentation": "https://docs.private.id/cryptonets-python-sdk/index.html",
+        "Release Notes": "https://docs.private.id/cryptonets-python-sdk/changelog.html"
     },
     classifiers=[
         "Intended Audience :: Developers",

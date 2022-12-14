@@ -12,6 +12,7 @@
 #
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath('../../src'))
 sys.path.insert(0, os.path.abspath('../../src/cryptonets_python_sdk'))
 sys.path.insert(0, os.path.abspath('../../src/cryptonets_python_sdk/helper'))
@@ -25,12 +26,11 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Cryptonets Python SDK'
-copyright = '2021, Private Identity'
+copyright = '2023, Private Identity LLC'
 author = 'Private Identity'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.6'
-
+release = '1.0.0'
 
 # -- General configuration ---------------------------------------------------
 
@@ -49,7 +49,6 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
-
 
 # -- Options for HTML output -------------------------------------------------
 

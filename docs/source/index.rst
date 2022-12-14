@@ -3,35 +3,50 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to PrivateID - CryptoNets SDK's documentation!
+Welcome to the CryptoNets™ Python SDK documentation
 ======================================================
+© 2023 by Private Identity® LLC All Rights Reserved
 
-Cryptonets-SDK is a Python library for generating and verifying private IDs using various factors such as Face, Voice, and Fingerprint.
+Cryptonets-SDK is a Python library for generating and verifying private IDs using Face Recognition.
 
-Check out the :doc:`installation` section for further information, including how to
-:ref:`install <installation>` the project.
+Read :doc:`installation` for how to :ref:`install <installation>` the project.
 
 Getting Started
 ===============
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
    installation
 
+ChangeLog
+=========
+.. toctree::
+   :maxdepth: 4
+
+   changelog
+
+Overview
+========
+.. toctree::
+   :maxdepth: 4
+
+   Overview <https://github.com/prividentity/CryptoNets/wiki>
+   
 Usage
 =====
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
-   usage
+   Usage/index
 
 Reference
 =========
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
    Factor/index
    ResultObjects/index
+   Configuration/index
 
 Search
 ======

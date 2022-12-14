@@ -1,6 +1,7 @@
+from typing import List
+
 from ..result_objects.faceObjectResult import FaceObjectResult
 
-from typing import List
 
 class FaceValidationResult:
     def __init__(self, error=-1, message=""):

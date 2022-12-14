@@ -1,8 +1,5 @@
 import traceback
 
-from typing import List
-from typing import Any
-
 import numpy as np
 
 from ..handler.nativeMethods import NativeMethods
@@ -11,22 +8,28 @@ from ..helper.messages import Message
 from ..helper.result_objects.compareResult import FaceCompareResult
 from ..helper.result_objects.deleteResult import FaceDeleteResult
 from ..helper.result_objects.enrollPredictResult import FaceEnrollPredictResult
-from ..helper.result_objects.isValidDeprecatedResult import FaceIsValidDeprecatedResult
 from ..helper.result_objects.faceValidationResult import FaceValidationResult
-
+from ..helper.result_objects.isValidDeprecatedResult import FaceIsValidDeprecatedResult
 from ..helper.utils import FaceValidationCode
+from ..settings.configuration import ConfigObject
+from ..settings.loggingLevel import LoggingLevel
 
 
 class Face(metaclass=Singleton):
 
-    def __init__(self, url: str, local_storage_path: str, api_key: str, logging_level: Any):
+    def __init__(self, api_key: str, server_url: str, local_storage_path: str, logging_level: LoggingLevel,
+                 config_object: ConfigObject = None):
         self.message = Message()
-        self.face_factor_processor = NativeMethods(api_key=api_key, url=url, local_storage_path=local_storage_path,
-                                                   logging_level=logging_level)
+        self.face_factor_processor = NativeMethods(api_key=api_key, server_url=server_url,
+                                                   local_storage_path=local_storage_path, logging_level=logging_level,
+                                                   config_object=config_object)
 
-    def enroll(self, image_data: np.array) -> FaceEnrollPredictResult:
+    def update_config(self, config_object):
+        self.face_factor_processor.update_config(config_object=config_object)
+
+    def enroll(self, image_data: np.array, config_object: ConfigObject = None) -> FaceEnrollPredictResult:
         try:
-            json_data = self.face_factor_processor.enroll(image_data)
+            json_data = self.face_factor_processor.enroll(image_data, config_object=config_object)
             if not json_data:
                 return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_ENROLL)
             if "PI" not in json_data:
@@ -41,9 +44,9 @@ class Face(metaclass=Singleton):
             print(e, traceback.format_exc())
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_ENROLL)
 
-    def predict(self, image_data: np.array) -> FaceEnrollPredictResult:
+    def predict(self, image_data: np.array, config_object: ConfigObject = None) -> FaceEnrollPredictResult:
         try:
-            json_data = self.face_factor_processor.predict(image_data)
+            json_data = self.face_factor_processor.predict(image_data, config_object=config_object)
             if not json_data:
                 return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
             if "PI" not in json_data:
@@ -68,9 +71,11 @@ class Face(metaclass=Singleton):
             print(e, traceback.format_exc())
             return FaceDeleteResult(message=self.message.EXCEPTION_ERROR_DELETE)
 
-    def compare(self, image_data_1: np.array, image_data_2: np.array) -> FaceCompareResult:
+    def compare(self, image_data_1: np.array, image_data_2: np.array,
+                config_object: ConfigObject = None) -> FaceCompareResult:
         try:
-            json_data = self.face_factor_processor.compare_files(image_data_1, image_data_2)
+            json_data = self.face_factor_processor.compare_files(image_data_1, image_data_2,
+                                                                 config_object=config_object)
             if not json_data:
                 return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
 
@@ -86,9 +91,10 @@ class Face(metaclass=Singleton):
             return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
 
     @deprecated
-    def is_valid_deprecated(self, image_data: np.array) -> FaceIsValidDeprecatedResult:
+    def is_valid_deprecated(self, image_data: np.array,
+                            config_object: ConfigObject = None) -> FaceIsValidDeprecatedResult:
         try:
-            json_data = self.face_factor_processor.is_valid(image_data)
+            json_data = self.face_factor_processor.is_valid(image_data, config_object=config_object)
             if not json_data:
                 return FaceIsValidDeprecatedResult(message=self.message.IS_VALID_ERROR)
 
@@ -102,9 +108,9 @@ class Face(metaclass=Singleton):
             print(e, traceback.format_exc())
             return FaceIsValidDeprecatedResult(message=self.message.IS_VALID_ERROR)
 
-    def is_valid(self, image_data: np.array) -> FaceValidationResult:
+    def is_valid(self, image_data: np.array, config_object: ConfigObject = None) -> FaceValidationResult:
         try:
-            json_data = self.face_factor_processor.is_valid_without_age(image_data)
+            json_data = self.face_factor_processor.is_valid_without_age(image_data, config_object=config_object)
             if not json_data:
                 return FaceValidationResult(message=self.message.IS_VALID_ERROR)
 
@@ -128,9 +134,9 @@ class Face(metaclass=Singleton):
             print(e, traceback.format_exc())
             return FaceValidationResult(message=self.message.IS_VALID_ERROR)
 
-    def estimate_age(self, image_data: np.array) -> FaceValidationResult:
+    def estimate_age(self, image_data: np.array, config_object: ConfigObject = None) -> FaceValidationResult:
         try:
-            json_data = self.face_factor_processor.estimate_age(image_data)
+            json_data = self.face_factor_processor.estimate_age(image_data, config_object=config_object)
             if not json_data:
                 return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
 
@@ -148,7 +154,6 @@ class Face(metaclass=Singleton):
                     raise Exception("Status code out of bounds.")
                 if _return_code == -1:
                     _age = -1
-                    _message = "Please validate the images using isvalid function"
                 face_age_result_object.append_face_objects(return_code=_return_code, age=_age, message=_message,
                                                            top_left_coordinate=face["box"].get("top_left", None),
                                                            bottom_right_coordinate=face["box"].get("bottom_right",

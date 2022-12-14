@@ -1,31 +1,41 @@
 import ctypes
 import json
 import pathlib
+import sys
 from ctypes import *
 from typing import Any
-import sys
+
 import numpy as np
 
+from ..settings.configuration import ConfigObject
 from ..settings.loggingLevel import LoggingLevel
-from ..settings.moduleSettings import ModuleSettings
 
 
 class NativeMethods(object):
-    def __init__(self, url: str = None, local_storage_path: str = "privateid", api_key: str = None,
-                 logging_level: int = LoggingLevel.off.value):
+    def __init__(self, api_key: str, server_url: str, local_storage_path: str,
+                 logging_level: LoggingLevel, config_object: ConfigObject = None):
         try:
-            self._module_settings = ModuleSettings(api_key=api_key, server_url=url,
-                                                   local_storage_path=local_storage_path,
-                                                   logging_level=logging_level)
+            self._config_object = config_object
             self._library_path = str(pathlib.Path(__file__).parent.joinpath("lib/lib_fhe.so").resolve())
             self._embedding_length = 128
             self._num_embeddings = 80
             self._aug_size = 224 * 224 * 4 * self._num_embeddings
             self._spl_so_face = None
+            self._api_key = bytes(api_key, 'utf-8')
+            self._server_url = bytes(server_url, 'utf-8')
+            self._local_storage_path = bytes(local_storage_path, 'utf-8')
+            self._logging_level = logging_level
             self._face_setup()
         except Exception as e:
             print("Error ", e)
             sys.exit(1)
+
+    def update_config(self, config_object):
+        self._config_object = config_object
+        if self._config_object and self._config_object.get_config_param():
+            c_config_param = c_char_p(bytes(self._config_object.get_config_param(), 'utf-8'))
+            c_config_param_len = c_int(len(self._config_object.get_config_param()))
+            self._spl_so_face.privid_set_configuration(self._spl_so_face.new_handle, c_config_param, c_config_param_len)
 
     def _face_setup(self):
         self._spl_so_face = ctypes.CDLL(self._library_path)
@@ -33,7 +43,7 @@ class NativeMethods(object):
         # self._spl_so_face._FHE_init = self._spl_so_face.FHE_init
         self._spl_so_face.FHE_init.argtypes = [c_int]
         self._spl_so_face.FHE_init.restype = POINTER(c_uint8)
-        self._spl_so_face.handle = self._spl_so_face.FHE_init(self._module_settings.logging_level)
+        self._spl_so_face.handle = self._spl_so_face.FHE_init(self._logging_level)
 
         self._spl_so_face.privid_initialize_session_join.argtypes = [POINTER(c_void_p), c_void_p]
         self._spl_so_face.privid_initialize_session_join.restype = c_bool
@@ -52,18 +62,28 @@ class NativeMethods(object):
         self._spl_so_face.FHE_configure_local_storage_dir_name.argtypes = [
             c_char_p, c_int]
         self._spl_so_face.FHE_configure_local_storage_dir_name.restype = c_uint8
+        # privid_set_configuration
+        self._spl_so_face.privid_set_configuration.argtypes = [c_void_p, c_char_p, c_int]
+        self._spl_so_face.privid_set_configuration.restype = c_bool
 
         # configure_url , API key and storage location
         self._spl_so_face.FHE_configure_url(self._spl_so_face.handle, c_int32(46),
-                                            c_char_p(self._module_settings.api_key),
-                                            c_int32(len(self._module_settings.api_key)))
+                                            c_char_p(self._api_key),
+                                            c_int32(len(self._api_key)))
 
         self._spl_so_face.FHE_configure_url(self._spl_so_face.handle, c_int32(42),
-                                            c_char_p(self._module_settings.server_url),
-                                            c_int32(len(self._module_settings.server_url)))
-        self._spl_so_face.FHE_configure_local_storage_dir_name(
-            c_char_p(self._module_settings.local_storage_path), c_int32(len(self._module_settings.local_storage_path)))
+                                            c_char_p(self._server_url),
+                                            c_int32(len(self._server_url)))
 
+        self._spl_so_face.FHE_configure_local_storage_dir_name(c_char_p(self._local_storage_path),
+                                                               c_int32(len(self._local_storage_path)))
+
+        # Configure parameters 
+        if self._config_object and self._config_object.get_config_param():
+            c_config_param = c_char_p(bytes(self._config_object.get_config_param(), 'utf-8'))
+            c_config_param_len = c_int(len(self._config_object.get_config_param()))
+            self._spl_so_face.privid_set_configuration(self._spl_so_face.new_handle, c_config_param, c_config_param_len)
+        # self._spl_so_face.privid_set_configuration.restype = c_int
         # FHE_close
         # self._spl_so_face.FHE_close = self._spl_so_face.FHE_close
         self._spl_so_face.FHE_close.argtypes = [POINTER(c_uint8)]
@@ -71,7 +91,7 @@ class NativeMethods(object):
 
         # privid_enroll_onefa
         # self._spl_so_face.privid_enroll_onefa = self._spl_so_face.privid_enroll_onefa
-        self._spl_so_face.privid_enroll_onefa.argtypes = [c_void_p, POINTER(c_char_p), c_int, POINTER(
+        self._spl_so_face.privid_enroll_onefa.argtypes = [c_void_p, c_char_p, c_int, POINTER(
             c_uint8), c_int, c_int, c_int, c_int, POINTER(c_float), POINTER(c_int), c_bool, POINTER(c_uint8),
                                                           POINTER(c_int), POINTER(c_char_p),
                                                           POINTER(c_int)]
@@ -79,7 +99,7 @@ class NativeMethods(object):
 
         # privid_face_predict_onefa
         # self._spl_so_face.privid_face_predict_onefa = self._spl_so_face.privid_face_predict_onefa
-        self._spl_so_face.privid_face_predict_onefa.argtypes = [c_void_p, POINTER(c_char_p), c_int, POINTER(
+        self._spl_so_face.privid_face_predict_onefa.argtypes = [c_void_p, c_char_p, c_int, POINTER(
             c_uint8), c_int, c_int, c_int, c_int, POINTER(c_float), POINTER(c_int), c_bool, POINTER(c_uint8),
                                                                 POINTER(c_int), POINTER(c_char_p),
                                                                 POINTER(c_int)]
@@ -104,7 +124,7 @@ class NativeMethods(object):
 
         # FHE_compare_files
         # self._spl_so_face.privid_face_compare_files = self._spl_so_face.privid_face_compare_files
-        self._spl_so_face.privid_face_compare_files.argtypes = [c_void_p, c_float, POINTER(c_char), c_int,
+        self._spl_so_face.privid_face_compare_files.argtypes = [c_void_p, c_float, c_char_p, c_int,
                                                                 POINTER(c_uint8), c_int, c_int, c_int,
                                                                 POINTER(c_uint8), c_int, c_int, c_int,
                                                                 POINTER(c_char_p),
@@ -123,7 +143,7 @@ class NativeMethods(object):
             c_char_p, c_int, POINTER(c_char_p), POINTER(c_int)]
         self._spl_so_face.privid_estimate_age.restype = c_bool
 
-    def is_valid(self, image_data: np.array, is_enroll: bool = False) -> Any:
+    def is_valid(self, image_data: np.array, is_enroll: bool = False, config_object: ConfigObject = None) -> Any:
         try:
             img = image_data
             im_width = img.shape[1]
@@ -157,7 +177,7 @@ class NativeMethods(object):
             print(e)
             return False
 
-    def is_valid_without_age(self, image_data: np.array) -> Any:
+    def is_valid_without_age(self, image_data: np.array, config_object: ConfigObject = None) -> Any:
         try:
             img = image_data
             im_width = img.shape[1]
@@ -168,10 +188,16 @@ class NativeMethods(object):
 
             c_result = c_char_p()
             c_result_len = c_int()
-
+            if config_object and config_object.get_config_param():
+                c_config_param = c_char_p(bytes(config_object.get_config_param(), 'utf-8'))
+                c_config_param_len = c_int(len(config_object.get_config_param()))
+            else:
+                c_config_param = c_char_p(bytes("", 'utf-8'))
+                c_config_param_len = c_int(0)
             self._spl_so_face.privid_validate(
                 self._spl_so_face.new_handle, c_p_buffer_images_in, c_int(im_width), c_int(im_height),
-                c_char_p(bytes("", 'utf-8')), c_int(0), byref(c_result), byref(c_result_len))
+                c_config_param, c_config_param_len,
+                byref(c_result), byref(c_result_len))
 
             if not c_result.value or not c_result_len.value:
                 raise Exception("Something went wrong. Couldn't process the image for is_valid API. ")
@@ -184,7 +210,7 @@ class NativeMethods(object):
             print(e)
             return False
 
-    def estimate_age(self, image_data: np.array) -> Any:
+    def estimate_age(self, image_data: np.array, config_object: ConfigObject = None) -> Any:
         try:
             img = image_data
             im_width = img.shape[1]
@@ -195,10 +221,16 @@ class NativeMethods(object):
 
             c_result = c_char_p()
             c_result_len = c_int()
-
+            if config_object and config_object.get_config_param():
+                c_config_param = c_char_p(bytes(config_object.get_config_param(), 'utf-8'))
+                c_config_param_len = c_int(len(config_object.get_config_param()))
+            else:
+                c_config_param = c_char_p(bytes("", 'utf-8'))
+                c_config_param_len = c_int(0)
             self._spl_so_face.privid_estimate_age(
                 self._spl_so_face.new_handle, c_p_buffer_images_in, c_int(im_width), c_int(im_height),
-                c_char_p(bytes("", 'utf-8')), c_int(0), byref(c_result), byref(c_result_len))
+                c_config_param, c_config_param_len,
+                byref(c_result), byref(c_result_len))
 
             if not c_result.value or not c_result_len.value:
                 raise Exception("Something went wrong. Couldn't process the image for estimate_age API. ")
@@ -215,8 +247,9 @@ class NativeMethods(object):
         uuid = bytes(uuid, 'utf-8')
         p_buffer_result = c_char_p()
         p_buffer_result_length = c_int()
-
-        self._spl_so_face.privid_user_delete(self._spl_so_face.new_handle, c_char_p(bytes("", 'utf-8')), c_int(0),
+        c_config_param = c_char_p(bytes("", 'utf-8'))
+        c_config_param_len = c_int(0)
+        self._spl_so_face.privid_user_delete(self._spl_so_face.new_handle, c_config_param, c_config_param_len,
                                              c_char_p(uuid),
                                              c_int(
                                                  len(uuid)), byref(p_buffer_result),
@@ -233,7 +266,7 @@ class NativeMethods(object):
         else:
             return False
 
-    def compare_files(self, left_image: np.array, right_image: np.array) -> Any:
+    def compare_files(self, left_image: np.array, right_image: np.array, config_object: ConfigObject = None) -> Any:
         fudge_factor = 0.0
         try:
             left_img_data_buffer = left_image.flatten()
@@ -252,9 +285,16 @@ class NativeMethods(object):
 
             p_buffer_result = c_char_p()
             p_buffer_result_length = c_int()
-
+            if config_object and config_object.get_config_param():
+                c_config_param = c_char_p(bytes(config_object.get_config_param(), 'utf-8'))
+                c_config_param_len = c_int(len(config_object.get_config_param()))
+            else:
+                c_config_param = c_char_p(bytes("", 'utf-8'))
+                c_config_param_len = c_int(0)
             self._spl_so_face.privid_face_compare_files(self._spl_so_face.new_handle, c_float(fudge_factor),
-                                                        c_char_p(bytes("", 'utf-8')), c_int(0), left_c_img_data_buffer,
+                                                        c_config_param,
+                                                        c_config_param_len,
+                                                        left_c_img_data_buffer,
                                                         c_int(lim_size), c_int(lim_width), c_int(lim_height),
                                                         right_c_img_data_buffer, c_int(rim_size),
                                                         c_int(rim_width), c_int(rim_height),
@@ -275,7 +315,7 @@ class NativeMethods(object):
             print(e)
             return False
 
-    def enroll(self, image_data: np.array) -> Any:
+    def enroll(self, image_data: np.array, config_object: ConfigObject = None) -> Any:
         im_count = 1
         try:
             img_data = image_data
@@ -302,7 +342,13 @@ class NativeMethods(object):
 
             augmented_images_length = np.zeros(1, dtype=np.int32)
             c_augmented_images_length = augmented_images_length.ctypes.data_as(POINTER(ctypes.c_int32))
-            self._spl_so_face.privid_enroll_onefa(self._spl_so_face.new_handle, c_char_p(bytes("", 'utf-8')), c_int(0),
+            if config_object and config_object.get_config_param():
+                c_config_param = c_char_p(bytes(config_object.get_config_param(), 'utf-8'))
+                c_config_param_len = c_int(len(config_object.get_config_param()))
+            else:
+                c_config_param = c_char_p(bytes("", 'utf-8'))
+                c_config_param_len = c_int(0)
+            self._spl_so_face.privid_enroll_onefa(self._spl_so_face.new_handle, c_config_param, c_config_param_len,
                                                   c_p_buffer_images_in,
                                                   c_int(im_count), c_int(im_size), c_int(im_width),
                                                   c_int(im_height),
@@ -321,7 +367,7 @@ class NativeMethods(object):
             print("Error :", e)
             return False
 
-    def predict(self, image_data: np.array) -> Any:
+    def predict(self, image_data: np.array, config_object: ConfigObject = None) -> Any:
         im_count = 1
         try:
             img_data = image_data
@@ -348,8 +394,14 @@ class NativeMethods(object):
             c_result = c_char_p()
             augmented_images_length = np.zeros(1, dtype=np.int32)
             c_augmented_images_length = augmented_images_length.ctypes.data_as(POINTER(ctypes.c_int32))
-            self._spl_so_face.privid_face_predict_onefa(self._spl_so_face.new_handle, c_char_p(bytes("", 'utf-8')),
-                                                        c_int(0),
+            if config_object and config_object.get_config_param():
+                c_config_param = c_char_p(bytes(config_object.get_config_param(), 'utf-8'))
+                c_config_param_len = c_int(len(config_object.get_config_param()))
+            else:
+                c_config_param = c_char_p(bytes("", 'utf-8'))
+                c_config_param_len = c_int(0)
+            self._spl_so_face.privid_face_predict_onefa(self._spl_so_face.new_handle, c_config_param,
+                                                        c_config_param_len,
                                                         c_p_buffer_images_in,
                                                         c_int(im_count), c_int(im_size), c_int(im_width),
                                                         c_int(im_height),

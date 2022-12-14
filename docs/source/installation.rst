@@ -1,18 +1,21 @@
 Installation
 ============
 
+The Python SDK supports fault tolerant and multi-threaded programming support.
+
+It also supports docker and K8s elastic, load balancing too.
 
 Python Version
 --------------
 
-We recommend using the latest version of Python. PrivateID supports
+We recommend using the latest version of Python. This SDK supports
 Python 3.6 and newer.
 
 
 Dependencies
 ------------
 
-PrivateID have dependencies on numpy, scipy and Pillow for image processing.
+Cryptonets-SDK has dependencies on numpy, scipy and Pillow for image processing.
 These distributions will be installed automatically. PrivateID will
 detect and use them if already installed.
 
@@ -25,7 +28,7 @@ detect and use them if already installed.
 Virtual environments
 --------------------
 
-Use a virtual environment to manage the dependencies for your project,
+We recommend you use a virtual environment to manage the dependencies for your project,
 both in development and in production.
 
 What problem does a virtual environment solve? The more Python
