@@ -36,10 +36,10 @@ DESCRIPTION = "Cryptonets SDK Library for Python"
 AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
 URL = "https://private.id/"
-VERSION = "1.0.0"
+VERSION = "1.0.10"
 REQUIRES = [
     "numpy >= 1.23.0",
-    "pillow >= 9.0.0"
+    "Pillow >= 9.0.0"
 ]
 
 LONG_DESCRIPTION = ''
