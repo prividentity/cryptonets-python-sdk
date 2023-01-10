@@ -54,7 +54,7 @@ server_url = URL of the server
 
 api_key = APIKEY issued on successful signup
 
-server = FaceFactor(url=server_url, api_key=api_key,
+server = FaceFactor(server_url=server_url, api_key=api_key,
         logging_level=LoggingLevel.full.value)
 ```
 
