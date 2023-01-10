@@ -48,6 +48,7 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     ORIENTATION_ID_VALUE = "orientation_id_value"
     FACE_DETECT_PREFERRED_SIZE = "face_detect_preferred_size"
     FACE_DETECT_MAX_OUT_IMAGE_SIZE = "face_detect_max_out_image_size"
+    SEND_ORIGINAL_IMAGES = "send_original_images"
 
 
 class ParameterValidator:
@@ -134,6 +135,8 @@ class ParameterValidator:
             name=PARAMETERS.FACE_DETECT_PREFERRED_SIZE, _type="ANY")
         self.__parameter[PARAMETERS.FACE_DETECT_MAX_OUT_IMAGE_SIZE] = self.Parameter(
             name=PARAMETERS.FACE_DETECT_MAX_OUT_IMAGE_SIZE, _type="ANY")
+        self.__parameter[PARAMETERS.SEND_ORIGINAL_IMAGES] = self.Parameter(
+            name=PARAMETERS.SEND_ORIGINAL_IMAGES, _type="BOOL")
 
     def validate(self, key, value):
         return self.__parameter[key].validate(value)

@@ -49,6 +49,9 @@ class FaceFactor(metaclass=Singleton):
         logging_level : Object (Optional)
             LoggingLevel needed while performing operation
 
+        tf_num_thread: int (Optional)
+            Number of thread to use for Tensorflow model inference
+
         config : ConfigObject (Optional)
             Configuration class object with parameters
 
@@ -68,7 +71,7 @@ class FaceFactor(metaclass=Singleton):
     """
 
     def __init__(self, api_key: str = None, server_url: str = None, local_storage_path: str = None,
-                 logging_level: LoggingLevel = LoggingLevel.off, config: ConfigObject = None):
+                 logging_level: LoggingLevel = LoggingLevel.off, tf_num_thread: int = 0, config: ConfigObject = None):
 
         try:
             if platform.system() not in SupportedPlatforms.supportedOS.value:
@@ -80,6 +83,14 @@ class FaceFactor(metaclass=Singleton):
                     os.environ.get('PI_API_KEY')) <= 0):
                 raise ValueError("API Key is required.")
 
+            if tf_num_thread is None and (os.environ.get('PI_TF_NUM_THREAD') is None or len(
+                    os.environ.get('PI_TF_NUM_THREAD')) <= 0):
+                tf_num_thread = 0
+
+            if tf_num_thread is None:
+                self._tf_num_thread = int(os.environ.get('PI_TF_NUM_THREAD'))
+            else:
+                self._tf_num_thread = tf_num_thread
             if server_url is None:
                 self._server_url = os.environ.get('PI_SERVER_URL')
             else:
@@ -101,6 +112,7 @@ class FaceFactor(metaclass=Singleton):
             self._logging_level = logging_level.value
             self.face_factor = Face(api_key=self._api_key, server_url=self._server_url,
                                     local_storage_path=self._local_storage_path, logging_level=self._logging_level,
+                                    tf_num_thread=self._tf_num_thread,
                                     config_object=self._config_object)
             self.message = Message()
         except ValueError as exp:
