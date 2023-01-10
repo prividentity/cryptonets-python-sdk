@@ -18,11 +18,11 @@ from ..settings.loggingLevel import LoggingLevel
 class Face(metaclass=Singleton):
 
     def __init__(self, api_key: str, server_url: str, local_storage_path: str, logging_level: LoggingLevel,
-                 config_object: ConfigObject = None):
+                 tf_num_thread: int, config_object: ConfigObject = None):
         self.message = Message()
         self.face_factor_processor = NativeMethods(api_key=api_key, server_url=server_url,
                                                    local_storage_path=local_storage_path, logging_level=logging_level,
-                                                   config_object=config_object)
+                                                   tf_num_thread=tf_num_thread, config_object=config_object)
 
     def update_config(self, config_object):
         self.face_factor_processor.update_config(config_object=config_object)

@@ -1,5 +1,14 @@
 Changelog
 =========
+Version 1.0.11 (2022-01-10)
+---------------------------
+
+Enhancements:
+
+* Introduction of new environment variable for tensorflow thread
+* Improvements on best face selection with face recognition model
+* Bug fixes for empty configuration object and URL usage
+* New parameter update for getting original images (BETA)
 
 Version 1.0.10 (2022-12-14)
 ---------------------------

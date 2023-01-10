@@ -123,14 +123,14 @@ Output:
 
 See the :ref:`is_valid advanced instructions <isvalid_advanced>` section for more configuration options.
 
-age_estimate: Estimate user's age
+estimate_age: Estimate user's age
 ---------------------------------
 
-The age_estimate method accepts a frontal facial image, apiKey and specified restrictions as input,
+The estimate_age method accepts a frontal facial image, apiKey and specified restrictions as input,
 checks the image to determine if a valid facial biometric that conforms to the specified restriction(s) are present in the image,
 and returns the age estimate [0-100] plus bounding box, or useful error code(s).
 
-Use age_estimate during live capture to continually estimate a user’s age.
+Use estimate_age during live capture to continually estimate a user’s age.
 
 | Method runs on-device and replies in 50ms without a server call
 | Head tilt (left to right): -22.5 to 22.5 degrees
@@ -191,7 +191,7 @@ See :ref:`return codes <return_codes>` for all result and status codes
     BBox TL:Point(130.0,45.5)
     BBox BR:Point(290.0,212.5)
 
-See the :ref:`age_estimate advanced instructions <age_advanced>` section for more configuration options.
+See the :ref:`estimate_age advanced instructions <age_advanced>` section for more configuration options.
 
 compare: 1:1 verification of two valid face images
 --------------------------------------------------

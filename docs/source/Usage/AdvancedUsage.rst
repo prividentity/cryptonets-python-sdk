@@ -1,6 +1,32 @@
 Advanced Usage
 ==============
 
+Environment Setup
+-----------------
+
+Server URL and API Key are prerequisites for accessing factor server
+
+To control the number of threads the Tensorflow uses for model inference, use the below environment variable
+
+.. code-block:: sh
+
+    export PI_TF_NUM_THREAD = 3
+
+Or you can pass the variable in the factor object directly.
+
+.. code-block:: py
+
+    # Import the cryptonets sdk class
+    from cryptonets_python_sdk.factor import FaceFactor
+
+    # Replace with the provided server URL
+    server_url = "https://sample.url.domain"
+
+    # Replace with your API key
+    api_key = "your-api-key"
+
+    # Create a Face factor class instance
+    face_factor = FaceFactor(server_url = server_url, api_key = api_key, tf_num_thread = 1)
 
 Configuration Setup
 -------------------
@@ -106,7 +132,7 @@ you can override the configuration context of ``CONF_SCORE_THR_ENROLL`` like bel
 
 .. _age_advanced:
 
-age_estimate: Advanced instructions
+estimate_age: Advanced instructions
 -----------------------------------
 
 See the :ref:`parameter <param_list>` section for complete list of parameters and valid values.

@@ -115,7 +115,7 @@ if __name__ == "__main__":
 
     config_object = ConfigObject(
         config_param={PARAMETERS.INPUT_IMAGE_FORMAT: "rgb",
-                      PARAMETERS.CONTEXT_STRING: "enroll"})
+                      PARAMETERS.CONTEXT_STRING: "predict"})
     # print(config_object.get_config_param())
 
     face_factor = FaceFactor(logging_level=LoggingLevel.off, config=config_object)

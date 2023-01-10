@@ -13,7 +13,7 @@ from ..settings.loggingLevel import LoggingLevel
 
 class NativeMethods(object):
     def __init__(self, api_key: str, server_url: str, local_storage_path: str,
-                 logging_level: LoggingLevel, config_object: ConfigObject = None):
+                 logging_level: LoggingLevel, tf_num_thread: int, config_object: ConfigObject = None):
         try:
             self._config_object = config_object
             self._library_path = str(pathlib.Path(__file__).parent.joinpath("lib/lib_fhe.so").resolve())
@@ -21,6 +21,7 @@ class NativeMethods(object):
             self._num_embeddings = 80
             self._aug_size = 224 * 224 * 4 * self._num_embeddings
             self._spl_so_face = None
+            self._tf_num_thread = tf_num_thread
             self._api_key = bytes(api_key, 'utf-8')
             self._server_url = bytes(server_url, 'utf-8')
             self._local_storage_path = bytes(local_storage_path, 'utf-8')
@@ -39,6 +40,12 @@ class NativeMethods(object):
 
     def _face_setup(self):
         self._spl_so_face = ctypes.CDLL(self._library_path)
+
+        # privid_global_settings
+        self._spl_so_face.privid_global_settings.argtypes = [c_uint8, c_uint8]
+        self._spl_so_face.privid_global_settings.restype = c_bool
+        self._spl_so_face.privid_global_settings(self._tf_num_thread, self._logging_level)
+
         # FHE_init
         # self._spl_so_face._FHE_init = self._spl_so_face.FHE_init
         self._spl_so_face.FHE_init.argtypes = [c_int]

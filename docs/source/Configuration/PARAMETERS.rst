@@ -105,3 +105,6 @@ Configurable Parameter List and Valid values
    * - FACE_DETECT_PREFERRED_SIZE
      - Preferred size of the cropped face image. typically used during face extraction from image with multiple faces
      - 448
+   * - SEND_ORIGINAL_IMAGES
+     - Get the original images from the server. Default false
+     - True, False
