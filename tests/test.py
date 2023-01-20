@@ -13,7 +13,7 @@ from cryptonets_python_sdk.settings.configuration import ConfigObject
 from cryptonets_python_sdk.settings.configuration import PARAMETERS
 from cryptonets_python_sdk.factor import FaceFactor
 from cryptonets_python_sdk.settings.loggingLevel import LoggingLevel
-
+from cryptonets_python_sdk.settings.cacheType import CacheType
 
 def image_path_to_array(image_path: str) -> np.ndarray:
     image = Image.open(image_path).convert('RGB')
@@ -87,6 +87,21 @@ def test_age_estimate(age_face_factor, age_path, config=None):
         print("No Faces found!!\n")
 
 
+def test_get_iso_face(get_iso_face_factor, age_path, config=None):
+    print(colored("{}\n{}".format("Get ISO FACE", "=" * 25), "green"))
+    start_time = default_timer()
+    get_iso_face_handle = get_iso_face_factor.get_iso_face(image_path=age_path, config=config)
+    print("Duration:", default_timer() - start_time, "\n")
+    print(
+        "Status:{}\nMessage:{}\nISO_image_width:{}\nISO_image_height: {}\nISO_image_channels:{}\nConfidence:{} ".format(
+            get_iso_face_handle.status, get_iso_face_handle.message, get_iso_face_handle.iso_image_width,
+            get_iso_face_handle.iso_image_height, get_iso_face_handle.iso_image_channels,
+            get_iso_face_handle.confidence))
+
+    if get_iso_face_handle.image:
+        get_iso_face_handle.image.show()
+
+
 def test_valid(valid_face_factor, valid_path, config=None):
     print(colored("{}\n{}".format("Is Valid", "=" * 25), "green"))
     valid_start_time = default_timer()
@@ -118,15 +133,16 @@ if __name__ == "__main__":
                       PARAMETERS.CONTEXT_STRING: "predict"})
     # print(config_object.get_config_param())
 
-    face_factor = FaceFactor(logging_level=LoggingLevel.off, config=config_object)
+    face_factor = FaceFactor(logging_level=LoggingLevel.off, config=config_object, cache_type=CacheType.OFF)
     # face_factor.update_config(config=config_object)
 
     for img_path in image_file_list:
         print(colored("\nImage:{}\n".format(img_path), "red"))
         test_valid(face_factor, img_path)
-        test_valid(face_factor, img_path, config=config_object)
+        # test_valid(face_factor, img_path, config=config_object)
         test_age_estimate(face_factor, img_path)
-        test_age_estimate(face_factor, img_path, config=config_object)
+        # test_age_estimate(face_factor, img_path, config=config_object)
+        # test_get_iso_face(face_factor, img_path)
         # test_compare(face_factor, img_path)
         # test_enroll(face_factor, img_path)
         # result_handle = test_predict(face_factor, img_path)

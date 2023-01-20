@@ -1,5 +1,27 @@
 Changelog
 =========
+
+Version 1.0.13 (2022-01-20)
+---------------------------
+
+Bug Fixes and Improvements:
+
+* Age Estimation on small resolution images
+* ISO image improvements for various conditions
+* Bug fixes and Improvements for image capture aspect ratio
+
+New Features:
+
+* Cache Type optional parameter
+
+Version 1.0.12 (2022-01-13)
+---------------------------
+
+Enhancements:
+
+* New function to get the ISO of the face image
+* Bug fixes and Improvements for memory allocation
+
 Version 1.0.11 (2022-01-10)
 ---------------------------
 

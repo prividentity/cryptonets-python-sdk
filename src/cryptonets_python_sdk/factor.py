@@ -16,7 +16,9 @@ from .helper.result_objects.deleteResult import FaceDeleteResult
 from .helper.result_objects.enrollPredictResult import FaceEnrollPredictResult
 from .helper.result_objects.faceValidationResult import FaceValidationResult
 from .helper.result_objects.isValidDeprecatedResult import FaceIsValidDeprecatedResult
+from .helper.result_objects.isoFaceResult import ISOFaceResult
 from .helper.utils import image_path_to_array
+from .settings.cacheType import CacheType
 from .settings.configuration import ConfigObject, PARAMETERS
 from .settings.loggingLevel import LoggingLevel
 from .settings.supportedPlatforms import SupportedPlatforms
@@ -46,11 +48,14 @@ class FaceFactor(metaclass=Singleton):
         local_storage_path : str (optional)
             Absolute path to the local storage.
 
-        logging_level : Object (Optional)
+        logging_level : LoggingLevel (Optional)
             LoggingLevel needed while performing operation
 
         tf_num_thread: int (Optional)
             Number of thread to use for Tensorflow model inference
+
+        cache_type: CacheType (Optional)
+            To set the cache on / off
 
         config : ConfigObject (Optional)
             Configuration class object with parameters
@@ -68,10 +73,12 @@ class FaceFactor(metaclass=Singleton):
         enroll
         predict
         delete
+        get_iso_face
     """
 
     def __init__(self, api_key: str = None, server_url: str = None, local_storage_path: str = None,
-                 logging_level: LoggingLevel = LoggingLevel.off, tf_num_thread: int = 0, config: ConfigObject = None):
+                 logging_level: LoggingLevel = LoggingLevel.off, tf_num_thread: int = 0,
+                 cache_type: CacheType = CacheType.OFF, config: ConfigObject = None):
 
         try:
             if platform.system() not in SupportedPlatforms.supportedOS.value:
@@ -109,10 +116,11 @@ class FaceFactor(metaclass=Singleton):
                 self._server_url = self._server_url[:-1]
 
             self._config_object = config
-            self._logging_level = logging_level.value
+            self._logging_level = logging_level
+            self._cache_type = cache_type
             self.face_factor = Face(api_key=self._api_key, server_url=self._server_url,
                                     local_storage_path=self._local_storage_path, logging_level=self._logging_level,
-                                    tf_num_thread=self._tf_num_thread,
+                                    tf_num_thread=self._tf_num_thread, cache_type=self._cache_type,
                                     config_object=self._config_object)
             self.message = Message()
         except ValueError as exp:
@@ -344,6 +352,65 @@ class FaceFactor(metaclass=Singleton):
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
             print("Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues")
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_ENROLL)
+
+    def get_iso_face(self, image_path: str = None, image_data: np.array = None,
+                     config: ConfigObject = None) -> ISOFaceResult:
+        """Takes the face image and gives back the image in ISO Spec format
+
+        Parameters
+        ----------
+        image_path
+            Directory path to the image file
+
+        config (Optional)
+            Additional configuration parameters for the operation
+
+        image_data (Optional)
+            Image data in numpy RGB format
+
+        Returns
+        -------
+        ISOFaceResult
+            status: int [0 if successful -1 if unsuccessful]
+
+            message: str [Message from the operation]
+
+            image: PIL.Image
+
+            confidence: float
+
+            iso_image_width: str
+
+            iso_image_height: str
+
+            iso_image_channels: str
+
+        """
+        try:
+            if config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param:
+                input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
+            elif self.config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param:
+                input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
+            else:
+                input_format = "rgb"
+            if (image_path is not None and image_data is not None) or (image_path is None and image_data is None):
+                return ISOFaceResult(message="Specify either image_path or image_data")
+            img_data = None
+            if image_data is not None:
+                if not isinstance(image_data, np.ndarray):
+                    return ISOFaceResult(message="Required numpy array in RGB/RGBA/BGR format")
+                img_data = image_data
+            if image_path is not None and len(image_path) > 0:
+                if not os.path.exists(image_path):
+                    return ISOFaceResult(message=self.message.get_message(101))
+                img_data = image_path_to_array(image_path, input_format=input_format)
+            if img_data is None:
+                return ISOFaceResult(message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)
+            return self.face_factor.get_iso_face(image_data=img_data, config_object=config)
+        except Exception as e:
+            print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
+            print("Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues")
+            return ISOFaceResult(message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)
 
     def predict(self, image_path: str = None, image_data: np.array = None,
                 config: ConfigObject = None) -> FaceEnrollPredictResult:

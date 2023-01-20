@@ -203,3 +203,15 @@ See the :ref:`parameter <param_list>` section for complete list of parameters an
     # Predict the image
     predict_handle = face_factor.predict(image_path = "path_to_the_image", config=config_object)
 
+.. _iso_face_advanced:
+
+iso_face: Advanced instructions
+-------------------------------
+
+See the :ref:`parameter <param_list>` section for complete list of parameters and valid values.
+
+.. code-block:: py
+
+    # Get ISO face for the image
+    iso_face_handle = face_factor.get_iso_face(image_path = "path_to_the_image", config=config_object)
+

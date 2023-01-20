@@ -414,6 +414,72 @@ Output:
     Status:0
     Message: Ok.
 
+get_iso_face: Extract ISO Spec Face Image
+-----------------------------------------
+
+The get_iso_face method accepts a frontal facial image, apiKey and specified restrictions as input,
+checks the image to determine if a valid facial biometric that conforms to the specified restriction(s) are present in the image,
+and returns the iso face image, or useful error code(s).
+
+Use get_iso_face during live capture to continually acquire iso image.
+
+| Method runs on-device and replies in 50ms without a server call
+| Head tilt (left to right): -22.5 to 22.5 degrees
+| Uncontrolled pose, but not full profile
+| Recommended minimum face: 224 x 224 pixels, smaller facial images may reduce accuracy but will not result in false positives
+| Face cropping: It is best to provide the original image to isValid without preprocessing.  If using a cropped image as input, use as much padding around the head as possible
+
+
+.. image:: images/iso_face_example.jpg
+   :width: 407
+
+.. code-block:: py
+
+    # Get ISO Face image
+
+    iso_face_handle = face_factor.get_iso_face(image_path = "path_to_the_image") ## Replace with the path to the image
+
+Output:
+
+.. code-block:: py
+
+    iso_face_handle.status # Status of the operation
+    iso_face_handle.message # Message of the operation
+    iso_face_handle.image # PIL Image object
+    iso_face_handle.confidence # Confidence Score for the image
+    iso_face_handle._iso_image_width # Width of the image
+    iso_face_handle._iso_image_height # Height of the image
+    iso_face_handle.iso_image_channels # Number of image channels
+
+Example:
+
+.. image:: images/johny.jpg
+   :width: 407
+.. code-block:: py
+
+    #Create a Face factor class instance
+    face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)
+
+    get_iso_face_handle = face_factor.get_iso_face(image_path=img_path)
+    print(
+        "Status:{}\nMessage:{}\nISO_image_width:{}\nISO_image_height: {}\nISO_image_channels:{}\nConfidence:{} ".format(
+            get_iso_face_handle.status, get_iso_face_handle.message, get_iso_face_handle.iso_image_width,
+            get_iso_face_handle.iso_image_height, get_iso_face_handle.iso_image_channels,
+            get_iso_face_handle.confidence))
+
+Output:
+
+.. code-block:: py
+
+    Status:0
+    Message: OK
+    ISO_image_width:360
+    ISO_image_height: 480
+    ISO_image_channels:4
+    Confidence:0.999437153339386
+
+See the :ref:`get_iso_face advanced instructions <iso_face_advanced>` section for more configuration options.
+
 .. toctree::
    :maxdepth: 2
 

@@ -14,3 +14,4 @@ This section covers how to use the result objects from the operations.
    EnrollPredictResult
    DeleteResult
    IsValidDeprecatedResult
+   ISOFaceResult
