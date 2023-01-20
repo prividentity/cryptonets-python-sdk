@@ -6,14 +6,17 @@ from ctypes import *
 from typing import Any
 
 import numpy as np
+from PIL import Image
 
+from ..settings.cacheType import CacheType
 from ..settings.configuration import ConfigObject
 from ..settings.loggingLevel import LoggingLevel
 
 
 class NativeMethods(object):
     def __init__(self, api_key: str, server_url: str, local_storage_path: str,
-                 logging_level: LoggingLevel, tf_num_thread: int, config_object: ConfigObject = None):
+                 logging_level: LoggingLevel, tf_num_thread: int, cache_type: CacheType,
+                 config_object: ConfigObject = None):
         try:
             self._config_object = config_object
             self._library_path = str(pathlib.Path(__file__).parent.joinpath("lib/lib_fhe.so").resolve())
@@ -24,8 +27,9 @@ class NativeMethods(object):
             self._tf_num_thread = tf_num_thread
             self._api_key = bytes(api_key, 'utf-8')
             self._server_url = bytes(server_url, 'utf-8')
-            self._local_storage_path = bytes(local_storage_path, 'utf-8')
             self._logging_level = logging_level
+            self._local_storage_path = local_storage_path
+            self._cache_type = cache_type
             self._face_setup()
         except Exception as e:
             print("Error ", e)
@@ -44,13 +48,13 @@ class NativeMethods(object):
         # privid_global_settings
         self._spl_so_face.privid_global_settings.argtypes = [c_uint8, c_uint8]
         self._spl_so_face.privid_global_settings.restype = c_bool
-        self._spl_so_face.privid_global_settings(self._tf_num_thread, self._logging_level)
+        self._spl_so_face.privid_global_settings(self._tf_num_thread, self._logging_level.value)
 
         # FHE_init
         # self._spl_so_face._FHE_init = self._spl_so_face.FHE_init
         self._spl_so_face.FHE_init.argtypes = [c_int]
         self._spl_so_face.FHE_init.restype = POINTER(c_uint8)
-        self._spl_so_face.handle = self._spl_so_face.FHE_init(self._logging_level)
+        self._spl_so_face.handle = self._spl_so_face.FHE_init(self._logging_level.value)
 
         self._spl_so_face.privid_initialize_session_join.argtypes = [POINTER(c_void_p), c_void_p]
         self._spl_so_face.privid_initialize_session_join.restype = c_bool
@@ -64,11 +68,6 @@ class NativeMethods(object):
             POINTER(c_uint8), c_int, c_char_p, c_int]
         self._spl_so_face.FHE_configure_url.restype = c_uint8
 
-        # _FHE_configure_local_storage_dir_name self._spl_so_face.FHE_configure_local_storage_dir_name =
-        # self._spl_so_face.FHE_configure_local_storage_dir_name
-        self._spl_so_face.FHE_configure_local_storage_dir_name.argtypes = [
-            c_char_p, c_int]
-        self._spl_so_face.FHE_configure_local_storage_dir_name.restype = c_uint8
         # privid_set_configuration
         self._spl_so_face.privid_set_configuration.argtypes = [c_void_p, c_char_p, c_int]
         self._spl_so_face.privid_set_configuration.restype = c_bool
@@ -82,13 +81,14 @@ class NativeMethods(object):
                                             c_char_p(self._server_url),
                                             c_int32(len(self._server_url)))
 
-        self._spl_so_face.FHE_configure_local_storage_dir_name(c_char_p(self._local_storage_path),
-                                                               c_int32(len(self._local_storage_path)))
-
         # Configure parameters 
         if self._config_object and self._config_object.get_config_param():
-            c_config_param = c_char_p(bytes(self._config_object.get_config_param(), 'utf-8'))
-            c_config_param_len = c_int(len(self._config_object.get_config_param()))
+            config_dict = json.loads(self._config_object.get_config_param())
+            config_dict["cache_type"] = self._cache_type.value
+            config_dict["local_storage_path"] = self._local_storage_path
+            config_dict = json.dumps(config_dict)
+            c_config_param = c_char_p(bytes(config_dict, 'utf-8'))
+            c_config_param_len = c_int(len(config_dict))
             self._spl_so_face.privid_set_configuration(self._spl_so_face.new_handle, c_config_param, c_config_param_len)
         # self._spl_so_face.privid_set_configuration.restype = c_int
         # FHE_close
@@ -148,6 +148,13 @@ class NativeMethods(object):
         self._spl_so_face.privid_estimate_age.argtypes = [
             c_void_p, POINTER(c_uint8), c_int, c_int,
             c_char_p, c_int, POINTER(c_char_p), POINTER(c_int)]
+        self._spl_so_face.privid_estimate_age.restype = c_bool
+
+        # privid_face_iso
+        self._spl_so_face.privid_face_iso.argtypes = [
+            c_void_p, POINTER(c_uint8), c_int, c_int,
+            c_char_p, c_int, POINTER(c_char_p), POINTER(c_int),
+            POINTER(POINTER(c_ubyte)), POINTER(c_int)]
         self._spl_so_face.privid_estimate_age.restype = c_bool
 
     def is_valid(self, image_data: np.array, is_enroll: bool = False, config_object: ConfigObject = None) -> Any:
@@ -246,6 +253,51 @@ class NativeMethods(object):
 
             output = json.loads(output_json)
             return output
+        except Exception as e:
+            print(e)
+            return False
+
+    def get_iso_face(self, image_data: np.array, config_object: ConfigObject = None) -> Any:
+        try:
+            img = image_data
+            im_width = img.shape[1]
+            im_height = img.shape[0]
+
+            p_buffer_images_in = img.flatten()
+            c_p_buffer_images_in = p_buffer_images_in.ctypes.data_as(POINTER(c_uint8))
+
+            c_result = c_char_p()
+            c_result_len = c_int()
+            c_iso_image_len = c_int()
+
+            c_iso_image = POINTER(c_ubyte)()
+
+            if config_object and config_object.get_config_param():
+                c_config_param = c_char_p(bytes(config_object.get_config_param(), 'utf-8'))
+                c_config_param_len = c_int(len(config_object.get_config_param()))
+            else:
+                c_config_param = c_char_p(bytes("", 'utf-8'))
+                c_config_param_len = c_int(0)
+
+            self._spl_so_face.privid_face_iso(
+                self._spl_so_face.new_handle, c_p_buffer_images_in, c_int(im_width), c_int(im_height),
+                c_config_param, c_config_param_len,
+                byref(c_result), byref(c_result_len), byref(c_iso_image), byref(c_iso_image_len))
+
+            if not c_result.value or not c_result_len.value:
+                raise Exception("Something went wrong. Couldn't process the image for get_iso_face API. ")
+            output_json = c_result.value[:c_result_len.value].decode()
+            output_json = json.loads(output_json)
+            self._spl_so_face.FHE_free_api_memory(c_result)
+            if c_iso_image_len.value and "iso_image_width" in output_json and "iso_image_height" in output_json:
+                output_json["image"] = Image.fromarray(np.uint8(np.reshape(c_iso_image[:c_iso_image_len.value], (
+                    output_json.get("iso_image_height", 0), output_json.get("iso_image_width", 0),
+                    output_json.get("iso_image_channels", 0))))).convert(
+                    "RGBA" if output_json.get("iso_image_channels", 0) == 4 else "RGB")
+            else:
+                # Empty Image
+                output_json["image"] = Image.new("RGB", (800, 1280), (255, 255, 255))
+            return output_json
         except Exception as e:
             print(e)
             return False

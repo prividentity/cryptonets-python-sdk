@@ -8,4 +8,4 @@ Face Factor
 This section covers how to use the Face Factor for generating and verifying Private IDs.
 
 .. autoclass:: FaceFactor
-   :members: is_valid, is_valid_deprecated, estimate_age, enroll, predict, delete, compare
+   :members: is_valid, is_valid_deprecated, estimate_age, enroll, predict, delete, compare, get_iso_face

@@ -10,7 +10,9 @@ from ..helper.result_objects.deleteResult import FaceDeleteResult
 from ..helper.result_objects.enrollPredictResult import FaceEnrollPredictResult
 from ..helper.result_objects.faceValidationResult import FaceValidationResult
 from ..helper.result_objects.isValidDeprecatedResult import FaceIsValidDeprecatedResult
+from ..helper.result_objects.isoFaceResult import ISOFaceResult
 from ..helper.utils import FaceValidationCode
+from ..settings.cacheType import CacheType
 from ..settings.configuration import ConfigObject
 from ..settings.loggingLevel import LoggingLevel
 
@@ -18,11 +20,12 @@ from ..settings.loggingLevel import LoggingLevel
 class Face(metaclass=Singleton):
 
     def __init__(self, api_key: str, server_url: str, local_storage_path: str, logging_level: LoggingLevel,
-                 tf_num_thread: int, config_object: ConfigObject = None):
+                 tf_num_thread: int, cache_type: CacheType, config_object: ConfigObject = None):
         self.message = Message()
         self.face_factor_processor = NativeMethods(api_key=api_key, server_url=server_url,
                                                    local_storage_path=local_storage_path, logging_level=logging_level,
-                                                   tf_num_thread=tf_num_thread, config_object=config_object)
+                                                   tf_num_thread=tf_num_thread, cache_type=cache_type,
+                                                   config_object=config_object)
 
     def update_config(self, config_object):
         self.face_factor_processor.update_config(config_object=config_object)
@@ -163,3 +166,24 @@ class Face(metaclass=Singleton):
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
+
+    def get_iso_face(self, image_data: np.array, config_object: ConfigObject = None) -> ISOFaceResult:
+        try:
+            json_data = self.face_factor_processor.get_iso_face(image_data, config_object=config_object)
+            if not json_data:
+                return ISOFaceResult(message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)
+
+            if json_data.get("status", -1) != 0:
+                return ISOFaceResult(status=json_data.get("status", -1),
+                                     message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)
+
+            return ISOFaceResult(iso_image_width=json_data.get("iso_image_width", None),
+                                 iso_image_height=json_data.get("iso_image_height", None),
+                                 iso_image_channels=json_data.get("iso_image_channels", None),
+                                 confidence=json_data.get("confidence", None),
+                                 image=json_data.get("image", None),
+                                 status=json_data.get("status", -1), message=json_data.get("message", "OK"))
+
+        except Exception as e:
+            print(e, traceback.format_exc())
+            return ISOFaceResult(message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)

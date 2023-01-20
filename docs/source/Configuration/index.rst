@@ -11,4 +11,5 @@ This section covers how to use the configuration parameters for setting up the f
 
    ConfigObject
    LoggingLevel
+   CacheType
    PARAMETERS
