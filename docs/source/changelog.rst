@@ -1,7 +1,7 @@
 Changelog
 =========
 
-Version 1.0.13 (2022-01-20)
+Version 1.0.14 (2022-01-20)
 ---------------------------
 
 Bug Fixes and Improvements:
