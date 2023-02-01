@@ -157,6 +157,16 @@ class NativeMethods(object):
             POINTER(POINTER(c_ubyte)), POINTER(c_int)]
         self._spl_so_face.privid_estimate_age.restype = c_bool
 
+        # privid_set_billing_record_threshold
+        self._spl_so_face.privid_set_billing_record_threshold.argtypes = [c_void_p, c_char_p, c_int]
+        self._spl_so_face.privid_set_billing_record_threshold.restype = c_bool
+
+        if self._config_object and self._config_object.get_config_billing_param():
+            c_config_param = c_char_p(bytes(self._config_object.get_config_billing_param(), 'utf-8'))
+            c_config_param_len = c_int(len(self._config_object.get_config_billing_param()))
+            self._spl_so_face.privid_set_billing_record_threshold(self._spl_so_face.new_handle, c_config_param,
+                                                                  c_config_param_len)
+
     def is_valid(self, image_data: np.array, is_enroll: bool = False, config_object: ConfigObject = None) -> Any:
         try:
             img = image_data
