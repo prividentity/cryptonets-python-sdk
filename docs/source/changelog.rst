@@ -1,6 +1,18 @@
 Changelog
 =========
 
+Version 1.0.15 (2022-02-01)
+---------------------------
+
+Bug Fixes and Improvements:
+
+* Improvements on face detection under various conditions
+* Improved Face selection thresholds
+
+New Features:
+
+* Billing reservation call parameters
+
 Version 1.0.14 (2022-01-20)
 ---------------------------
 

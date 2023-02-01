@@ -30,7 +30,7 @@ copyright = '2023, Private Identity LLC'
 author = 'Private Identity'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.14'
+release = '1.0.15'
 
 # -- General configuration ---------------------------------------------------
 

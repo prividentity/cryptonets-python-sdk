@@ -130,7 +130,13 @@ if __name__ == "__main__":
 
     config_object = ConfigObject(
         config_param={PARAMETERS.INPUT_IMAGE_FORMAT: "rgb",
-                      PARAMETERS.CONTEXT_STRING: "predict"})
+                      PARAMETERS.CONTEXT_STRING: "predict",
+                      PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS: 1,
+                      PARAMETERS.ISVALID_RESERVATION_CALLS: 2,
+                      PARAMETERS.ENROLL_RESERVATION_CALLS: 3,
+                      PARAMETERS.PREDICT_RESERVATION_CALLS: 4,
+                      PARAMETERS.DELETE_RESERVATION_CALLS: 5,
+                      })
     # print(config_object.get_config_param())
 
     face_factor = FaceFactor(logging_level=LoggingLevel.off, config=config_object, cache_type=CacheType.OFF)
