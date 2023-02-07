@@ -7,7 +7,7 @@ from typing import Any
 
 import numpy as np
 from PIL import Image
-
+import platform
 from ..settings.cacheType import CacheType
 from ..settings.configuration import ConfigObject
 from ..settings.loggingLevel import LoggingLevel
@@ -19,11 +19,23 @@ class NativeMethods(object):
                  config_object: ConfigObject = None):
         try:
             self._config_object = config_object
-            self._library_path = str(pathlib.Path(__file__).parent.joinpath("lib/lib_fhe.so").resolve())
+            if platform.system() == "Linux":
+                self._library_path = str(pathlib.Path(__file__).parent.joinpath("lib/lib_fhe.so").resolve())
+                self._spl_so_face = ctypes.CDLL(self._library_path)
+            elif platform.system() == "Windows":
+                self._library_path = str(pathlib.Path(__file__).parent.joinpath("lib/privid_fhe.dll").resolve())
+                self._library_path_2 = str(pathlib.Path(__file__).parent.joinpath("lib/libssl-1_1-x64.dll").resolve())
+                self._library_path_3 = str(pathlib.Path(__file__).parent.joinpath("lib/libcrypto-1_1-x64.dll").resolve())
+                ctypes.CDLL(self._library_path_3,mode=1) 
+                ctypes.CDLL(self._library_path_2,mode=1) 
+                self._spl_so_face = ctypes.CDLL(self._library_path)    
+            elif platform.system() == "Darwin":
+                self._library_path = str(pathlib.Path(__file__).parent.joinpath("lib/libprivid_fhe.dylib").resolve())
+                self._spl_so_face = ctypes.CDLL(self._library_path)  
+
             self._embedding_length = 128
             self._num_embeddings = 80
             self._aug_size = 224 * 224 * 4 * self._num_embeddings
-            self._spl_so_face = None
             self._tf_num_thread = tf_num_thread
             self._api_key = bytes(api_key, 'utf-8')
             self._server_url = bytes(server_url, 'utf-8')
@@ -43,7 +55,6 @@ class NativeMethods(object):
             self._spl_so_face.privid_set_configuration(self._spl_so_face.new_handle, c_config_param, c_config_param_len)
 
     def _face_setup(self):
-        self._spl_so_face = ctypes.CDLL(self._library_path)
 
         # privid_global_settings
         self._spl_so_face.privid_global_settings.argtypes = [c_uint8, c_uint8]

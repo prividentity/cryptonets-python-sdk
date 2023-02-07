@@ -36,7 +36,7 @@ DESCRIPTION = "Cryptonets SDK Library for Python"
 AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
 URL = "https://private.id/"
-VERSION = "1.0.15"
+VERSION = "1.1.0"
 REQUIRES = [
     "numpy >= 1.23.0",
     "pillow >= 9.1.0"
@@ -46,7 +46,6 @@ LONG_DESCRIPTION = ''
 if os.path.exists('./README.md'):
     with open("README.md", encoding='utf-8') as fp:
         LONG_DESCRIPTION = fp.read()
-
 setup(
     name=NAME,
     version=VERSION,
@@ -83,6 +82,9 @@ setup(
     ],
     py_modules=[NAME],
     package_data={
-        "cryptonets_python_sdk": ['handler/lib/lib_fhe.so']
+        "cryptonets_python_sdk": ['handler/lib/lib_fhe.so',
+                                  'handler/lib/libcrypto-1_1-x64.dll',
+                                  'handler/lib/libprivid_fhe.dylib',
+                                  'handler/lib/libssl-1_1-x64.dll']
     }
 )

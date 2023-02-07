@@ -15,6 +15,7 @@ from cryptonets_python_sdk.factor import FaceFactor
 from cryptonets_python_sdk.settings.loggingLevel import LoggingLevel
 from cryptonets_python_sdk.settings.cacheType import CacheType
 
+
 def image_path_to_array(image_path: str) -> np.ndarray:
     image = Image.open(image_path).convert('RGB')
     return np.array(image)
