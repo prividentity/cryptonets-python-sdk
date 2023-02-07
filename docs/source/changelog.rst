@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Version 1.1.0 (2022-02-07)
+---------------------------
+
+Major release:
+
+* Added Windows Support for the SDK
+
 Version 1.0.15 (2022-02-01)
 ---------------------------
 

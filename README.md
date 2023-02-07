@@ -2,8 +2,8 @@
 
 ## Project description
 
-This package provides an interface to CryptoNets™ 1:N fully homomorphically encrypted (FHE) face recognition, Ultrapass™ ID and human age estimation. 
-
+This package provides an interface to CryptoNets™ 1:N fully homomorphically encrypted (FHE) face recognition, Ultrapass™
+ID and human age estimation.
 
 ## Getting Started
 
@@ -15,12 +15,14 @@ Sign up on the waitlist on https://private.id to obtain your apiKey.
 
 ## Notices
 
-Licensing Restriction: This SDK is not licensed for use in regulated gaming. To license CryptoNets in this market, please contact CentralAMS.
+Licensing Restriction: This SDK is not licensed for use in regulated gaming. To license CryptoNets in this market,
+please contact CentralAMS.
 
 ## Installation
 
-Installation of the CryptoNets Python SDK and its dependencies is provided by `pip`. 
-If pip is not installed, see the [pip user guide](https://pip.pypa.io/en/stable/installing/ "pip User Guide") to install pip.
+Installation of the CryptoNets Python SDK and its dependencies is provided by `pip`.
+If pip is not installed, see the [pip user guide](https://pip.pypa.io/en/stable/installing/ "pip User Guide") to install
+pip.
 
 To ensure smooth installation, it’s recommended to use:
 
@@ -33,19 +35,24 @@ python -m pip install cryptonets_python_sdk
 ```
 
 If you have the cryptonets_python_sdk package installed and want to upgrade to the latest version, you can run:
+
 ```
 python -m pip install --upgrade cryptonets_python_sdk
 ```
 
 This will install the cryptonets_python_sdk package as well as all dependencies.
-See the [installation](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/installation.html) section of the SDK homepage Guide for more information.
+See the [installation](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/installation.html) section of
+the SDK homepage Guide for more information.
 
 ## Usage
 
 You will receive the Server URL and apiKey when you subscribe.
 
 ### Import Face factor
+
 `from cryptonets_python_sdk.factor import FaceFactor`
+
+`from cryptonets_python_sdk.settings.loggingLevel import LoggingLevel`
 
 ### Initialize and use factor
 
@@ -54,10 +61,9 @@ server_url = URL of the server
 
 api_key = APIKEY issued on successful signup
 
-server = FaceFactor(server_url=server_url, api_key=api_key,
-        logging_level=LoggingLevel.full.value)
+server = FaceFactor(url=server_url, api_key=api_key,
+        logging_level=LoggingLevel.full)
 ```
-
 
 ## License
 
