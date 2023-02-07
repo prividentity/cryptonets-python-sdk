@@ -38,7 +38,7 @@ AUTHOR_EMAIL = "support@private.id"
 URL = "https://private.id/"
 VERSION = "1.1.0"
 REQUIRES = [
-    "numpy >= 1.23.0",
+    "numpy >= 1.21.0",
     "pillow >= 9.1.0"
 ]
 
@@ -84,7 +84,7 @@ setup(
     package_data={
         "cryptonets_python_sdk": ['handler/lib/lib_fhe.so',
                                   'handler/lib/libcrypto-1_1-x64.dll',
-                                  'handler/lib/libprivid_fhe.dylib',
-                                  'handler/lib/libssl-1_1-x64.dll']
+                                  'handler/lib/libssl-1_1-x64.dll',
+                                  'handler/lib/privid_fhe.dll']
     }
 )
