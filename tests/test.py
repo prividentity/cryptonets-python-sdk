@@ -9,11 +9,11 @@ from termcolor import colored
 src_path = pathlib.Path(__file__).parent.parent.resolve()
 sys.path.append(str(src_path))
 import numpy as np
-from cryptonets_python_sdk.settings.configuration import ConfigObject
-from cryptonets_python_sdk.settings.configuration import PARAMETERS
-from cryptonets_python_sdk.factor import FaceFactor
-from cryptonets_python_sdk.settings.loggingLevel import LoggingLevel
-from cryptonets_python_sdk.settings.cacheType import CacheType
+from src.cryptonets_python_sdk.settings.configuration import ConfigObject
+from src.cryptonets_python_sdk.settings.configuration import PARAMETERS
+from src.cryptonets_python_sdk.factor import FaceFactor
+from src.cryptonets_python_sdk.settings.loggingLevel import LoggingLevel
+from src.cryptonets_python_sdk.settings.cacheType import CacheType
 
 
 def image_path_to_array(image_path: str) -> np.ndarray:
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     face_factor = FaceFactor(logging_level=LoggingLevel.off, config=config_object, cache_type=CacheType.OFF)
     # face_factor.update_config(config=config_object)
 
-    for img_path in image_file_list:
+    for img_path in image_file_list[:1]:
         print(colored("\nImage:{}\n".format(img_path), "red"))
         test_valid(face_factor, img_path)
         # test_valid(face_factor, img_path, config=config_object)
@@ -151,6 +151,6 @@ if __name__ == "__main__":
         # test_age_estimate(face_factor, img_path, config=config_object)
         # test_get_iso_face(face_factor, img_path)
         # test_compare(face_factor, img_path)
-        # test_enroll(face_factor, img_path)
-        # result_handle = test_predict(face_factor, img_path)
-        # test_delete(face_factor, result_handle)
+        test_enroll(face_factor, img_path)
+        result_handle = test_predict(face_factor, img_path)
+        test_delete(face_factor, result_handle)
