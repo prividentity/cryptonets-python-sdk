@@ -1,14 +1,21 @@
 Changelog
 =========
 
-Version 1.1.0 (2022-02-07)
+Version 1.1.2 (2023-02-11)
+---------------------------
+
+* The new thresholds for enroll (face too far and head rotation)
+* The age estimation function now uses enroll thresholds
+* The eyeglasses work for age estimation after zoom
+
+Version 1.1.0 (2023-02-07)
 ---------------------------
 
 Major release:
 
 * Added Windows Support for the SDK
 
-Version 1.0.15 (2022-02-01)
+Version 1.0.15 (2023-02-01)
 ---------------------------
 
 Bug Fixes and Improvements:
@@ -20,7 +27,7 @@ New Features:
 
 * Billing reservation call parameters
 
-Version 1.0.14 (2022-01-20)
+Version 1.0.14 (2023-01-20)
 ---------------------------
 
 Bug Fixes and Improvements:
@@ -33,7 +40,7 @@ New Features:
 
 * Cache Type optional parameter
 
-Version 1.0.12 (2022-01-13)
+Version 1.0.12 (2023-01-13)
 ---------------------------
 
 Enhancements:
@@ -41,7 +48,7 @@ Enhancements:
 * New function to get the ISO of the face image
 * Bug fixes and Improvements for memory allocation
 
-Version 1.0.11 (2022-01-10)
+Version 1.0.11 (2023-01-10)
 ---------------------------
 
 Enhancements:
