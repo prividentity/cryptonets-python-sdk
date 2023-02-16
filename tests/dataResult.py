@@ -140,7 +140,7 @@ class Png16:
         self.is_valid_result.append_face_objects(return_code=0, message="ValidBiometric",
                                                  top_left_coordinate={"x": 637.0, "y": 129.0},
                                                  bottom_right_coordinate={"x": 777.0, "y": 265.0})
-        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=20.892248153686523,
+        self.estimate_age_result.append_face_objects(return_code=13, message="ChinTooFarRight", age=-1,
                                                      top_left_coordinate={"x": 341.5, "y": 121.0},
                                                      bottom_right_coordinate={"x": 490.5, "y": 269.0})
         self.estimate_age_result.append_face_objects(return_code=-1, message="NoFace", age=-1.0,
@@ -173,13 +173,13 @@ class Png17:
         self.is_valid_result.append_face_objects(return_code=0, message="ValidBiometric",
                                                  top_left_coordinate={"x": 722.0, "y": 102.5},
                                                  bottom_right_coordinate={"x": 850.0, "y": 237.5})
-        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=22.34023094177246,
+        self.estimate_age_result.append_face_objects(return_code=12, message="ChinTooFarLeft", age=-1,
                                                      top_left_coordinate={"x": 432.0, "y": 123.0},
                                                      bottom_right_coordinate={"x": 576.0, "y": 271.0})
         self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=21.73577117919922,
                                                      top_left_coordinate={"x": 82.5, "y": 125.5},
                                                      bottom_right_coordinate={"x": 227.5, "y": 264.5})
-        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=19.614810943603516,
+        self.estimate_age_result.append_face_objects(return_code=12, message="ChinTooFarLeft", age=-1,
                                                      top_left_coordinate={"x": 722.0, "y": 102.5},
                                                      bottom_right_coordinate={"x": 850.0, "y": 237.5})
 
@@ -354,9 +354,9 @@ class Jpeg10:
         self.get_iso_result = ISOFaceResult(status=-100, message="ISO face validation failed.")
         self.compare_result = FaceCompareResult(status=1, result=1, first_validation_result=0,
                                                 second_validation_result=0)
-        self.enroll_result = FaceEnrollPredictResult(status=0, message="Ok")
-        self.predict_result = FaceEnrollPredictResult(status=0, message="Ok")
-        self.delete_result = FaceDeleteResult(status=0, message="Ok")
+        self.enroll_result = FaceEnrollPredictResult(status=-100, message="Invalid Image")
+        self.predict_result = FaceEnrollPredictResult(status=-1, message="User not enrolled")
+        self.delete_result = FaceDeleteResult(status=-1, message="Missing UUID")
         self.set_face_objects()
 
     def set_face_objects(self):
@@ -421,10 +421,10 @@ class Jpeg13:
                                                  top_left_coordinate={"x": 35.5, "y": 86.5},
                                                  bottom_right_coordinate={"x": 130.5, "y": 183.5})
 
-        self.estimate_age_result.append_face_objects(return_code=-1, message="NoFace", age=-1,
+        self.estimate_age_result.append_face_objects(return_code=13, message="ChinTooFarRight", age=-1,
                                                      top_left_coordinate={"x": 393.5, "y": 74.0},
                                                      bottom_right_coordinate={"x": 508.5, "y": 186.0})
-        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=20.274599075317383,
+        self.estimate_age_result.append_face_objects(return_code=13, message="ChinTooFarRight", age=-1,
                                                      top_left_coordinate={"x": 207.0, "y": 79.0},
                                                      bottom_right_coordinate={"x": 315.0, "y": 189.0})
         self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=22.285968780517578,
@@ -452,7 +452,8 @@ class Png7:
         self.is_valid_result = FaceValidationResult(error=0, message="OK")
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=-100, message="ISO face validation failed.")
-        self.compare_result = FaceCompareResult(status=-1, message="Something went wrong while doing compare.")
+        self.compare_result = FaceCompareResult(status=1, message="",result=1,first_validation_result=0,
+                                                second_validation_result=0)
         self.enroll_result = FaceEnrollPredictResult(status=-100, message="Invalid Image")
         self.predict_result = FaceEnrollPredictResult(status=-100, message="Invalid Image")
         self.delete_result = FaceDeleteResult(message="Missing UUID")
