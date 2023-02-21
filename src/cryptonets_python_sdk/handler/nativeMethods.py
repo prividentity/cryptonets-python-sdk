@@ -25,13 +25,14 @@ class NativeMethods(object):
             elif platform.system() == "Windows":
                 self._library_path = str(pathlib.Path(__file__).parent.joinpath("lib/privid_fhe.dll").resolve())
                 self._library_path_2 = str(pathlib.Path(__file__).parent.joinpath("lib/libssl-1_1-x64.dll").resolve())
-                self._library_path_3 = str(pathlib.Path(__file__).parent.joinpath("lib/libcrypto-1_1-x64.dll").resolve())
-                ctypes.CDLL(self._library_path_3,mode=1) 
-                ctypes.CDLL(self._library_path_2,mode=1) 
-                self._spl_so_face = ctypes.CDLL(self._library_path)    
+                self._library_path_3 = str(
+                    pathlib.Path(__file__).parent.joinpath("lib/libcrypto-1_1-x64.dll").resolve())
+                ctypes.CDLL(self._library_path_3, mode=1)
+                ctypes.CDLL(self._library_path_2, mode=1)
+                self._spl_so_face = ctypes.CDLL(self._library_path)
             elif platform.system() == "Darwin":
                 self._library_path = str(pathlib.Path(__file__).parent.joinpath("lib/libprivid_fhe.dylib").resolve())
-                self._spl_so_face = ctypes.CDLL(self._library_path)  
+                self._spl_so_face = ctypes.CDLL(self._library_path)
 
             self._embedding_length = 128
             self._num_embeddings = 80
@@ -61,38 +62,26 @@ class NativeMethods(object):
         self._spl_so_face.privid_global_settings.restype = c_bool
         self._spl_so_face.privid_global_settings(self._tf_num_thread, self._logging_level.value)
 
-        # FHE_init
-        # self._spl_so_face._FHE_init = self._spl_so_face.FHE_init
-        self._spl_so_face.FHE_init.argtypes = [c_int]
-        self._spl_so_face.FHE_init.restype = POINTER(c_uint8)
-        self._spl_so_face.handle = self._spl_so_face.FHE_init(self._logging_level.value)
+        self._spl_so_face.privid_initialize_session.argtypes = [c_int, POINTER(c_void_p), c_char_p, c_int, c_char_p,
+                                                                c_int]
+        self._spl_so_face.privid_initialize_session.restype = c_bool
+        self._spl_so_face.handle = c_void_p()
 
-        self._spl_so_face.privid_initialize_session_join.argtypes = [POINTER(c_void_p), c_void_p]
-        self._spl_so_face.privid_initialize_session_join.restype = c_bool
-        self._spl_so_face.new_handle = c_void_p()
-
-        self._spl_so_face.privid_initialize_session_join(byref(self._spl_so_face.new_handle), self._spl_so_face.handle)
+        self.return_type = self._spl_so_face.privid_initialize_session(self._logging_level.value,
+                                                                       byref(self._spl_so_face.handle),
+                                                                       c_char_p(self._api_key),
+                                                                       c_int32(len(self._api_key)),
+                                                                       c_char_p(self._server_url),
+                                                                       c_int32(len(self._server_url)))
 
         # FHE_configure_url
         # self._spl_so_face.FHE_configure_url = self._spl_so_face.FHE_configure_url
-        self._spl_so_face.FHE_configure_url.argtypes = [
-            POINTER(c_uint8), c_int, c_char_p, c_int]
-        self._spl_so_face.FHE_configure_url.restype = c_uint8
 
         # privid_set_configuration
         self._spl_so_face.privid_set_configuration.argtypes = [c_void_p, c_char_p, c_int]
         self._spl_so_face.privid_set_configuration.restype = c_bool
 
-        # configure_url , API key and storage location
-        self._spl_so_face.FHE_configure_url(self._spl_so_face.handle, c_int32(46),
-                                            c_char_p(self._api_key),
-                                            c_int32(len(self._api_key)))
-
-        self._spl_so_face.FHE_configure_url(self._spl_so_face.handle, c_int32(42),
-                                            c_char_p(self._server_url),
-                                            c_int32(len(self._server_url)))
-
-        # Configure parameters 
+        # Configure parameters
         if self._config_object and self._config_object.get_config_param():
             config_dict = json.loads(self._config_object.get_config_param())
             config_dict["cache_type"] = self._cache_type.value
