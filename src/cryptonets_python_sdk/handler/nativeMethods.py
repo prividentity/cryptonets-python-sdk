@@ -62,13 +62,13 @@ class NativeMethods(object):
         self._spl_so_face.privid_global_settings.restype = c_bool
         self._spl_so_face.privid_global_settings(self._tf_num_thread, self._logging_level.value)
 
-        self._spl_so_face.privid_initialize_session.argtypes = [c_int, POINTER(c_void_p), c_char_p, c_int, c_char_p,
+        self._spl_so_face.privid_initialize_session.argtypes = [POINTER(c_void_p), c_int, c_char_p, c_int, c_char_p,
                                                                 c_int]
         self._spl_so_face.privid_initialize_session.restype = c_bool
         self._spl_so_face.handle = c_void_p()
 
-        self.return_type = self._spl_so_face.privid_initialize_session(self._logging_level.value,
-                                                                       byref(self._spl_so_face.handle),
+        self.return_type = self._spl_so_face.privid_initialize_session(byref(self._spl_so_face.handle),
+                                                                       self._logging_level.value,
                                                                        c_char_p(self._api_key),
                                                                        c_int32(len(self._api_key)),
                                                                        c_char_p(self._server_url),
