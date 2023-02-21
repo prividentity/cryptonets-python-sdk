@@ -53,7 +53,7 @@ class NativeMethods(object):
         if self._config_object and self._config_object.get_config_param():
             c_config_param = c_char_p(bytes(self._config_object.get_config_param(), 'utf-8'))
             c_config_param_len = c_int(len(self._config_object.get_config_param()))
-            self._spl_so_face.privid_set_configuration(self._spl_so_face.new_handle, c_config_param, c_config_param_len)
+            self._spl_so_face.privid_set_configuration(self._spl_so_face.handle, c_config_param, c_config_param_len)
 
     def _face_setup(self):
 
@@ -74,9 +74,6 @@ class NativeMethods(object):
                                                                        c_char_p(self._server_url),
                                                                        c_int32(len(self._server_url)))
 
-        # FHE_configure_url
-        # self._spl_so_face.FHE_configure_url = self._spl_so_face.FHE_configure_url
-
         # privid_set_configuration
         self._spl_so_face.privid_set_configuration.argtypes = [c_void_p, c_char_p, c_int]
         self._spl_so_face.privid_set_configuration.restype = c_bool
@@ -89,23 +86,19 @@ class NativeMethods(object):
             config_dict = json.dumps(config_dict)
             c_config_param = c_char_p(bytes(config_dict, 'utf-8'))
             c_config_param_len = c_int(len(config_dict))
-            self._spl_so_face.privid_set_configuration(self._spl_so_face.new_handle, c_config_param, c_config_param_len)
-        # self._spl_so_face.privid_set_configuration.restype = c_int
-        # FHE_close
-        # self._spl_so_face.FHE_close = self._spl_so_face.FHE_close
+            self._spl_so_face.privid_set_configuration(self._spl_so_face.handle, c_config_param, c_config_param_len)
+
         self._spl_so_face.FHE_close.argtypes = [POINTER(c_uint8)]
         self._spl_so_face.FHE_close.restype = c_int
 
-        # privid_enroll_onefa
-        # self._spl_so_face.privid_enroll_onefa = self._spl_so_face.privid_enroll_onefa
+        # privid_enroll_1fa
         self._spl_so_face.privid_enroll_onefa.argtypes = [c_void_p, c_char_p, c_int, POINTER(
             c_uint8), c_int, c_int, c_int, c_int, POINTER(c_float), POINTER(c_int), c_bool, POINTER(c_uint8),
                                                           POINTER(c_int), POINTER(c_char_p),
                                                           POINTER(c_int)]
         self._spl_so_face.privid_enroll_onefa.restype = c_int
 
-        # privid_face_predict_onefa
-        # self._spl_so_face.privid_face_predict_onefa = self._spl_so_face.privid_face_predict_onefa
+        # privid_predict_1fa
         self._spl_so_face.privid_face_predict_onefa.argtypes = [c_void_p, c_char_p, c_int, POINTER(
             c_uint8), c_int, c_int, c_int, c_int, POINTER(c_float), POINTER(c_int), c_bool, POINTER(c_uint8),
                                                                 POINTER(c_int), POINTER(c_char_p),
@@ -113,24 +106,20 @@ class NativeMethods(object):
         self._spl_so_face.privid_face_predict_onefa.restype = c_int
 
         # is_valid
-        # self._spl_so_face.is_valid = self._spl_so_face.is_valid
         self._spl_so_face.is_valid.argtypes = [POINTER(c_uint8), c_bool, POINTER(
             c_uint8), c_int, c_int, POINTER(c_uint8), POINTER(c_int), POINTER(c_char_p), POINTER(c_int),
                                                POINTER(c_char_p), c_int]
         self._spl_so_face.is_valid.restype = c_int
 
         # FHE_delete
-        # self._spl_so_face.privid_user_delete = self._spl_so_face.privid_user_delete
         self._spl_so_face.privid_user_delete.argtypes = [c_void_p, POINTER(c_char), c_int, POINTER(
             c_char), c_int, POINTER(c_char_p), POINTER(c_int)]
         self._spl_so_face.privid_user_delete.restype = c_int
 
         # FHE_free_api_memory
-        # self._spl_so_face.FHE_free_api_memory = self._spl_so_face.FHE_free_api_memory
         self._spl_so_face.FHE_free_api_memory.argtypes = [POINTER(c_char_p)]
 
         # FHE_compare_files
-        # self._spl_so_face.privid_face_compare_files = self._spl_so_face.privid_face_compare_files
         self._spl_so_face.privid_face_compare_files.argtypes = [c_void_p, c_float, c_char_p, c_int,
                                                                 POINTER(c_uint8), c_int, c_int, c_int,
                                                                 POINTER(c_uint8), c_int, c_int, c_int,
@@ -164,7 +153,7 @@ class NativeMethods(object):
         if self._config_object and self._config_object.get_config_billing_param():
             c_config_param = c_char_p(bytes(self._config_object.get_config_billing_param(), 'utf-8'))
             c_config_param_len = c_int(len(self._config_object.get_config_billing_param()))
-            self._spl_so_face.privid_set_billing_record_threshold(self._spl_so_face.new_handle, c_config_param,
+            self._spl_so_face.privid_set_billing_record_threshold(self._spl_so_face.handle, c_config_param,
                                                                   c_config_param_len)
 
     def is_valid(self, image_data: np.array, is_enroll: bool = False, config_object: ConfigObject = None) -> Any:
@@ -219,7 +208,7 @@ class NativeMethods(object):
                 c_config_param = c_char_p(bytes("", 'utf-8'))
                 c_config_param_len = c_int(0)
             self._spl_so_face.privid_validate(
-                self._spl_so_face.new_handle, c_p_buffer_images_in, c_int(im_width), c_int(im_height),
+                self._spl_so_face.handle, c_p_buffer_images_in, c_int(im_width), c_int(im_height),
                 c_config_param, c_config_param_len,
                 byref(c_result), byref(c_result_len))
 
@@ -252,7 +241,7 @@ class NativeMethods(object):
                 c_config_param = c_char_p(bytes("", 'utf-8'))
                 c_config_param_len = c_int(0)
             self._spl_so_face.privid_estimate_age(
-                self._spl_so_face.new_handle, c_p_buffer_images_in, c_int(im_width), c_int(im_height),
+                self._spl_so_face.handle, c_p_buffer_images_in, c_int(im_width), c_int(im_height),
                 c_config_param, c_config_param_len,
                 byref(c_result), byref(c_result_len))
 
@@ -290,7 +279,7 @@ class NativeMethods(object):
                 c_config_param_len = c_int(0)
 
             self._spl_so_face.privid_face_iso(
-                self._spl_so_face.new_handle, c_p_buffer_images_in, c_int(im_width), c_int(im_height),
+                self._spl_so_face.handle, c_p_buffer_images_in, c_int(im_width), c_int(im_height),
                 c_config_param, c_config_param_len,
                 byref(c_result), byref(c_result_len), byref(c_iso_image), byref(c_iso_image_len))
 
@@ -318,7 +307,7 @@ class NativeMethods(object):
         p_buffer_result_length = c_int()
         c_config_param = c_char_p(bytes("", 'utf-8'))
         c_config_param_len = c_int(0)
-        self._spl_so_face.privid_user_delete(self._spl_so_face.new_handle, c_config_param, c_config_param_len,
+        self._spl_so_face.privid_user_delete(self._spl_so_face.handle, c_config_param, c_config_param_len,
                                              c_char_p(uuid),
                                              c_int(
                                                  len(uuid)), byref(p_buffer_result),
@@ -360,7 +349,7 @@ class NativeMethods(object):
             else:
                 c_config_param = c_char_p(bytes("", 'utf-8'))
                 c_config_param_len = c_int(0)
-            self._spl_so_face.privid_face_compare_files(self._spl_so_face.new_handle, c_float(fudge_factor),
+            self._spl_so_face.privid_face_compare_files(self._spl_so_face.handle, c_float(fudge_factor),
                                                         c_config_param,
                                                         c_config_param_len,
                                                         left_c_img_data_buffer,
@@ -417,7 +406,7 @@ class NativeMethods(object):
             else:
                 c_config_param = c_char_p(bytes("", 'utf-8'))
                 c_config_param_len = c_int(0)
-            self._spl_so_face.privid_enroll_onefa(self._spl_so_face.new_handle, c_config_param, c_config_param_len,
+            self._spl_so_face.privid_enroll_onefa(self._spl_so_face.handle, c_config_param, c_config_param_len,
                                                   c_p_buffer_images_in,
                                                   c_int(im_count), c_int(im_size), c_int(im_width),
                                                   c_int(im_height),
@@ -469,7 +458,7 @@ class NativeMethods(object):
             else:
                 c_config_param = c_char_p(bytes("", 'utf-8'))
                 c_config_param_len = c_int(0)
-            self._spl_so_face.privid_face_predict_onefa(self._spl_so_face.new_handle, c_config_param,
+            self._spl_so_face.privid_face_predict_onefa(self._spl_so_face.handle, c_config_param,
                                                         c_config_param_len,
                                                         c_p_buffer_images_in,
                                                         c_int(im_count), c_int(im_size), c_int(im_width),
