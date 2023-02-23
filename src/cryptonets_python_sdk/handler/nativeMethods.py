@@ -67,13 +67,14 @@ class NativeMethods(object):
         self._spl_so_face.privid_initialize_session.restype = c_bool
         self._spl_so_face.handle = c_void_p()
 
-        self.return_type = self._spl_so_face.privid_initialize_session(byref(self._spl_so_face.handle),
+        return_type = self._spl_so_face.privid_initialize_session(byref(self._spl_so_face.handle),
                                                                        self._logging_level.value,
                                                                        c_char_p(self._api_key),
                                                                        c_int32(len(self._api_key)),
                                                                        c_char_p(self._server_url),
                                                                        c_int32(len(self._server_url)))
-
+        if not return_type:
+            raise Exception("Wrong API_KEY or Server URL.")
         # privid_set_configuration
         self._spl_so_face.privid_set_configuration.argtypes = [c_void_p, c_char_p, c_int]
         self._spl_so_face.privid_set_configuration.restype = c_bool
