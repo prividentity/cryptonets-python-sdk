@@ -176,7 +176,7 @@ class Png17:
         self.estimate_age_result.append_face_objects(return_code=12, message="ChinTooFarLeft", age=-1,
                                                      top_left_coordinate={"x": 432.0, "y": 123.0},
                                                      bottom_right_coordinate={"x": 576.0, "y": 271.0})
-        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=21.73577117919922,
+        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=22.355247497558594,
                                                      top_left_coordinate={"x": 82.5, "y": 125.5},
                                                      bottom_right_coordinate={"x": 227.5, "y": 264.5})
         self.estimate_age_result.append_face_objects(return_code=12, message="ChinTooFarLeft", age=-1,
@@ -326,7 +326,7 @@ class Jpeg9:
         self.set_face_objects()
 
     def set_face_objects(self):
-        self.is_valid_result.append_face_objects(return_code=-1, message="NoFace",
+        self.is_valid_result.append_face_objects(return_code=0, message="ValidBiometric",
                                                  top_left_coordinate={"x": 279.0, "y": 106.0},
                                                  bottom_right_coordinate={"x": 381.0, "y": 216.0})
         self.is_valid_result.append_face_objects(return_code=0, message="ValidBiometric",
@@ -336,13 +336,13 @@ class Jpeg9:
                                                  top_left_coordinate={"x": 56.5, "y": 117.5},
                                                  bottom_right_coordinate={"x": 157.5, "y": 224.5})
 
-        self.estimate_age_result.append_face_objects(return_code=-1, message="NoFace", age=-1,
+        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=54.295047760009766,
                                                      top_left_coordinate={"x": 279.0, "y": 106.0},
                                                      bottom_right_coordinate={"x": 381.0, "y": 216.0})
         self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=54.85247039794922,
                                                      top_left_coordinate={"x": 495.0, "y": 105.0},
                                                      bottom_right_coordinate={"x": 597.0, "y": 213.0})
-        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=53.27436828613281,
+        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=52.734676361083984,
                                                      top_left_coordinate={"x": 56.5, "y": 117.5},
                                                      bottom_right_coordinate={"x": 157.5, "y": 224.5})
 
@@ -414,7 +414,7 @@ class Jpeg13:
         self.is_valid_result.append_face_objects(return_code=-1, message="NoFace",
                                                  top_left_coordinate={"x": 393.5, "y": 74.0},
                                                  bottom_right_coordinate={"x": 508.5, "y": 186.0})
-        self.is_valid_result.append_face_objects(return_code=0, message="ValidBiometric",
+        self.is_valid_result.append_face_objects(return_code=13, message="ChinTooFarRight",
                                                  top_left_coordinate={"x": 207.0, "y": 79.0},
                                                  bottom_right_coordinate={"x": 315.0, "y": 189.0})
         self.is_valid_result.append_face_objects(return_code=0, message="ValidBiometric",
@@ -489,23 +489,23 @@ class Png11:
         self.is_valid_result.append_face_objects(return_code=0, message="ValidBiometric",
                                                  top_left_coordinate={"x": 429.0, "y": 123.0},
                                                  bottom_right_coordinate={"x": 549.0, "y": 247.0})
-        self.is_valid_result.append_face_objects(return_code=-1, message="NoFace",
+        self.is_valid_result.append_face_objects(return_code=0, message="ValidBiometric",
                                                  top_left_coordinate={"x": 65.5, "y": 108.5},
                                                  bottom_right_coordinate={"x": 180.5, "y": 223.5})
-        self.is_valid_result.append_face_objects(return_code=4, message="TooFaraway",
+        self.is_valid_result.append_face_objects(return_code=-1, message="NoFace",
                                                  top_left_coordinate={"x": 34.0, "y": 349.5},
                                                  bottom_right_coordinate={"x": 88.0, "y": 400.5})
 
         self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=24.499250411987305,
                                                      top_left_coordinate={"x": 233.5, "y": 178.5},
                                                      bottom_right_coordinate={"x": 368.5, "y": 311.5})
-        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=43.474491119384766,
+        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=42.43165969848633,
                                                      top_left_coordinate={"x": 429.0, "y": 123.0},
                                                      bottom_right_coordinate={"x": 549.0, "y": 247.0})
-        self.estimate_age_result.append_face_objects(return_code=-1, message="NoFace", age=-1,
+        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=3.9154975414276123,
                                                      top_left_coordinate={"x": 65.5, "y": 108.5},
                                                      bottom_right_coordinate={"x": 180.5, "y": 223.5})
-        self.estimate_age_result.append_face_objects(return_code=4, message="TooFaraway", age=-1,
+        self.estimate_age_result.append_face_objects(return_code=-1, message="NoFace", age=-1,
                                                      top_left_coordinate={"x": 34.0, "y": 349.5},
                                                      bottom_right_coordinate={"x": 88.0, "y": 400.5})
 
