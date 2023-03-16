@@ -1,4 +1,7 @@
+from enum import Enum
 class FaceCompareResult:
+    STATUS_SUCCESS = 0
+    STATUS_ERROR = -1
     def __init__(self, result=None, distance_min=None, distance_mean=None, distance_max=None,
                  second_validation_result=None,
                  first_validation_result=None, status=-1, message=""):
