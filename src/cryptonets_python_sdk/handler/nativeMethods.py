@@ -541,7 +541,7 @@ class NativeMethods(object):
             else:
                 c_config_param = c_char_p(bytes("", 'utf-8'))
                 c_config_param_len = c_int(0)
-            self._spl_so_face.privid_face_compare_files(self._spl_so_face.handle,
+            success = self._spl_so_face.privid_face_compare_files(self._spl_so_face.handle,
                                                         c_float(fudge_factor),
                                                         c_config_param,
                                                         c_config_param_len,
@@ -563,7 +563,13 @@ class NativeMethods(object):
             self._spl_so_face.FHE_free_api_memory(byref(p_buffer_result))
             if output_json_str is not None and len(output_json_str) > 0:
                 output = json.loads(output_json_str)
-                output["status"] = output["result"]
+                # the status should receive the value of the success of the api call
+                # according to FaceCompareResult (that is used in unit tests!!) comments and thus should have
+                # * 0 : If successfully obtained result from server => API call success
+                # * -1 : In case of error => API call failed
+                # The 'result' in the other hand is a value returned by the operation
+                #  which can be any basic type having any value
+                output["status"] = (0 if success else -1)
                 return output
             else:
                 return False
