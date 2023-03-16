@@ -46,8 +46,10 @@ class Jpg2:
         self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
                                                 first_validation_result=FaceValidationCode.GlassesOn.value,
                                                 second_validation_result=FaceValidationCode.GlassesOn.value)
-        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code = -100, message="Invalid Image")
-        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code = -1, message="User not enrolled")
+        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100,
+                                                     message="Invalid Image")
+        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
+                                                      message="User not enrolled")
         self.delete_result = FaceDeleteResult(status=-1, message="Missing UUID")
         self.set_face_objects()
 
@@ -69,8 +71,10 @@ class Png5:
                                                 result=1,
                                                 first_validation_result=FaceValidationCode.ChinTooFarLeft.value,
                                                 second_validation_result=FaceValidationCode.ChinTooFarLeft.value)
-        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100, message="Invalid Image")
-        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1, message="User not enrolled")
+        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100,
+                                                     message="Invalid Image")
+        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
+                                                      message="User not enrolled")
         self.delete_result = FaceDeleteResult(message="Missing UUID")
         self.set_face_objects()
 
@@ -89,7 +93,8 @@ class Png8:
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=0, message="OK", iso_image_height=480, iso_image_width=360,
                                             iso_image_channels=3, confidence=0.7746248245239258)
-        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1, first_validation_result=0,
+        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
+                                                first_validation_result=0,
                                                 second_validation_result=0)
         self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="OK")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="OK")
@@ -113,8 +118,10 @@ class Png15:
         self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
                                                 first_validation_result=FaceValidationCode.ChinTooFarRight.value,
                                                 second_validation_result=FaceValidationCode.ChinTooFarRight.value)
-        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100, message="Invalid Image")
-        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1, message="User not enrolled")
+        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100,
+                                                     message="Invalid Image")
+        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
+                                                      message="User not enrolled")
         self.delete_result = FaceDeleteResult(message="Missing UUID")
         self.set_face_objects()
 
@@ -132,10 +139,13 @@ class Png16:
         self.is_valid_result = FaceValidationResult(error=0, message="OK")
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=13, message="ISO face validation failed.")
-        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1, first_validation_result=0,
+        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
+                                                first_validation_result=0,
                                                 second_validation_result=0)
-        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100, message="Invalid Image")
-        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1, message="User not enrolled")
+        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100,
+                                                     message="Invalid Image")
+        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
+                                                      message="User not enrolled")
         self.delete_result = FaceDeleteResult(message="Missing UUID")
         self.set_face_objects()
 
@@ -165,10 +175,13 @@ class Png17:
         self.is_valid_result = FaceValidationResult(error=0, message="OK")
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=12, message="ISO face validation failed.")
-        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1, first_validation_result=0,
+        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
+                                                first_validation_result=0,
                                                 second_validation_result=0)
-        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100, message="Invalid Image")
-        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1, message="User not enrolled")
+        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100,
+                                                     message="Invalid Image")
+        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
+                                                      message="User not enrolled")
         self.delete_result = FaceDeleteResult(message="Missing UUID")
         self.set_face_objects()
 
@@ -199,7 +212,8 @@ class Jpg18:
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=0, message="OK", iso_image_height=480, iso_image_width=360,
                                             iso_image_channels=3, confidence=0.9994304776191711)
-        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1, first_validation_result=0,
+        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
+                                                first_validation_result=0,
                                                 second_validation_result=0)
         self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="OK")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="OK")
@@ -221,7 +235,8 @@ class Jpg19:
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=0, message="OK", iso_image_height=480, iso_image_width=360,
                                             iso_image_channels=3, confidence=0.11450446397066116)
-        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1, first_validation_result=0,
+        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
+                                                first_validation_result=0,
                                                 second_validation_result=0)
         self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="OK")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="OK")
@@ -308,7 +323,8 @@ class Jpeg4:
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=0, message="OK", iso_image_height=480, iso_image_width=360,
                                             iso_image_channels=3, confidence=0.9904078841209412)
-        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1, first_validation_result=0,
+        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
+                                                first_validation_result=0,
                                                 second_validation_result=0)
         self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="Ok")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="Ok")
@@ -331,7 +347,8 @@ class Jpeg9:
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=0, message="OK", iso_image_height=480, iso_image_width=360,
                                             iso_image_channels=3, confidence=0.9994041919708252)
-        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1, first_validation_result=0,
+        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
+                                                first_validation_result=0,
                                                 second_validation_result=0)
         self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="Ok")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="Ok")
@@ -365,10 +382,13 @@ class Jpeg10:
         self.is_valid_result = FaceValidationResult(error=0, message="OK")
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=-100, message="ISO face validation failed.")
-        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1, first_validation_result=0,
+        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
+                                                first_validation_result=0,
                                                 second_validation_result=0)
-        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100, message="Invalid Image")
-        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1, message="User not enrolled")
+        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100,
+                                                     message="Invalid Image")
+        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
+                                                      message="User not enrolled")
         self.delete_result = FaceDeleteResult(status=-1, message="Missing UUID")
         self.set_face_objects()
 
@@ -388,7 +408,8 @@ class Jpeg12:
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=0, message="OK", iso_image_height=480, iso_image_width=360,
                                             iso_image_channels=3, confidence=0.9678338766098022)
-        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1, first_validation_result=0,
+        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
+                                                first_validation_result=0,
                                                 second_validation_result=0)
         self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="Ok")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="Ok")
@@ -420,8 +441,10 @@ class Jpeg13:
                                                 result=1,
                                                 first_validation_result=FaceValidationCode.ChinTooFarRight.value,
                                                 second_validation_result=FaceValidationCode.ChinTooFarRight.value)
-        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100, message="Invalid Image")
-        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1, message="User not enrolled")
+        self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100,
+                                                     message="Invalid Image")
+        self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
+                                                      message="User not enrolled")
         self.delete_result = FaceDeleteResult(status=0, message="Ok")
         self.set_face_objects()
 
@@ -484,7 +507,7 @@ class Png7:
         self.is_valid_result = FaceValidationResult(error=0, message="OK")
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=-100, message="ISO face validation failed.")
-        self.compare_result = FaceCompareResult(status=0, message="",result=-1,
+        self.compare_result = FaceCompareResult(status=0, message="", result=-1,
                                                 first_validation_result=FaceValidationCode.InvalidImage.value,
                                                 second_validation_result=FaceValidationCode.InvalidImage.value)
         # TODO FIX ME  same as 6.png comment
@@ -511,7 +534,8 @@ class Png11:
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=0, message="OK", iso_image_height=480, iso_image_width=360,
                                             iso_image_channels=3, confidence=0.9949344992637634)
-        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1, first_validation_result=0,
+        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
+                                                first_validation_result=0,
                                                 second_validation_result=0)
         self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="Ok")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="Ok")
@@ -552,7 +576,8 @@ class Jpg14:
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
         self.get_iso_result = ISOFaceResult(status=0, message="OK", iso_image_height=480, iso_image_width=360,
                                             iso_image_channels=3, confidence=0.9276024103164673)
-        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1, first_validation_result=0,
+        self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS, result=1,
+                                                first_validation_result=0,
                                                 second_validation_result=0)
         self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="Ok")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="Ok")

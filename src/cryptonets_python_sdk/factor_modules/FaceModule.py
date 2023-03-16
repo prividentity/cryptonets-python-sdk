@@ -37,15 +37,16 @@ class Face(metaclass=Singleton):
             if not json_data:
                 return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_ENROLL)
             else:
-                call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS # we received a json response and thus call is successful
-                
+                # we received a json response and thus call is successful
+                call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS
+
             if "PI" not in json_data:
                 # This is a quick fix to pick up the 'error' instead of 'status' field
                 # TODO Check the json structure consistency then pick up the right fields to generate
                 # the correct and informative 'FaceEnrollPredictResult'
-                return FaceEnrollPredictResult(status=call_status,code=json_data.get("error", -1),
+                return FaceEnrollPredictResult(status=call_status, code=json_data.get("error", -1),
                                                message=json_data.get("message", self.message.EXCEPTION_ERROR_ENROLL))
-            return FaceEnrollPredictResult(status = call_status,
+            return FaceEnrollPredictResult(status=call_status,
                                            enroll_level=json_data["PI"].get("enroll_level", None),
                                            uuid=json_data["PI"].get("uuid", None),
                                            guid=json_data["PI"].get("guid", None),
@@ -62,17 +63,18 @@ class Face(metaclass=Singleton):
             if not json_data:
                 return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
             else:
-                call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS # we received a json response and thus call is successful
+                # we received a json response and thus call is successful
+                call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS
             if "PI" not in json_data:
                 # TODO Check the json structure consistency then pick up the right fields to generate
                 # the correct and informative 'FaceEnrollPredictResult' 
                 return FaceEnrollPredictResult(status=call_status,
-                                               code=json_data.get("status",-1),
-                                               message=json_data.get("message",self.message.EXCEPTION_ERROR_PREDICT))
-            return FaceEnrollPredictResult(status=call_status,enroll_level=json_data["PI"].get("enroll_level", None),
+                                               code=json_data.get("status", -1),
+                                               message=json_data.get("message", self.message.EXCEPTION_ERROR_PREDICT))
+            return FaceEnrollPredictResult(status=call_status, enroll_level=json_data["PI"].get("enroll_level", None),
                                            uuid=json_data["PI"].get("uuid", None),
                                            guid=json_data["PI"].get("guid", None),
-                                           token=json_data["PI"].get("token", None), 
+                                           token=json_data["PI"].get("token", None),
                                            message=json_data.get("message", ""))
         except Exception as e:
             print(e, traceback.format_exc())
@@ -97,7 +99,8 @@ class Face(metaclass=Singleton):
             if not json_data:
                 return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
             else:
-                call_status = FaceCompareResult.CALL_STATUS_SUCCESS # we received a json response and thus call is successful
+                # we received a json response and thus call is successful
+                call_status = FaceCompareResult.CALL_STATUS_SUCCESS
 
             return FaceCompareResult(result=json_data.get("result", None),
                                      distance_min=json_data.get("distance_min", None),
@@ -109,24 +112,6 @@ class Face(metaclass=Singleton):
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
-
-    @deprecated
-    def is_valid_deprecated(self, image_data: np.array,
-                            config_object: ConfigObject = None) -> FaceIsValidDeprecatedResult:
-        try:
-            json_data = self.face_factor_processor.is_valid(image_data, config_object=config_object)
-            if not json_data:
-                return FaceIsValidDeprecatedResult(message=self.message.IS_VALID_ERROR)
-
-            result_ = None
-            if json_data.get("result", None) in FaceValidationCode:
-                result_ = FaceValidationCode(json_data.get("result", None)).name
-
-            return FaceIsValidDeprecatedResult(result=result_, age_factor=json_data.get("ageFactor", None), status=0)
-
-        except Exception as e:
-            print(e, traceback.format_exc())
-            return FaceIsValidDeprecatedResult(message=self.message.IS_VALID_ERROR)
 
     def is_valid(self, image_data: np.array, config_object: ConfigObject = None) -> FaceValidationResult:
         try:

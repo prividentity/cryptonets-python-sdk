@@ -1,7 +1,9 @@
 class FaceEnrollPredictResult:
     CALL_STATUS_SUCCESS = 0
     CALL_STATUS_ERROR = -1
-    def __init__(self, enroll_level=None, uuid=None, guid=None, token=None, code=None, status=CALL_STATUS_ERROR, message=""):
+
+    def __init__(self, enroll_level=None, uuid=None, guid=None, token=None, code=None, status=CALL_STATUS_ERROR,
+                 message=""):
         self._enroll_level = enroll_level
         self._uuid = uuid
         self._guid = guid
@@ -65,7 +67,7 @@ class FaceEnrollPredictResult:
         Returns the message of the operation
         """
         return self._message
-    
+
     @property
     def code(self) -> int:
         """
@@ -101,6 +103,6 @@ class FaceEnrollPredictResult:
     def message(self, value):
         self._message = value
 
-    @message.setter
-    def message(self, value):
+    @code.setter
+    def code(self, value):
         self._code = value
