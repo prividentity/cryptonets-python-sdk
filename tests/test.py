@@ -121,35 +121,124 @@ def test_valid(valid_face_factor, valid_path, config=None):
     if len(is_valid_handle.face_objects) == 0:
         print("No Faces found!!\n")
 
-
-if __name__ == "__main__":
+def build_sample_image_path(image_filename =None):
     images_files_path = str(pathlib.Path(__file__).parent.joinpath("example/test_images/").resolve())
-    image_file_list = []
-    image_file_list.extend(glob("{}/*.png".format(images_files_path)))
-    image_file_list.extend(sorted(glob("{}/*.jpg".format(images_files_path))))
-    image_file_list.extend(sorted(glob("{}/*.jpeg".format(images_files_path))))
+    image_file_path = "{}/{}".format(images_files_path,image_filename)
+    return image_file_path
 
+def setup_test(image_filename =None, operation_threshold_parameter_name = "" , threshold_value = 0, use_cache = False,call_context = 'predict'):
+    image_file_path = build_sample_image_path(image_filename)
     config_object = ConfigObject(
         config_param={PARAMETERS.INPUT_IMAGE_FORMAT: "rgb",
-                      PARAMETERS.CONTEXT_STRING: "predict",
-                      PARAMETERS.ISVALID_RESERVATION_CALLS: 1,
-                      PARAMETERS.ENROLL_RESERVATION_CALLS: 1,
-                      PARAMETERS.PREDICT_RESERVATION_CALLS: 1,
-                      PARAMETERS.DELETE_RESERVATION_CALLS: 1,
-                      })
-    # print(config_object.get_config_param())
+                      PARAMETERS.CONTEXT_STRING: call_context,
+                      operation_threshold_parameter_name: threshold_value} # type: ignore
+                      )
+        
+    a_cache_type = CacheType.ON if use_cache == False else CacheType.ON
 
-    face_factor = FaceFactor(logging_level=LoggingLevel.off, config=config_object, cache_type=CacheType.OFF)
-    # face_factor.update_config(config=config_object)
+    face_factor = FaceFactor(logging_level=LoggingLevel.full,config=config_object, cache_type = a_cache_type)
 
-    for img_path in image_file_list[:1]:
-        print(colored("\nImage:{}\n".format(img_path), "red"))
-        test_valid(face_factor, img_path)
-        # test_valid(face_factor, img_path, config=config_object)
-        test_age_estimate(face_factor, img_path)
-        # test_age_estimate(face_factor, img_path, config=config_object)
-        # test_get_iso_face(face_factor, img_path)
-        # test_compare(face_factor, img_path)
-        test_enroll(face_factor, img_path)
-        result_handle = test_predict(face_factor, img_path)
-        test_delete(face_factor, result_handle)
+    return (face_factor,image_file_path)
+
+
+def test_predict_enrol_valid_image_with_cache():
+    # Notice we do not need to pass enroll reservation qty 
+    (face_factor,image_path) = setup_test("8.png",PARAMETERS.PREDICT_RESERVATION_CALLS,2,True)
+    test_enroll(face_factor, image_path)  # => no billing reservation  
+    result_handle = test_predict(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    result_handle = test_predict(face_factor, image_path) # => local bill increment (2)  
+    result_handle = test_predict(face_factor, image_path) # => no billing reservation as predict was performing from cache 
+    test_delete(face_factor, result_handle) # => no billing for delete
+    result_handle = test_predict(face_factor, image_path)  # => billing reservation of 2 and local bill increment (1)
+    test_delete(face_factor, result_handle) # => no billing for delete
+    result_handle = test_predict(face_factor, image_path) # => local bill increment (2)  
+    test_delete(face_factor, result_handle) # => no billing for delete
+
+def test_predict_enrol_valid_image_with_no_cache():
+    # Notice we do not need to pass enroll reservation qty
+    (face_factor,image_path) = setup_test("8.png",PARAMETERS.PREDICT_RESERVATION_CALLS,2)
+    test_enroll(face_factor, image_path)  # => no billing reservation  
+    result_handle = test_predict(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    result_handle = test_predict(face_factor, image_path) # => local bill increment (2)  
+    result_handle = test_predict(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    test_delete(face_factor, result_handle) # => no billing for delete
+    result_handle = test_predict(face_factor, image_path)  # => local bill increment (2)  
+    test_delete(face_factor, result_handle) # => no billing for delete
+    result_handle = test_predict(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    result_handle = test_predict(face_factor, image_path)  # => local bill increment (2)  
+    test_delete(face_factor, result_handle) # => no billing for delete
+
+def test_valid_with_cache():
+    (face_factor,image_path) = setup_test("8.png",PARAMETERS.ISVALID_RESERVATION_CALLS,2,True)
+    test_valid(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    test_valid(face_factor, image_path) # => local bill increment (2)
+    test_valid(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    test_valid(face_factor, image_path) # => local bill increment (2)
+
+def test_valid_with_badimg_and_no_cache():
+    (face_factor,image_path) = setup_test("5.png",PARAMETERS.ISVALID_RESERVATION_CALLS,2,False)
+    test_valid(face_factor, image_path)# => no billing for ValidBiometric / status = 0 => tested OK
+    test_valid(face_factor, build_sample_image_path("6.png")) # => no billing for ValidBiometric / status = 0 
+    test_valid(face_factor, build_sample_image_path("8.png")) # => billing reservation of 2 and local bill increment (1)
+    test_valid(face_factor, build_sample_image_path("6.png")) # => no billing for ValidBiometric / status = 0 
+    test_valid(face_factor, build_sample_image_path("6.png")) # => no billing for ValidBiometric / status = 0 
+
+def test_age_estimate_with_cache():
+  (face_factor,image_path) = setup_test("5.png",PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS,2,True)
+  test_age_estimate(face_factor, image_path)# => no billing for invalid age => tested OK
+  test_age_estimate(face_factor, build_sample_image_path("6.png"))# => no billing for invalid age 
+  test_age_estimate(face_factor, build_sample_image_path("8.png"))# => billing reservation of 2 and local bill increment (1)
+  test_age_estimate(face_factor, build_sample_image_path("6.png"))# => no billing for invalid age 
+  test_age_estimate(face_factor, build_sample_image_path("6.png"))# => no billing for invalid age 
+  test_age_estimate(face_factor, build_sample_image_path("8.png"))# => local bill increment (2)  
+
+def test_age_estimate_with_no_cache():
+  (face_factor,image_path) = setup_test("5.png",PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS,2)
+  test_age_estimate(face_factor, image_path) # => no billing for invalid age => tested OK
+  test_age_estimate(face_factor, build_sample_image_path("6.png")) # => no billing for invalid age 
+  test_age_estimate(face_factor, build_sample_image_path("8.png")) # => billing reservation of 2 and local bill increment (1)
+  test_age_estimate(face_factor, build_sample_image_path("6.png")) # => no billing for invalid age 
+  test_age_estimate(face_factor, build_sample_image_path("6.png")) # => no billing for invalid age 
+  test_age_estimate(face_factor, build_sample_image_path("8.png")) # => local bill increment (2)  
+  test_age_estimate(face_factor, build_sample_image_path("8.png")) # => billing reservation of 2 and local bill increment (1)
+
+def test_compare_with_cache():
+    (face_factor,image_path) = setup_test("8.png",PARAMETERS.COMPARE_RESERVATION_CALLS,2,True)
+    test_compare(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    test_compare(face_factor, image_path) # => local bill increment (2)  
+    test_compare(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    test_compare(face_factor, build_sample_image_path("6.png")) # => local bill increment (2)  
+    test_compare(face_factor, build_sample_image_path("6.png")) # => billing reservation of 2 and local bill increment (1)
+
+def test_compare_with_no_cache():
+    (face_factor,image_path) = setup_test("8.png",PARAMETERS.COMPARE_RESERVATION_CALLS,2)
+    test_compare(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    test_compare(face_factor, image_path) # => local bill increment (2)  
+    test_compare(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    test_compare(face_factor, build_sample_image_path("6.png")) # => local bill increment (2)  
+    test_compare(face_factor, build_sample_image_path("6.png")) # => billing reservation of 2 and local bill increment (1)
+
+def test_get_iso_image_with_cache():
+    (face_factor,image_path) = setup_test("8.png",PARAMETERS.FACE_ISO_RESERVATION_CALLS,2,True)
+    test_get_iso_face(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    test_get_iso_face(face_factor, image_path)  # => local bill increment (2)  
+    test_get_iso_face(face_factor, build_sample_image_path("6.png")) # => billing reservation of 2 and local bill increment (1) 
+
+def test_get_iso_image_with_no_cache():
+    (face_factor,image_path) = setup_test("8.png",PARAMETERS.FACE_ISO_RESERVATION_CALLS,2)
+    test_get_iso_face(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    test_get_iso_face(face_factor, image_path)  # => local bill increment (2)  
+    test_get_iso_face(face_factor, build_sample_image_path("6.png")) # => billing reservation of 2 and local bill increment (1) 
+ 
+if __name__ == "__main__":
+    #test_predict_enrol_valid_image_with_cache() => ok
+    #test_predict_enrol_valid_image_with_no_cache() => ok
+    #test_valid_with_cache() => ok
+    #test_valid_with_badimg_and_no_cache() => ok
+    #test_age_estimate_with_cache() => ok
+    #test_age_estimate_with_no_cache() => ok
+    #test_compare_with_cache() => ok
+    #test_compare_with_no_cache() => ok
+    #test_get_iso_image_with_cache() # => ok but wrog sku as it was not provided
+    test_get_iso_image_with_no_cache() # => ok but wrog sku as it was not provided
+    print("Done")
