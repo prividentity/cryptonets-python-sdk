@@ -145,43 +145,43 @@ def test_predict_enrol_valid_image_with_cache():
     # Notice we do not need to pass enroll reservation qty 
     (face_factor,image_path) = setup_test("8.png",PARAMETERS.PREDICT_RESERVATION_CALLS,2,True)
     test_enroll(face_factor, image_path)  # => no billing reservation  
-    result_handle = test_predict(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
-    result_handle = test_predict(face_factor, image_path) # => local bill increment (2)  
-    result_handle = test_predict(face_factor, image_path) # => no billing reservation as predict was performing from cache 
+    result_handle = test_predict(face_factor, image_path) # =>  no billing reservation    
+    result_handle = test_predict(face_factor, image_path) # => no billing reservation    
+    result_handle = test_predict(face_factor, image_path) # => no billing reservation  
     test_delete(face_factor, result_handle) # => no billing for delete
-    result_handle = test_predict(face_factor, image_path)  # => billing reservation of 2 and local bill increment (1)
+    result_handle = test_predict(face_factor, image_path)  # => no billing reservation  
     test_delete(face_factor, result_handle) # => no billing for delete
-    result_handle = test_predict(face_factor, image_path) # => local bill increment (2)  
+    result_handle = test_predict(face_factor, image_path) # => no billing reservation    
     test_delete(face_factor, result_handle) # => no billing for delete
 
 def test_predict_enrol_valid_image_with_no_cache():
     # Notice we do not need to pass enroll reservation qty
     (face_factor,image_path) = setup_test("8.png",PARAMETERS.PREDICT_RESERVATION_CALLS,2)
     test_enroll(face_factor, image_path)  # => no billing reservation  
-    result_handle = test_predict(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
-    result_handle = test_predict(face_factor, image_path) # => local bill increment (2)  
-    result_handle = test_predict(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
+    result_handle = test_predict(face_factor, image_path) # => no billing reservation 
+    result_handle = test_predict(face_factor, image_path) # => no billing reservation 
+    result_handle = test_predict(face_factor, image_path) # => no billing reservation 
     test_delete(face_factor, result_handle) # => no billing for delete
-    result_handle = test_predict(face_factor, image_path)  # => local bill increment (2)  
+    result_handle = test_predict(face_factor, image_path)  # => no billing reservation 
     test_delete(face_factor, result_handle) # => no billing for delete
-    result_handle = test_predict(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
-    result_handle = test_predict(face_factor, image_path)  # => local bill increment (2)  
+    result_handle = test_predict(face_factor, image_path) # => no billing reservation 
+    result_handle = test_predict(face_factor, image_path)  # => no billing reservation 
     test_delete(face_factor, result_handle) # => no billing for delete
 
 def test_valid_with_cache():
     (face_factor,image_path) = setup_test("8.png",PARAMETERS.ISVALID_RESERVATION_CALLS,2,True)
-    test_valid(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
-    test_valid(face_factor, image_path) # => local bill increment (2)
-    test_valid(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
-    test_valid(face_factor, image_path) # => local bill increment (2)
+    test_valid(face_factor, image_path) # => no billing
+    test_valid(face_factor, image_path) # => no billing
+    test_valid(face_factor, image_path) # => no billing
+    test_valid(face_factor, image_path) # => no billing
 
 def test_valid_with_badimg_and_no_cache():
     (face_factor,image_path) = setup_test("5.png",PARAMETERS.ISVALID_RESERVATION_CALLS,2,False)
-    test_valid(face_factor, image_path)# => no billing for ValidBiometric / status = 0 => tested OK
-    test_valid(face_factor, build_sample_image_path("6.png")) # => no billing for ValidBiometric / status = 0 
-    test_valid(face_factor, build_sample_image_path("8.png")) # => billing reservation of 2 and local bill increment (1)
-    test_valid(face_factor, build_sample_image_path("6.png")) # => no billing for ValidBiometric / status = 0 
-    test_valid(face_factor, build_sample_image_path("6.png")) # => no billing for ValidBiometric / status = 0 
+    test_valid(face_factor, image_path)# => no billing
+    test_valid(face_factor, build_sample_image_path("6.png")) # => no billing
+    test_valid(face_factor, build_sample_image_path("8.png")) # => no billing
+    test_valid(face_factor, build_sample_image_path("6.png")) # => no billing
+    test_valid(face_factor, build_sample_image_path("6.png")) # => no billing
 
 def test_age_estimate_with_cache():
   (face_factor,image_path) = setup_test("5.png",PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS,2,True)
@@ -220,25 +220,25 @@ def test_compare_with_no_cache():
 
 def test_get_iso_image_with_cache():
     (face_factor,image_path) = setup_test("8.png",PARAMETERS.FACE_ISO_RESERVATION_CALLS,2,True)
-    test_get_iso_face(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
-    test_get_iso_face(face_factor, image_path)  # => local bill increment (2)  
-    test_get_iso_face(face_factor, build_sample_image_path("6.png")) # => billing reservation of 2 and local bill increment (1) 
+    test_get_iso_face(face_factor, image_path) # no billing reservation 
+    test_get_iso_face(face_factor, image_path)  # no billing reservation 
+    test_get_iso_face(face_factor, build_sample_image_path("6.png")) # no billing reservation  
 
 def test_get_iso_image_with_no_cache():
     (face_factor,image_path) = setup_test("8.png",PARAMETERS.FACE_ISO_RESERVATION_CALLS,2)
-    test_get_iso_face(face_factor, image_path) # => billing reservation of 2 and local bill increment (1)
-    test_get_iso_face(face_factor, image_path)  # => local bill increment (2)  
-    test_get_iso_face(face_factor, build_sample_image_path("6.png")) # => billing reservation of 2 and local bill increment (1) 
+    test_get_iso_face(face_factor, image_path) # no billing reservation 
+    test_get_iso_face(face_factor, image_path)  # no billing reservation 
+    test_get_iso_face(face_factor, build_sample_image_path("6.png")) # no billing reservation 
  
 if __name__ == "__main__":
-    #test_predict_enrol_valid_image_with_cache() => ok
-    #test_predict_enrol_valid_image_with_no_cache() => ok
-    #test_valid_with_cache() => ok
-    #test_valid_with_badimg_and_no_cache() => ok
-    #test_age_estimate_with_cache() => ok
-    #test_age_estimate_with_no_cache() => ok
-    #test_compare_with_cache() => ok
-    #test_compare_with_no_cache() => ok
-    #test_get_iso_image_with_cache() # => ok but wrog sku as it was not provided
-    test_get_iso_image_with_no_cache() # => ok but wrog sku as it was not provided
+    test_predict_enrol_valid_image_with_cache() 
+    #test_predict_enrol_valid_image_with_no_cache()  
+    #test_valid_with_cache()  
+    #test_valid_with_badimg_and_no_cache()  
+    #test_age_estimate_with_cache() 
+    #test_age_estimate_with_no_cache()  
+    #test_compare_with_cache() 
+    #test_compare_with_no_cache() 
+    #test_get_iso_image_with_cache()   
+    #test_get_iso_image_with_no_cache()   
     print("Done")
