@@ -1,9 +1,6 @@
 import pathlib
 import sys
 
-from cryptonets_python_sdk.helper.messages import Message
-from cryptonets_python_sdk.helper.utils import FaceValidationCode
-
 src_path = pathlib.Path(__file__).parent.parent.resolve()
 sys.path.append(str(src_path))
 
@@ -12,7 +9,8 @@ from src.cryptonets_python_sdk.helper.result_objects.deleteResult import FaceDel
 from src.cryptonets_python_sdk.helper.result_objects.enrollPredictResult import FaceEnrollPredictResult
 from src.cryptonets_python_sdk.helper.result_objects.faceValidationResult import FaceValidationResult
 from src.cryptonets_python_sdk.helper.result_objects.isoFaceResult import ISOFaceResult
-
+from src.cryptonets_python_sdk.helper.messages import Message
+from src.cryptonets_python_sdk.helper.utils import FaceValidationCode
 
 class Jpg1:
     def __init__(self):
