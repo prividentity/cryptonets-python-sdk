@@ -260,7 +260,8 @@ class Jpg20:
     def __init__(self):
         self.is_valid_result = FaceValidationResult(error=0, message="OK")
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
-        self.get_iso_result = ISOFaceResult(status=9, message="ISO face validation failed.")
+        self.get_iso_result = ISOFaceResult(status=0, message="OK", iso_image_height=480, iso_image_width=360,
+                                            iso_image_channels=3, confidence=0.9994304776191711)
         self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS,
                                                 result=1,
                                                 first_validation_result=0,
