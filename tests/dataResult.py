@@ -16,11 +16,12 @@ class Jpg1:
     def __init__(self):
         self.is_valid_result = FaceValidationResult(error=0, message="OK")
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
-        self.get_iso_result = ISOFaceResult(status=9, message="ISO face validation failed.")
+        self.get_iso_result = ISOFaceResult(status=0, message="OK", iso_image_height=480, iso_image_width=360,
+                                            iso_image_channels=3, confidence=0.8549543619155884)
         self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS,
                                                 result=1,
-                                                first_validation_result=FaceValidationCode.TooBlurry.value,
-                                                second_validation_result=FaceValidationCode.TooBlurry.value)
+                                                first_validation_result=FaceValidationCode.ValidBiometric.value,
+                                                second_validation_result=FaceValidationCode.ValidBiometric.value)
         self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="OK")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="OK")
         self.delete_result = FaceDeleteResult(status=0, message="OK")
@@ -245,13 +246,13 @@ class Jpg19:
         self.is_valid_result.append_face_objects(return_code=0, message="ValidBiometric",
                                                  top_left_coordinate={"x": 107.5, "y": 72.0},
                                                  bottom_right_coordinate={"x": 144.5, "y": 110.0})
-        self.is_valid_result.append_face_objects(return_code=0, message="ValidBiometric",
+        self.is_valid_result.append_face_objects(return_code=9, message="TooBlurry",
                                                  top_left_coordinate={"x": 286.5, "y": 69.0},
                                                  bottom_right_coordinate={"x": 315.5, "y": 97.0})
         self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=25.008012771606445,
                                                      top_left_coordinate={"x": 107.5, "y": 72.0},
                                                      bottom_right_coordinate={"x": 144.5, "y": 110.0})
-        self.estimate_age_result.append_face_objects(return_code=0, message="ValidBiometric", age=24.311437606811523,
+        self.estimate_age_result.append_face_objects(return_code=9, message="TooBlurry", age=-1,
                                                      top_left_coordinate={"x": 286.5, "y": 69.0},
                                                      bottom_right_coordinate={"x": 315.5, "y": 97.0})
 
@@ -296,11 +297,12 @@ class Jpg3:
     def __init__(self):
         self.is_valid_result = FaceValidationResult(error=0, message="OK")
         self.estimate_age_result = FaceValidationResult(error=0, message="OK")
-        self.get_iso_result = ISOFaceResult(status=9, message="ISO face validation failed.")
+        self.get_iso_result = ISOFaceResult(status=0, message="OK", iso_image_height=480, iso_image_width=360,
+                                            iso_image_channels=3, confidence=0.9803179502487183)
         self.compare_result = FaceCompareResult(status=FaceCompareResult.CALL_STATUS_SUCCESS,
                                                 result=1,
-                                                first_validation_result=FaceValidationCode.TooBlurry.value,
-                                                second_validation_result=FaceValidationCode.TooBlurry.value)
+                                                first_validation_result=FaceValidationCode.ValidBiometric.value,
+                                                second_validation_result=FaceValidationCode.ValidBiometric.value)
         self.enroll_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="Ok")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, message="Ok")
         self.delete_result = FaceDeleteResult(status=0, message="Ok")
