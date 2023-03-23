@@ -1,6 +1,25 @@
 Changelog
 =========
 
+Version 1.1.3 (2023-03-23)
+---------------------------
+
+Bug Fixes and Improvements:
+
+* Strict Face thresholds for avoiding False Positives
+* Image aspect ratio bug fix for age estimation
+* Performance improvements on compare call
+* Billing default thresholds update
+* SO library memory footprint improvements
+
+New Features:
+
+* Exposure detection on face recognition
+* Face expression detection: Eye blink / Mouth open
+* Mouth Bug Fixes and Improvements:
+* Improvements on face detection under various conditions
+* Improved Face selection thresholds
+
 Version 1.1.2 (2023-02-11)
 ---------------------------
 
