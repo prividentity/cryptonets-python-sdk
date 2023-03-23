@@ -1,11 +1,16 @@
 class FaceEnrollPredictResult:
-    def __init__(self, enroll_level=None, uuid=None, guid=None, token=None, status=-1, message=""):
+    CALL_STATUS_SUCCESS = 0
+    CALL_STATUS_ERROR = -1
+
+    def __init__(self, enroll_level=None, uuid=None, guid=None, token=None, code=None, status=CALL_STATUS_ERROR,
+                 message=""):
         self._enroll_level = enroll_level
         self._uuid = uuid
         self._guid = guid
         self._token = token
         self._status = status
         self._message = message
+        self._code = code
 
     @property
     def enroll_level(self) -> int:
@@ -63,6 +68,17 @@ class FaceEnrollPredictResult:
         """
         return self._message
 
+    @property
+    def code(self) -> int:
+        """
+        Returns The field 'code' is a code or error value returned of the operation, this is needed t distinguish
+        between what data is returned by a successful enroll or predict calls from the success of the call itself.
+        A call is successful if it returned an intelligible JSON.
+        TODO: 1) the field 'code '  to be split in 2 fields after the fix the spec in c/c++ code
+        TODO: 2) pickup a proper name like to express the nature of these codes like error_code, validation_code etc.
+        """
+        return self._code
+
     @enroll_level.setter
     def enroll_level(self, value):
         self._enroll_level = value
@@ -86,3 +102,7 @@ class FaceEnrollPredictResult:
     @message.setter
     def message(self, value):
         self._message = value
+
+    @code.setter
+    def code(self, value):
+        self._code = value

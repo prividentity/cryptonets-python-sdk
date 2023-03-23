@@ -33,7 +33,7 @@ Return Codes for is valid and Error Messages
    * - -1
      - NoFace
    * - 0
-     - Valid Image
+     - Valid Biometric
    * - 1
      - Face is an image of an image (spoof). Please only provide live facial image(s). (Under implementation)
    * - 2
@@ -64,3 +64,15 @@ Return Codes for is valid and Error Messages
      - Head in image turned too far up. Please face the camera.
    * - 15
      - Head in image turned too far down. Please face the camera.
+   * - 16
+     - Exposure too dark. Low Light Condition
+   * - 17
+     - Exposure too bright. Bright Light Condition
+   * - 18
+     - Face detection Confidence low. Adjust spatial resolution
+   * - 19
+     - Invalid face background. Too noisy to capture face
+   * - 20
+     - Eye blink detected.
+   * - 21
+     - Mouth open detected.

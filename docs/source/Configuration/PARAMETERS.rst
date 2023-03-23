@@ -108,18 +108,6 @@ Configurable Parameter List and Valid values
    * - SEND_ORIGINAL_IMAGES
      - Get the original images from the server. Default false
      - True, False
-   * - ENROLL_RESERVATION_CALLS
-     - Number of calls to be set for enroll in billing reservation.
-     - 0 to 100000000
-   * - ISVALID_RESERVATION_CALLS
-     - Number of calls to be set for is valid in billing reservation.
-     - 0 to 100000000
-   * - PREDICT_RESERVATION_CALLS
-     - Number of calls to be set for predict in billing reservation.
-     - 0 to 100000000
-   * - DELETE_RESERVATION_CALLS
-     - Number of calls to be set for delete in billing reservation.
-     - 0 to 100000000
    * - COMPARE_RESERVATION_CALLS
      - Number of calls to be set for compare in billing reservation.
      - 0 to 100000000

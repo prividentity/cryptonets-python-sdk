@@ -1,7 +1,13 @@
 class FaceCompareResult:
+    # TODO once teh spec is clear, pickup proper names
+    # for status and code like CALL_STATUS_SUCCESS ...,
+    # ERROR_CODE_
+    CALL_STATUS_SUCCESS = 0
+    CALL_STATUS_ERROR = -1
+
     def __init__(self, result=None, distance_min=None, distance_mean=None, distance_max=None,
                  second_validation_result=None,
-                 first_validation_result=None, status=-1, message=""):
+                 first_validation_result=None, status=CALL_STATUS_ERROR, message=""):
         """Result handler for compare
         """
         self._status = status

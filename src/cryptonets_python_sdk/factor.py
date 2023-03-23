@@ -9,13 +9,12 @@ import traceback
 import numpy as np
 
 from .factor_modules.FaceModule import Face
-from .helper.decorators import Singleton, deprecated
+from .helper.decorators import Singleton
 from .helper.messages import Message
 from .helper.result_objects.compareResult import FaceCompareResult
 from .helper.result_objects.deleteResult import FaceDeleteResult
 from .helper.result_objects.enrollPredictResult import FaceEnrollPredictResult
 from .helper.result_objects.faceValidationResult import FaceValidationResult
-from .helper.result_objects.isValidDeprecatedResult import FaceIsValidDeprecatedResult
 from .helper.result_objects.isoFaceResult import ISOFaceResult
 from .helper.utils import image_path_to_array
 from .settings.cacheType import CacheType
@@ -136,63 +135,6 @@ class FaceFactor(metaclass=Singleton):
 
     def update_config(self, config):
         self.face_factor.update_config(config_object=config)
-
-    @deprecated
-    def is_valid_deprecated(self, image_path: str = None, image_data: np.array = None,
-                            config: ConfigObject = None) -> FaceIsValidDeprecatedResult:
-        """Check if the image is valid for using in the face recognition
-        Deprecated: Use the is_valid instead as it improves the processing speed of is valid.
-
-        Parameters
-        ----------
-        image_path
-            Directory path to the image file
-
-        config (Optional)
-            Additional configuration parameters for the operation
-
-        image_data (Optional)
-            Image data in numpy format
-
-        Returns
-        -------
-        FaceValidationResult
-            status: int [0 if successful -1 if unsuccessful]
-
-            message: str [Message from the operation]
-
-            result: str [Result of the operation]
-
-            age_factor: str [Predicted age of the image]
-
-            output_image_data: any [Numpy RGB image data of cropped face]
-
-        """
-        try:
-            if config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param:
-                input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
-            elif self.config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param:
-                input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
-            else:
-                input_format = "rgb"
-            if (image_path is not None and image_data is not None) or (image_path is None and image_data is None):
-                return FaceIsValidDeprecatedResult(message="Specify either image_path or image_data")
-            img_data = None
-            if image_data is not None:
-                if not isinstance(image_data, np.ndarray):
-                    return FaceIsValidDeprecatedResult(message="Required numpy array in RGB/RGBA/BGR format")
-                img_data = image_data
-            if image_path is not None and len(image_path) > 0:
-                if not os.path.exists(image_path):
-                    return FaceIsValidDeprecatedResult(message=self.message.get_message(101))
-                img_data = image_path_to_array(image_path, input_format=input_format)
-            if img_data is None:
-                return FaceIsValidDeprecatedResult(message=self.message.IS_VALID_ERROR)
-            return self.face_factor.is_valid_deprecated(image_data=img_data, config_object=config)
-        except Exception as e:
-            print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
-            print("Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues")
-            return FaceIsValidDeprecatedResult(message=self.message.IS_VALID_ERROR)
 
     def is_valid(self, image_path: str = None, image_data: np.array = None,
                  config: ConfigObject = None) -> FaceValidationResult:

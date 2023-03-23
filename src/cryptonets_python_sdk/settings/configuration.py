@@ -51,12 +51,10 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     SEND_ORIGINAL_IMAGES = "send_original_images"
 
     # BILLING PARAMETERS
-    ENROLL_RESERVATION_CALLS = "enroll"
-    ISVALID_RESERVATION_CALLS = "is_valid"
-    PREDICT_RESERVATION_CALLS = "predict"
+    # ISVALID_RESERVATION_CALLS = "is_valid"
+    # PREDICT_RESERVATION_CALLS = "predict"
     DOC_FRONT_RESERVATION_CALLS = "document_model"
     DOC_BACK_RESERVATION_CALLS = "document_model"
-    DELETE_RESERVATION_CALLS = "delete"
     COMPARE_RESERVATION_CALLS = "compare_files"
     FACE_RESERVATION_CALLS = "faces"
     ESTIMATE_AGE_RESERVATION_CALLS = "estimate_age"
@@ -67,16 +65,16 @@ class ParameterValidator:
     def __init__(self):
         self.__parameter = {}
         self.__populate_parameters()
-        self.__billing_reservation_parameters = [PARAMETERS.ENROLL_RESERVATION_CALLS,
-                                                 PARAMETERS.ISVALID_RESERVATION_CALLS,
-                                                 PARAMETERS.PREDICT_RESERVATION_CALLS,
-                                                 PARAMETERS.DOC_FRONT_RESERVATION_CALLS,
-                                                 PARAMETERS.DOC_BACK_RESERVATION_CALLS,
-                                                 PARAMETERS.DELETE_RESERVATION_CALLS,
-                                                 PARAMETERS.COMPARE_RESERVATION_CALLS,
-                                                 PARAMETERS.FACE_RESERVATION_CALLS,
-                                                 PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS,
-                                                 PARAMETERS.FACE_ISO_RESERVATION_CALLS]
+        self.__billing_reservation_parameters = [
+            # PARAMETERS.PREDICT_RESERVATION_CALLS,
+            # PARAMETERS.ISVALID_RESERVATION_CALLS,
+            PARAMETERS.DOC_FRONT_RESERVATION_CALLS,
+            PARAMETERS.DOC_BACK_RESERVATION_CALLS,
+            PARAMETERS.COMPARE_RESERVATION_CALLS,
+            PARAMETERS.FACE_RESERVATION_CALLS,
+            PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS,
+            PARAMETERS.FACE_ISO_RESERVATION_CALLS,
+        ]
 
     def __populate_parameters(self):
         self.__parameter[PARAMETERS.INPUT_IMAGE_FORMAT] = self.Parameter(
@@ -161,22 +159,16 @@ class ParameterValidator:
             name=PARAMETERS.SEND_ORIGINAL_IMAGES, _type="BOOL")
 
         # BILLING PARAMETERS
-        self.__parameter[PARAMETERS.ENROLL_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.ENROLL_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
-
-        self.__parameter[PARAMETERS.ISVALID_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.ISVALID_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
-        self.__parameter[PARAMETERS.PREDICT_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.PREDICT_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
+        # self.__parameter[PARAMETERS.ISVALID_RESERVATION_CALLS] = self.Parameter(
+        #     name=PARAMETERS.ISVALID_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
+        # self.__parameter[PARAMETERS.PREDICT_RESERVATION_CALLS] = self.Parameter(
+        #     name=PARAMETERS.PREDICT_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
 
         self.__parameter[PARAMETERS.DOC_FRONT_RESERVATION_CALLS] = self.Parameter(
             name=PARAMETERS.DOC_FRONT_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
 
         self.__parameter[PARAMETERS.DOC_BACK_RESERVATION_CALLS] = self.Parameter(
             name=PARAMETERS.DOC_BACK_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
-
-        self.__parameter[PARAMETERS.DELETE_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.DELETE_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
 
         self.__parameter[PARAMETERS.COMPARE_RESERVATION_CALLS] = self.Parameter(
             name=PARAMETERS.COMPARE_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)

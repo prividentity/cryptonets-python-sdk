@@ -3,13 +3,12 @@ import traceback
 import numpy as np
 
 from ..handler.nativeMethods import NativeMethods
-from ..helper.decorators import Singleton, deprecated
+from ..helper.decorators import Singleton
 from ..helper.messages import Message
 from ..helper.result_objects.compareResult import FaceCompareResult
 from ..helper.result_objects.deleteResult import FaceDeleteResult
 from ..helper.result_objects.enrollPredictResult import FaceEnrollPredictResult
 from ..helper.result_objects.faceValidationResult import FaceValidationResult
-from ..helper.result_objects.isValidDeprecatedResult import FaceIsValidDeprecatedResult
 from ..helper.result_objects.isoFaceResult import ISOFaceResult
 from ..helper.utils import FaceValidationCode
 from ..settings.cacheType import CacheType
@@ -33,15 +32,24 @@ class Face(metaclass=Singleton):
     def enroll(self, image_data: np.array, config_object: ConfigObject = None) -> FaceEnrollPredictResult:
         try:
             json_data = self.face_factor_processor.enroll(image_data, config_object=config_object)
+            call_status = FaceEnrollPredictResult.CALL_STATUS_ERROR
             if not json_data:
                 return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_ENROLL)
+            else:
+                # we received a json response and thus call is successful
+                call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS
+
             if "PI" not in json_data:
-                return FaceEnrollPredictResult(status=json_data.get("status", -1),
+                # This is a quick fix to pick up the 'error' instead of 'status' field
+                # TODO Check the json structure consistency then pick up the right fields to generate
+                # the correct and informative 'FaceEnrollPredictResult'
+                return FaceEnrollPredictResult(status=call_status, code=json_data.get("error", -1),
                                                message=json_data.get("message", self.message.EXCEPTION_ERROR_ENROLL))
-            return FaceEnrollPredictResult(enroll_level=json_data["PI"].get("enroll_level", None),
+            return FaceEnrollPredictResult(status=call_status,
+                                           enroll_level=json_data["PI"].get("enroll_level", None),
                                            uuid=json_data["PI"].get("uuid", None),
                                            guid=json_data["PI"].get("guid", None),
-                                           token=json_data["PI"].get("token", None), status=json_data.get("status", -1),
+                                           token=json_data["PI"].get("token", None),
                                            message=json_data.get("message", ""))
         except Exception as e:
             print(e, traceback.format_exc())
@@ -50,15 +58,22 @@ class Face(metaclass=Singleton):
     def predict(self, image_data: np.array, config_object: ConfigObject = None) -> FaceEnrollPredictResult:
         try:
             json_data = self.face_factor_processor.predict(image_data, config_object=config_object)
+            call_status = FaceEnrollPredictResult.CALL_STATUS_ERROR
             if not json_data:
                 return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
+            else:
+                # we received a json response and thus call is successful
+                call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS
             if "PI" not in json_data:
-                return FaceEnrollPredictResult(status=json_data.get("status", -1),
+                # TODO Check the json structure consistency then pick up the right fields to generate
+                # the correct and informative 'FaceEnrollPredictResult' 
+                return FaceEnrollPredictResult(status=call_status,
+                                               code=json_data.get("status", -1),
                                                message=json_data.get("message", self.message.EXCEPTION_ERROR_PREDICT))
-            return FaceEnrollPredictResult(enroll_level=json_data["PI"].get("enroll_level", None),
+            return FaceEnrollPredictResult(status=call_status, enroll_level=json_data["PI"].get("enroll_level", None),
                                            uuid=json_data["PI"].get("uuid", None),
                                            guid=json_data["PI"].get("guid", None),
-                                           token=json_data["PI"].get("token", None), status=json_data.get("status", -1),
+                                           token=json_data["PI"].get("token", None),
                                            message=json_data.get("message", ""))
         except Exception as e:
             print(e, traceback.format_exc())
@@ -79,8 +94,12 @@ class Face(metaclass=Singleton):
         try:
             json_data = self.face_factor_processor.compare_files(image_data_1, image_data_2,
                                                                  config_object=config_object)
+            call_status = FaceCompareResult.CALL_STATUS_ERROR
             if not json_data:
                 return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
+            else:
+                # we received a json response and thus call is successful
+                call_status = FaceCompareResult.CALL_STATUS_SUCCESS
 
             return FaceCompareResult(result=json_data.get("result", None),
                                      distance_min=json_data.get("distance_min", None),
@@ -88,28 +107,10 @@ class Face(metaclass=Singleton):
                                      second_validation_result=json_data.get("valid_flag_b", None),
                                      distance_max=json_data.get("distance_max", None),
                                      distance_mean=json_data.get("distance_mean", None),
-                                     status=json_data.get("status", 1), message=json_data.get("message", ""))
+                                     status=call_status, message=json_data.get("message", ""))
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
-
-    @deprecated
-    def is_valid_deprecated(self, image_data: np.array,
-                            config_object: ConfigObject = None) -> FaceIsValidDeprecatedResult:
-        try:
-            json_data = self.face_factor_processor.is_valid(image_data, config_object=config_object)
-            if not json_data:
-                return FaceIsValidDeprecatedResult(message=self.message.IS_VALID_ERROR)
-
-            result_ = None
-            if json_data.get("result", None) in FaceValidationCode:
-                result_ = FaceValidationCode(json_data.get("result", None)).name
-
-            return FaceIsValidDeprecatedResult(result=result_, age_factor=json_data.get("ageFactor", None), status=0)
-
-        except Exception as e:
-            print(e, traceback.format_exc())
-            return FaceIsValidDeprecatedResult(message=self.message.IS_VALID_ERROR)
 
     def is_valid(self, image_data: np.array, config_object: ConfigObject = None) -> FaceValidationResult:
         try:
