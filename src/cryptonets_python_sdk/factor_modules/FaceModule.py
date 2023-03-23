@@ -3,13 +3,12 @@ import traceback
 import numpy as np
 
 from ..handler.nativeMethods import NativeMethods
-from ..helper.decorators import Singleton, deprecated
+from ..helper.decorators import Singleton
 from ..helper.messages import Message
 from ..helper.result_objects.compareResult import FaceCompareResult
 from ..helper.result_objects.deleteResult import FaceDeleteResult
 from ..helper.result_objects.enrollPredictResult import FaceEnrollPredictResult
 from ..helper.result_objects.faceValidationResult import FaceValidationResult
-from ..helper.result_objects.isValidDeprecatedResult import FaceIsValidDeprecatedResult
 from ..helper.result_objects.isoFaceResult import ISOFaceResult
 from ..helper.utils import FaceValidationCode
 from ..settings.cacheType import CacheType

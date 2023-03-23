@@ -64,11 +64,7 @@ def factor_object():
     config_object = ConfigObject(
         config_param={PARAMETERS.INPUT_IMAGE_FORMAT: "rgb",
                       PARAMETERS.CONTEXT_STRING: "predict",
-                      PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS: 100,
-                      PARAMETERS.ISVALID_RESERVATION_CALLS: 200,
-                      PARAMETERS.ENROLL_RESERVATION_CALLS: 300,
-                      PARAMETERS.PREDICT_RESERVATION_CALLS: 400,
-                      PARAMETERS.DELETE_RESERVATION_CALLS: 500,
+                      PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS: 10,
                       })
     face_factor = FaceFactor(logging_level=LoggingLevel.off, config=config_object, cache_type=CacheType.OFF)
     return face_factor

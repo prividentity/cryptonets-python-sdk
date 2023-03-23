@@ -1,6 +1,3 @@
-from enum import Enum
-
-
 class FaceCompareResult:
     # TODO once teh spec is clear, pickup proper names
     # for status and code like CALL_STATUS_SUCCESS ...,

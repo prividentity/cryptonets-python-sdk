@@ -13,5 +13,4 @@ This section covers how to use the result objects from the operations.
    CompareResult
    EnrollPredictResult
    DeleteResult
-   IsValidDeprecatedResult
    ISOFaceResult
