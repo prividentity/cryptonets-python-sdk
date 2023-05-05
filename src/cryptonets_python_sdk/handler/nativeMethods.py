@@ -303,7 +303,7 @@ class NativeMethods(object):
             POINTER(c_int),  # int *result_out_length
             POINTER(POINTER(c_ubyte)),  # uint8_t** output_iso_image_bytes
             POINTER(c_int)]  # int* output_iso_image_bytes_length
-        self._spl_so_face.privid_face_iso.restype = c_bool  # fixed a bug here
+        self._spl_so_face.privid_face_iso.restype = c_bool  
 
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_set_billing_record_threshold(
@@ -645,3 +645,6 @@ class NativeMethods(object):
         except Exception as e:
             print("Error :", e)
             return False
+
+    def get_version(self) -> str:
+        return self._spl_so_face.get_version().decode("utf-8")

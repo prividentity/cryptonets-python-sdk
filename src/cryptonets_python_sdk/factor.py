@@ -121,6 +121,7 @@ class FaceFactor(metaclass=Singleton):
                                     local_storage_path=self._local_storage_path, logging_level=self._logging_level,
                                     tf_num_thread=self._tf_num_thread, cache_type=self._cache_type,
                                     config_object=self._config_object)
+            self._version =  self.face_factor.get_verion() 
             self.message = Message()
         except ValueError as exp:
             print("Initialization Failed: {}\n".format(exp))
@@ -548,6 +549,9 @@ class FaceFactor(metaclass=Singleton):
     @config.setter
     def config(self, value):
         self._config_object = value
+    @property
+    def version(self) -> str:
+        return self._version
 
 
 if __name__ == "__main__":
