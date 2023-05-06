@@ -317,6 +317,13 @@ class NativeMethods(object):
         self._spl_so_face.privid_set_billing_record_threshold.restype = c_bool
         ##############################################################################################
 
+        ##############################################################################################
+        # PRIVID_API const char* get_version(void);
+        ##############################################################################################
+        self._spl_so_face.get_version.argtypes = None
+        self._spl_so_face.get_version.restype = ctypes.c_char_p 
+        ##############################################################################################
+
         if self._config_object and self._config_object.get_config_billing_param():
             c_config_param = c_char_p(bytes(self._config_object.get_config_billing_param(), 'utf-8'))
             c_config_param_len = c_int(len(self._config_object.get_config_billing_param()))
