@@ -34,9 +34,6 @@ class NativeMethods(object):
                 self._library_path = str(pathlib.Path(__file__).parent.joinpath("lib/libprivid_fhe.dylib").resolve())
                 self._spl_so_face = ctypes.CDLL(self._library_path)
 
-            self._embedding_length = 128
-            self._num_embeddings = 80
-            self._aug_size = 224 * 224 * 4 * self._num_embeddings
             self._tf_num_thread = tf_num_thread
             self._api_key = bytes(api_key, 'utf-8')
             self._server_url = bytes(server_url, 'utf-8')
@@ -144,7 +141,8 @@ class NativeMethods(object):
              c_int,  # const int image_size
              c_int,  # const int image_width,
              c_int,  # const int image_height
-             c_bool,  # const bool remove_bad_embeddings
+             POINTER(c_char_p),  # char **best_input_out
+             POINTER(c_int),  # int *best_input_length
              POINTER(c_char_p),  # char **result_out
              POINTER(c_int)]  # int *result_out_length
         self._spl_so_face.privid_enroll_onefa.restype = c_int
@@ -169,37 +167,9 @@ class NativeMethods(object):
             c_int,  # const int image_size,
             c_int,  # const int image_width,
             c_int,  # const int image_height,
-            POINTER(c_float),  # float **embeddings_out,
-            POINTER(c_int),  # int *embeddings_out_len,
-            c_bool,  # const bool remove_bad_embeddings,
-            POINTER(c_uint8),  # uint8_t **augmentations_out,
-            POINTER(c_int),  # int *augmentations_out_len,
             POINTER(c_char_p),  # char **result_out,
             POINTER(c_int)]  # int *result_out_length
         self._spl_so_face.privid_face_predict_onefa.restype = c_int
-        ##############################################################################################
-
-        ##############################################################################################
-        # (ok => usage removed in this class)
-        # PRIVID_API int is_valid(t_privid_face_handle h, int nContext, uint8_t* image, int width, int height,
-        #                         uint8_t** cropped_image_out, int *cropped_image_length,
-        #                         char **result_out, int *result_out_len,
-        #                         const char *user_config = nullptr, const int user_config_len = 0);
-        # TODO deprecated do not use in the future
-        ##############################################################################################
-        self._spl_so_face.is_valid.argtypes = [
-            POINTER(c_uint8),  # t_privid_face_handle TODO this is not session handler
-            c_bool,  # int nContext, TODO fix wrong ctype
-            POINTER(c_uint8),  # uint8_t* image
-            c_int,  # int width
-            c_int,  # int height
-            POINTER(c_uint8),  # uint8_t** cropped_image_out
-            POINTER(c_int),  # int *cropped_image_length
-            POINTER(c_char_p),  # char **result_out
-            POINTER(c_int),  # int *result_out_len
-            POINTER(c_char_p),  # const char *user_config = nullptr
-            c_int]  # const int user_config_len = 0
-        self._spl_so_face.is_valid.restype = c_int
         ##############################################################################################
 
         ##############################################################################################
@@ -552,19 +522,11 @@ class NativeMethods(object):
             c_p_buffer_images_in = p_buffer_images_in.ctypes.data_as(
                 POINTER(c_uint8))
             im_size = im_height * im_width * im_channel
-            p_buffer_embeddings_out = np.zeros(
-                4 * self._embedding_length * self._num_embeddings, dtype=np.float32)
-            c_p_buffer_embeddings_out = p_buffer_embeddings_out.ctypes.data_as(
-                POINTER(c_float))
-
-            augmented_images = np.zeros(self._aug_size, dtype=np.int8)
-            c_augmented_images = augmented_images.ctypes.data_as(
-                POINTER(c_uint8))
 
             result_out = np.zeros(1, dtype=np.int32)
             c_result_out = result_out.ctypes.data_as(POINTER(ctypes.c_int32))
             c_result = c_char_p()
-            
+
             if config_object and config_object.get_config_param():
                 c_config_param = c_char_p(bytes(config_object.get_config_param(), 'utf-8'))
                 c_config_param_len = c_int(len(config_object.get_config_param()))
@@ -578,8 +540,9 @@ class NativeMethods(object):
                                                   c_int(im_count),
                                                   c_int(im_size),
                                                   c_int(im_width),
-                                                  c_int(im_height),                                                
-                                                  c_bool(True),
+                                                  c_int(im_height),
+                                                  None, # best image data
+                                                  None, # best image size
                                                   byref(c_result),
                                                   c_result_out)
 
@@ -604,23 +567,11 @@ class NativeMethods(object):
             c_p_buffer_images_in = p_buffer_images_in.ctypes.data_as(
                 POINTER(c_uint8))
             im_size = im_height * im_width * im_channel
-            p_buffer_embeddings_out = np.zeros(
-                4 * self._embedding_length * self._num_embeddings, dtype=np.float32)
-            c_p_buffer_embeddings_out = p_buffer_embeddings_out.ctypes.data_as(
-                POINTER(c_float))
-
-            augmented_images = np.zeros(self._aug_size, dtype=np.int8)
-            c_augmented_images = augmented_images.ctypes.data_as(
-                POINTER(c_uint8))
 
             result_out = np.zeros(1, dtype=np.int32)
             c_result_out = result_out.ctypes.data_as(POINTER(ctypes.c_int32))
 
-            emb_out_lenght = np.zeros(1, dtype=np.int32)
-            emb_out_lenght = emb_out_lenght.ctypes.data_as(POINTER(ctypes.c_int32))
             c_result = c_char_p()
-            augmented_images_length = np.zeros(1, dtype=np.int32)
-            c_augmented_images_length = augmented_images_length.ctypes.data_as(POINTER(ctypes.c_int32))
             if config_object and config_object.get_config_param():
                 c_config_param = c_char_p(bytes(config_object.get_config_param(), 'utf-8'))
                 c_config_param_len = c_int(len(config_object.get_config_param()))
@@ -635,11 +586,6 @@ class NativeMethods(object):
                                                         c_int(im_size),
                                                         c_int(im_width),
                                                         c_int(im_height),
-                                                        c_p_buffer_embeddings_out,
-                                                        emb_out_lenght,
-                                                        c_bool(True),
-                                                        c_augmented_images,
-                                                        c_augmented_images_length,
                                                         byref(c_result),
                                                         c_result_out)
             len_ = np.fromiter(c_result_out[:1], dtype=np.uint32, count=-1)[0]
