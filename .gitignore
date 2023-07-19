@@ -4,3 +4,8 @@ build
 dist
 **.egg-info
 .venv/
+.idea/
+.pytest_cache/
+venv/
+.vscode/
+src/privateid_local_storage/
