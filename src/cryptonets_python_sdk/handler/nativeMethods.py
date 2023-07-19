@@ -132,9 +132,7 @@ class NativeMethods(object):
         #         void *session_ptr, const char *user_config, const int user_config_length,
         #         const uint8_t *input_images, const int image_count, const int image_size,
         #         const int image_width, const int image_height,
-        #         float **embeddings_out,int *embeddings_out_len,
-        #         const bool remove_bad_embeddings,
-        #         uint8_t **augmentations_out,int *augmentations_out_len,
+        #         uint8_t** best_input_out, int *best_input_length,
         #         char **result_out, int *result_out_length);
         ##############################################################################################
         self._spl_so_face.privid_enroll_onefa.argtypes = \
@@ -146,11 +144,8 @@ class NativeMethods(object):
              c_int,  # const int image_size
              c_int,  # const int image_width,
              c_int,  # const int image_height
-             POINTER(c_float),  # float **embeddings_out
-             POINTER(c_int),  # int *embeddings_out_len
-             c_bool,  # const bool remove_bad_embeddings
-             POINTER(c_uint8),  # uint8_t **augmentations_out
-             POINTER(c_int),  # int *augmentations_out_len
+             POINTER(c_uint8),  # uint8_t** best_input_out
+             POINTER(c_int),  # int *best_input_length
              POINTER(c_char_p),  # char **result_out
              POINTER(c_int)]  # int *result_out_length
         self._spl_so_face.privid_enroll_onefa.restype = c_int
@@ -158,13 +153,10 @@ class NativeMethods(object):
 
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB int privid_face_predict_onefa(
-        #         void *session_ptr, const char *user_config, const int user_config_length,
-        #         const uint8_t *input_images, const int image_count, const int image_size,
-        #         const int image_width, const int image_height,
-        #         float **embeddings_out, int *embeddings_out_len,
-        #         const bool remove_bad_embeddings,
-        #         uint8_t **augmentations_out, int *augmentations_out_len,
-        #         char **result_out, int *result_out_length);
+    #           void *session_ptr, const char *user_config, const int user_config_length,
+    #           const uint8_t *input_images, const int image_count, const int image_size,
+    #           const int image_width, const int image_height,
+    #           char **result_out, int *result_out_length);
         ##############################################################################################
         self._spl_so_face.privid_face_predict_onefa.argtypes = [
             c_void_p,  # void *session_ptr
@@ -174,12 +166,7 @@ class NativeMethods(object):
             c_int,  # const int image_count,
             c_int,  # const int image_size,
             c_int,  # const int image_width,
-            c_int,  # const int image_height,
-            POINTER(c_float),  # float **embeddings_out,
-            POINTER(c_int),  # int *embeddings_out_len,
-            c_bool,  # const bool remove_bad_embeddings,
-            POINTER(c_uint8),  # uint8_t **augmentations_out,
-            POINTER(c_int),  # int *augmentations_out_len,
+            c_int,  # const int image_height,           
             POINTER(c_char_p),  # char **result_out,
             POINTER(c_int)]  # int *result_out_length
         self._spl_so_face.privid_face_predict_onefa.restype = c_int
@@ -193,19 +180,19 @@ class NativeMethods(object):
         #                         const char *user_config = nullptr, const int user_config_len = 0);
         # TODO deprecated do not use in the future
         ##############################################################################################
-        self._spl_so_face.is_valid.argtypes = [
-            POINTER(c_uint8),  # t_privid_face_handle TODO this is not session handler
-            c_bool,  # int nContext, TODO fix wrong ctype
-            POINTER(c_uint8),  # uint8_t* image
-            c_int,  # int width
-            c_int,  # int height
-            POINTER(c_uint8),  # uint8_t** cropped_image_out
-            POINTER(c_int),  # int *cropped_image_length
-            POINTER(c_char_p),  # char **result_out
-            POINTER(c_int),  # int *result_out_len
-            POINTER(c_char_p),  # const char *user_config = nullptr
-            c_int]  # const int user_config_len = 0
-        self._spl_so_face.is_valid.restype = c_int
+        # self._spl_so_face.is_valid.argtypes = [
+        #     POINTER(c_uint8),  # t_privid_face_handle TODO this is not session handler
+        #     c_bool,  # int nContext, TODO fix wrong ctype
+        #     POINTER(c_uint8),  # uint8_t* image
+        #     c_int,  # int width
+        #     c_int,  # int height
+        #     POINTER(c_uint8),  # uint8_t** cropped_image_out
+        #     POINTER(c_int),  # int *cropped_image_length
+        #     POINTER(c_char_p),  # char **result_out
+        #     POINTER(c_int),  # int *result_out_len
+        #     POINTER(c_char_p),  # const char *user_config = nullptr
+        #     c_int]  # const int user_config_len = 0
+        # self._spl_so_face.is_valid.restype = c_int
         ##############################################################################################
 
         ##############################################################################################
@@ -321,6 +308,24 @@ class NativeMethods(object):
             c_char_p,  # const char *billing_config
             c_int]  # const int billing_config_length
         self._spl_so_face.privid_set_billing_record_threshold.restype = c_bool
+        ##############################################################################################
+
+        ##############################################################################################
+        #   D_API_ATTRIB bool privid_anti_spoofing(
+        #   void* session_ptr, const uint8_t* image_bytes, const int image_width,
+        #   const int image_height, const char* user_config, const int user_config_length,
+        #   char** result_out, int* result_out_length);
+        ##############################################################################################
+        self._spl_so_face.privid_anti_spoofing.argtypes = [
+            c_void_p,  # void *session_ptr
+            POINTER(c_uint8),  # const uint8_t* image_bytes
+            c_int,  # const int image_width
+            c_int,  # const int image_height,
+            c_char_p,  # const char *user_config,
+            c_int,  # const int user_config_length
+            POINTER(c_char_p),  # char **result_out
+            POINTER(c_int)]  # int *result_out_length
+        self._spl_so_face.privid_anti_spoofing.restype = c_bool
         ##############################################################################################
 
         if self._config_object and self._config_object.get_config_billing_param():
@@ -574,6 +579,8 @@ class NativeMethods(object):
             else:
                 c_config_param = c_char_p(bytes("", 'utf-8'))
                 c_config_param_len = c_int(0)
+            best_input_out = c_uint8()  # uint8_t** best_input_out
+            best_input_length = c_int()  # int *best_input_length
             self._spl_so_face.privid_enroll_onefa(self._spl_so_face.handle,
                                                   c_config_param,
                                                   c_config_param_len,
@@ -582,11 +589,8 @@ class NativeMethods(object):
                                                   c_int(im_size),
                                                   c_int(im_width),
                                                   c_int(im_height),
-                                                  c_p_buffer_embeddings_out,
-                                                  c_emb_out_length,
-                                                  c_bool(True),
-                                                  c_augmented_images,
-                                                  c_augmented_images_length,
+                                                  byref(best_input_out),   
+                                                  byref(best_input_length),  
                                                   byref(c_result),
                                                   c_result_out)
 
@@ -641,12 +645,7 @@ class NativeMethods(object):
                                                         c_int(im_count),
                                                         c_int(im_size),
                                                         c_int(im_width),
-                                                        c_int(im_height),
-                                                        c_p_buffer_embeddings_out,
-                                                        emb_out_lenght,
-                                                        c_bool(True),
-                                                        c_augmented_images,
-                                                        c_augmented_images_length,
+                                                        c_int(im_height),                                                        
                                                         byref(c_result),
                                                         c_result_out)
             len_ = np.fromiter(c_result_out[:1], dtype=np.uint32, count=-1)[0]
@@ -658,4 +657,40 @@ class NativeMethods(object):
             return False
         except Exception as e:
             print("Error :", e)
+            return False
+    def antispoofing(self, image_data: np.array, config_object: ConfigObject = None) -> Any:
+        try:
+            img = image_data
+            im_width = img.shape[1]
+            im_height = img.shape[0]
+
+            p_buffer_images_in = img.flatten()
+            c_p_buffer_images_in = p_buffer_images_in.ctypes.data_as(POINTER(c_uint8))
+
+            c_result = c_char_p()
+            c_result_len = c_int()
+            if config_object and config_object.get_config_param():
+                c_config_param = c_char_p(bytes(config_object.get_config_param(), 'utf-8'))
+                c_config_param_len = c_int(len(config_object.get_config_param()))
+            else:
+                c_config_param = c_char_p(bytes("", 'utf-8'))
+                c_config_param_len = c_int(0)
+            self._spl_so_face.privid_anti_spoofing(self._spl_so_face.handle,
+                                                  c_p_buffer_images_in,
+                                                  c_int(im_width),
+                                                  c_int(im_height),
+                                                  c_config_param,
+                                                  c_config_param_len,
+                                                  byref(c_result),
+                                                  byref(c_result_len))
+
+            if not c_result.value or not c_result_len.value:
+                raise Exception("Something went wrong. Couldn't process the image for antispoofing API. ")
+            output_json = c_result.value[:c_result_len.value].decode()
+            self._spl_so_face.FHE_free_api_memory(c_result)
+
+            output = json.loads(output_json)
+            return output
+        except Exception as e:
+            print(e)
             return False
