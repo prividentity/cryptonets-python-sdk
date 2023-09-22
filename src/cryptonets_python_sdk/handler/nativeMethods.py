@@ -87,20 +87,6 @@ class NativeMethods(object):
         ##############################################################################################
 
         ##############################################################################################
-        # (ok) PRIVID_API_ATTRIB bool privid_global_settings(const uint8_t max_threads,
-        #                                               const uint8_t logging_level);
-        # TODO use this after creating a session
-        # TODO this will be deprecated soon in the API change
-        ##############################################################################################
-        self._spl_so_face.privid_global_settings.argtypes = [
-            c_uint8,  # const uint8_t max_threads
-            c_uint8]  # const uint8_t logging_level
-        self._spl_so_face.privid_global_settings.restype = c_bool
-        # set global settings
-        self._spl_so_face.privid_global_settings(self._tf_num_thread, self._logging_level.value)
-        ##############################################################################################
-
-        ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_set_configuration(void *session_ptr, const char *user_config,
         # const int user_config_length);
         ##############################################################################################
@@ -119,13 +105,6 @@ class NativeMethods(object):
             c_config_param_len = c_int(len(config_dict))
             self._spl_so_face.privid_set_configuration(self._spl_so_face.handle, c_config_param, c_config_param_len)
         ###############################################################################################
-
-        ##############################################################################################
-        # (ok) PRIVID_API int32_t FHE_close(t_privid_face_handle handle);
-        ##############################################################################################
-        self._spl_so_face.FHE_close.argtypes = [POINTER(c_uint8)]  # t_privid_face_handle
-        self._spl_so_face.FHE_close.restype = c_int
-        ##############################################################################################
 
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB int privid_enroll_onefa(
@@ -173,29 +152,6 @@ class NativeMethods(object):
         ##############################################################################################
 
         ##############################################################################################
-        # (ok => usage removed in this class)
-        # PRIVID_API int is_valid(t_privid_face_handle h, int nContext, uint8_t* image, int width, int height,
-        #                         uint8_t** cropped_image_out, int *cropped_image_length,
-        #                         char **result_out, int *result_out_len,
-        #                         const char *user_config = nullptr, const int user_config_len = 0);
-        # TODO deprecated do not use in the future
-        ##############################################################################################
-        # self._spl_so_face.is_valid.argtypes = [
-        #     POINTER(c_uint8),  # t_privid_face_handle TODO this is not session handler
-        #     c_bool,  # int nContext, TODO fix wrong ctype
-        #     POINTER(c_uint8),  # uint8_t* image
-        #     c_int,  # int width
-        #     c_int,  # int height
-        #     POINTER(c_uint8),  # uint8_t** cropped_image_out
-        #     POINTER(c_int),  # int *cropped_image_length
-        #     POINTER(c_char_p),  # char **result_out
-        #     POINTER(c_int),  # int *result_out_len
-        #     POINTER(c_char_p),  # const char *user_config = nullptr
-        #     c_int]  # const int user_config_len = 0
-        # self._spl_so_face.is_valid.restype = c_int
-        ##############################################################################################
-
-        ##############################################################################################
         # (ok) PRIVID_API_ATTRIB int privid_user_delete(
         #         void *session_ptr, const char *user_conf, const int conf_len,
         #         const char *uuid, const int uuid_length,
@@ -213,9 +169,9 @@ class NativeMethods(object):
         ##############################################################################################
 
         ##############################################################################################
-        # (ok) PRIVID_API void FHE_free_api_memory(char **buffer);
+        # (ok) PRIVID_API void privid_free_char_buffer(char **buffer);
         ##############################################################################################
-        self._spl_so_face.FHE_free_api_memory.argtypes = [POINTER(c_char_p)]  # char **buffer
+        self._spl_so_face.privid_free_char_buffer.argtypes = [c_char_p]  # char **buffer
         ##############################################################################################
 
         ##############################################################################################
@@ -364,7 +320,7 @@ class NativeMethods(object):
             if not c_result.value or not c_result_len.value:
                 raise Exception("Something went wrong. Couldn't process the image for is_valid API. ")
             output_json = c_result.value[:c_result_len.value].decode()
-            self._spl_so_face.FHE_free_api_memory(c_result)
+            self._spl_so_face.privid_free_char_buffer(c_result)
 
             output = json.loads(output_json)
             return output
@@ -401,7 +357,7 @@ class NativeMethods(object):
             if not c_result.value or not c_result_len.value:
                 raise Exception("Something went wrong. Couldn't process the image for estimate_age API. ")
             output_json = c_result.value[:c_result_len.value].decode()
-            self._spl_so_face.FHE_free_api_memory(c_result)
+            self._spl_so_face.privid_free_char_buffer(c_result)
 
             output = json.loads(output_json)
             return output
@@ -446,7 +402,7 @@ class NativeMethods(object):
                 raise Exception("Something went wrong. Couldn't process the image for get_iso_face API. ")
             output_json = c_result.value[:c_result_len.value].decode()
             output_json = json.loads(output_json)
-            self._spl_so_face.FHE_free_api_memory(c_result)
+            self._spl_so_face.privid_free_char_buffer(c_result)
             if c_iso_image_len.value and "iso_image_width" in output_json and "iso_image_height" in output_json:
                 output_json["image"] = Image.fromarray(np.uint8(np.reshape(c_iso_image[:c_iso_image_len.value], (
                     output_json.get("iso_image_height", 0), output_json.get("iso_image_width", 0),
@@ -477,7 +433,7 @@ class NativeMethods(object):
         len_ = p_buffer_result_length.value
         output_json_str = p_buffer_result.value[:len_].decode()
 
-        self._spl_so_face.FHE_free_api_memory(byref(p_buffer_result))
+        self._spl_so_face.privid_free_char_buffer(p_buffer_result)
 
         if output_json_str is not None and len(output_json_str) > 0:
             output = json.loads(output_json_str)
@@ -529,7 +485,7 @@ class NativeMethods(object):
             len_ = p_buffer_result_length.value
             output_json_str = p_buffer_result.value[:len_].decode()
 
-            self._spl_so_face.FHE_free_api_memory(byref(p_buffer_result))
+            self._spl_so_face.privid_free_char_buffer(p_buffer_result)
             if output_json_str is not None and len(output_json_str) > 0:
                 output = json.loads(output_json_str)
                 # the status should receive the value of the success of the api call
@@ -596,7 +552,7 @@ class NativeMethods(object):
 
             len_ = np.fromiter(c_result_out[:1], dtype=np.uint32, count=-1)[0]
             output_json_str = c_result.value[:len_].decode()
-            self._spl_so_face.FHE_free_api_memory(byref(c_result))
+            self._spl_so_face.privid_free_char_buffer(c_result)
             if output_json_str is not None and len(output_json_str) > 0:
                 output = json.loads(output_json_str)
                 return output
@@ -650,7 +606,7 @@ class NativeMethods(object):
                                                         c_result_out)
             len_ = np.fromiter(c_result_out[:1], dtype=np.uint32, count=-1)[0]
             output_json_str = c_result.value[:len_].decode()
-            self._spl_so_face.FHE_free_api_memory(byref(c_result))
+            self._spl_so_face.privid_free_char_buffer(c_result)
             if output_json_str is not None and len(output_json_str) > 0:
                 output = json.loads(output_json_str)
                 return output
@@ -687,7 +643,7 @@ class NativeMethods(object):
             if not c_result.value or not c_result_len.value:
                 raise Exception("Something went wrong. Couldn't process the image for antispoofing API. ")
             output_json = c_result.value[:c_result_len.value].decode()
-            self._spl_so_face.FHE_free_api_memory(c_result)
+            self._spl_so_face.privid_free_char_buffer(c_result)
 
             output = json.loads(output_json)
             return output
