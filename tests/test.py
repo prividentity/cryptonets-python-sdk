@@ -71,6 +71,7 @@ def test_delete(delete_face_factor, predict_handle):
 
 def test_age_estimate(age_face_factor, age_path, config=None):
     print(colored("{}\n{}".format("Age Estimation", "=" * 25), "green"))
+    print(colored(age_path, "green"))
     age_start_time = default_timer()
     age_handle = age_face_factor.estimate_age(image_path=age_path, config=config)
     print("Duration:", default_timer() - age_start_time, "\n")
@@ -139,7 +140,8 @@ def setup_test(image_filename=None, operation_threshold_parameter_name=None, thr
 
     a_cache_type = CacheType.ON if use_cache is False else CacheType.ON
 
-    face_factor = FaceFactor(logging_level=LoggingLevel.off, config=config_object, cache_type=a_cache_type)
+    face_factor = FaceFactor()
+    print("here")
 
     return face_factor, image_file_path
 
@@ -204,9 +206,9 @@ def test_age_estimate_with_cache():
 def test_age_estimate_with_no_cache():
     (face_factor, image_path) = setup_test("5.png", PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS, 2)
     test_age_estimate(face_factor, image_path)  # => no billing for invalid age => tested OK
-    test_age_estimate(face_factor, build_sample_image_path("6.png"))  # => no billing for invalid age
+    test_age_estimate(face_factor, build_sample_image_path("14.jpg"))  # => no billing for invalid age
     test_age_estimate(face_factor,
-                      build_sample_image_path("8.png"))  # => billing reservation of 2 and local bill increment (1)
+                      build_sample_image_path("multi_face_1.jpg")) 
     test_age_estimate(face_factor, build_sample_image_path("6.png"))  # => no billing for invalid age
     test_age_estimate(face_factor, build_sample_image_path("6.png"))  # => no billing for invalid age
     test_age_estimate(face_factor, build_sample_image_path("8.png"))  # => local bill increment (2)
@@ -254,9 +256,11 @@ if __name__ == "__main__":
     # test_valid_with_cache()
     # test_valid_with_badimg_and_no_cache()
     # test_age_estimate_with_cache()
-    # test_age_estimate_with_no_cache()
+    test_age_estimate_with_no_cache()
     # test_compare_with_cache()
-    test_compare_with_no_cache()
+    # test_compare_with_no_cache()
     # test_get_iso_image_with_cache()
     # test_get_iso_image_with_no_cache()
     print("Done")
+
+# face_factor = FaceFactor()

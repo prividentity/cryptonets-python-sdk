@@ -19,12 +19,10 @@ from ..settings.loggingLevel import LoggingLevel
 
 class Face(metaclass=Singleton):
 
-    def __init__(self, api_key: str, server_url: str, local_storage_path: str, logging_level: LoggingLevel,
-                 tf_num_thread: int, cache_type: CacheType, config_object: ConfigObject = None):
+    def __init__(self,  logging_level: LoggingLevel,
+                  config_object: ConfigObject = None):
         self.message = Message()
-        self.face_factor_processor = NativeMethods(api_key=api_key, server_url=server_url,
-                                                   local_storage_path=local_storage_path, logging_level=logging_level,
-                                                   tf_num_thread=tf_num_thread, cache_type=cache_type,
+        self.face_factor_processor = NativeMethods( logging_level=logging_level,
                                                    config_object=config_object)
 
     def update_config(self, config_object):
@@ -190,5 +188,3 @@ class Face(metaclass=Singleton):
             print(e, traceback.format_exc())
             return ISOFaceResult(message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)
 
-    def get_verion(self) -> str:
-         return self.face_factor_processor.get_version()
