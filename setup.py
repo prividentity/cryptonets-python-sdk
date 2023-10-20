@@ -82,9 +82,6 @@ setup(
     ],
     py_modules=[NAME],
     package_data={
-        "cryptonets_python_sdk": ['handler/lib/lib_fhe.so',
-                                  'handler/lib/libcrypto-1_1-x64.dll',
-                                  'handler/lib/libssl-1_1-x64.dll',
-                                  'handler/lib/privid_fhe.dll']
+        "cryptonets_python_sdk": ['handler/lib/lib_fhe.so',]
     }
 )

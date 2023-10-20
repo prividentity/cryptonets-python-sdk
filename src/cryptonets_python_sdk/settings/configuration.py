@@ -12,62 +12,38 @@ class __PARAMETERSMETA(EnumMeta):
 class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     """PARAMETERS contains the valid key values for configuring additional parameters in the factor processor.
     """
-    INPUT_IMAGE_FORMAT = "input_image_format"
-    CONTEXT_STRING = "context_string"
-    CONF_FAST_PROCESS = "conf_fast_process"
-    INPUT_TYPE = "input_type"
-    FACE_THRESHOLDS_REM_BAD_EMB = "face_thresholds_rem_bad_emb"
-    BLUR_THRESHOLD_DOC_LEVEL_1 = "blur_threshold_doc_level_1"
-    BLUR_THRESHOLD_DOC_LEVEL_2 = "blur_threshold_doc_level_2"
-    BLUR_THRESHOLD_ENROLL_PRED = "blur_threshold_enroll_pred"
-    THRESHOLD_PROFILE_ENROLL = "threshold_profile_enroll"
-    THRESHOLD_PROFILE_PREDICT = "threshold_profile_predict"
-    THRESHOLD_VERTICAL_ENROLL = "threshold_vertical_enroll"
-    THRESHOLD_VERTICAL_PREDICT = "threshold_vertical_predict"
-    THRESHOLD_USER_RIGHT = "threshold_user_right"
-    THRESHOLD_USER_LEFT = "threshold_user_left"
+    INPUT_IMAGE_FORMAT = "inputImageFormat"
+    CONTEXT_STRING = "contextString"
+    INPUT_TYPE = "inputType"
+    CONF_SCORE_THR_ENROLL = "confScoreThrEnroll"
+    CONF_SCORE_THR_PREDICT = "confScoreThrPredict"
+    BLUR_THRESHOLD_ENROLL_PRED = "blurThresholdEnrollPred"
+    THRESHOLD_PROFILE_ENROLL = "thresholdProfileEnroll"
+    THRESHOLD_HIGH_VERTICAL_ENROLL = "threshold_high_vertical_enroll"
+    THRESHOLD_DOWN_VERTICAL_ENROLL = "threshold_down_vertical_enroll"
+    THRESHOLD_USER_RIGHT = "thresholdUserRight"
+    THRESHOLD_USER_LEFT = "thresholdUserLeft"
     THRESHOLD_USER_TOO_FAR = "threshold_user_too_far"
     THRESHOLD_USER_TOO_CLOSE = "threshold_user_too_close"
-    IMAGE_BORDER = "image_border"
-    IMAGE_PRE_PROC = "image_pre_proc"
-    THRESHOLD_GLASS = "threshold_glass"
-    THRESHOLD_MASK = "threshold_mask"
-    FACE_THRESHOLD_RIGHT = "face_threshold_right"
-    FACE_THRESHOLD_LEFT = "face_threshold_left"
-    FACE_THRESHOLD_VERTICAL = "face_threshold_vertical"
-    CONF_SCORE_THR_ENROLL = "conf_score_thr_enroll"
-    CONF_SCORE_THR_PREDICT = "conf_score_thr_predict"
-    MIN_DOCUMENT_BORDER = "min_document_border"
-    DISALLOWED_RESULTS = "disallowed_results"
-    ALLOWED_RESULTS = "allowed_results"
-    DOCUMENT_FACE_CHECK_VALIDITY = "document_face_check_validity"
-    DOCUMENT_CHECK_VALIDITY = "document_check_validity"
-    DOCUMENT_FACE_PREDICT = "document_face_predict"
-    ENABLE_DOC_PERSPECTIVE_CORRECTION = "enable_doc_perspective_correction"
-    ENROLL_ALLOW_EYE_GLASS = "enroll_allow_eye_glass"
-    ORIENTATION_ID_VALUE = "orientation_id_value"
-    FACE_DETECT_PREFERRED_SIZE = "face_detect_preferred_size"
-    FACE_DETECT_MAX_OUT_IMAGE_SIZE = "face_detect_max_out_image_size"
-    SEND_ORIGINAL_IMAGES = "send_original_images"
-
-    # BILLING PARAMETERS
-    # ISVALID_RESERVATION_CALLS = "is_valid"
-    # PREDICT_RESERVATION_CALLS = "predict"
-    DOC_FRONT_RESERVATION_CALLS = "document_model"
-    DOC_BACK_RESERVATION_CALLS = "document_model"
-    COMPARE_RESERVATION_CALLS = "compare_files"
-    FACE_RESERVATION_CALLS = "faces"
-    ESTIMATE_AGE_RESERVATION_CALLS = "estimate_age"
-    FACE_ISO_RESERVATION_CALLS = "face_iso"
-
-
+    ANGLE_ROTATION_LEFT_THRESHOLD = "angle_rotation_left_threshold"
+    ANGLE_ROTATION_RIGHT_THRESHOLD = "angle_rotation_right_threshold"
+    FACE_TOO_BRIGHT = "face_too_bright"
+    FACE_TOO_DARK = "face_too_dark"
+    SKIP_ANTISPOOF= "skip_antispoof"
+    SINGLE_FACE_AGE_RESUL= "single_face_age_resul"
+    SPOOF_FILTER_THRESHOLD="spoof_filter_threshold"
+    ESTIMATE_AGE_RESERVATION_CALLS="ESTIMATE_AGE_RESERVATION_CALLS"
+    DOC_FRONT_RESERVATION_CALLS="DOC_FRONT_RESERVATION_CALLS"
+    FACE_RESERVATION_CALLS="FACE_RESERVATION_CALLS"
+    DOC_BACK_RESERVATION_CALLS="DOC_BACK_RESERVATION_CALLS"
+    FACE_ISO_RESERVATION_CALLS="FACE_ISO_RESERVATION_CALLS"
+    COMPARE_RESERVATION_CALLS="COMPARE_RESERVATION_CALLS"
 class ParameterValidator:
     def __init__(self):
         self.__parameter = {}
         self.__populate_parameters()
         self.__billing_reservation_parameters = [
-            # PARAMETERS.PREDICT_RESERVATION_CALLS,
-            # PARAMETERS.ISVALID_RESERVATION_CALLS,
+
             PARAMETERS.DOC_FRONT_RESERVATION_CALLS,
             PARAMETERS.DOC_BACK_RESERVATION_CALLS,
             PARAMETERS.COMPARE_RESERVATION_CALLS,
@@ -78,109 +54,60 @@ class ParameterValidator:
 
     def __populate_parameters(self):
         self.__parameter[PARAMETERS.INPUT_IMAGE_FORMAT] = self.Parameter(
-            name=PARAMETERS.INPUT_IMAGE_FORMAT, _type="SET", valid_set=["rgb", "rgba", "bgr"])
-        self.__parameter[PARAMETERS.CONTEXT_STRING] = self.Parameter(name=PARAMETERS.CONTEXT_STRING,
-                                                                     _type="SET",
-                                                                     valid_set=["enroll", "predict"])
-        self.__parameter[PARAMETERS.CONF_FAST_PROCESS] = self.Parameter(name=PARAMETERS.CONF_FAST_PROCESS,
-                                                                        _type="BOOL")
-        self.__parameter[PARAMETERS.INPUT_TYPE] = self.Parameter(name=PARAMETERS.INPUT_TYPE, _type="SET",
-                                                                 valid_set=["face", "document-id",
-                                                                            "document-barcode"])
-        self.__parameter[PARAMETERS.FACE_THRESHOLDS_REM_BAD_EMB] = self.Parameter(
-            name=PARAMETERS.FACE_THRESHOLDS_REM_BAD_EMB, _type="NUMBER", min_value=0, max_value=2)
-        self.__parameter[PARAMETERS.BLUR_THRESHOLD_DOC_LEVEL_1] = self.Parameter(
-            name=PARAMETERS.BLUR_THRESHOLD_DOC_LEVEL_1, _type="NUMBER", min_value=0, max_value=10000)
-        self.__parameter[PARAMETERS.BLUR_THRESHOLD_DOC_LEVEL_2] = self.Parameter(
-            name=PARAMETERS.BLUR_THRESHOLD_DOC_LEVEL_2, _type="NUMBER", min_value=0, max_value=10000)
-        self.__parameter[PARAMETERS.BLUR_THRESHOLD_ENROLL_PRED] = self.Parameter(
-            name=PARAMETERS.BLUR_THRESHOLD_ENROLL_PRED, _type="NUMBER", min_value=0, max_value=10000)
-        self.__parameter[PARAMETERS.THRESHOLD_PROFILE_ENROLL] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_PROFILE_ENROLL, _type="NUMBER", min_value=-0.1, max_value=2)
-        self.__parameter[PARAMETERS.THRESHOLD_PROFILE_PREDICT] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_PROFILE_PREDICT, _type="NUMBER", min_value=-0.1, max_value=2)
-        self.__parameter[PARAMETERS.THRESHOLD_VERTICAL_ENROLL] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_VERTICAL_ENROLL, _type="NUMBER", min_value=-0.1, max_value=2)
-        self.__parameter[PARAMETERS.THRESHOLD_VERTICAL_PREDICT] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_VERTICAL_PREDICT, _type="NUMBER", min_value=-0.1, max_value=2)
-        self.__parameter[PARAMETERS.THRESHOLD_USER_RIGHT] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_USER_RIGHT, _type="NUMBER", min_value=-0.1, max_value=2)
-        self.__parameter[PARAMETERS.THRESHOLD_USER_LEFT] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_USER_LEFT, _type="NUMBER", min_value=-0.1, max_value=2)
-        self.__parameter[PARAMETERS.THRESHOLD_USER_TOO_FAR] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_USER_TOO_FAR, _type="NUMBER", min_value=-0.1, max_value=2)
-        self.__parameter[PARAMETERS.THRESHOLD_USER_TOO_CLOSE] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_USER_TOO_CLOSE, _type="NUMBER", min_value=-0.1, max_value=2)
-        self.__parameter[PARAMETERS.IMAGE_BORDER] = self.Parameter(name=PARAMETERS.IMAGE_BORDER,
-                                                                   _type="NUMBER", min_value=0, max_value=0.1)
-        self.__parameter[PARAMETERS.IMAGE_PRE_PROC] = self.Parameter(name=PARAMETERS.IMAGE_PRE_PROC,
-                                                                     _type="SET",
-                                                                     valid_set=["zoom_pan", "rotate90",
-                                                                                "rotate180", "rotate270", "blur",
-                                                                                "fliplr", "none"])
-        self.__parameter[PARAMETERS.THRESHOLD_GLASS] = self.Parameter(name=PARAMETERS.THRESHOLD_GLASS,
-                                                                      _type="NUMBER", min_value=-0.1,
-                                                                      max_value=2)
-        self.__parameter[PARAMETERS.THRESHOLD_MASK] = self.Parameter(name=PARAMETERS.THRESHOLD_MASK,
-                                                                     _type="NUMBER", min_value=-0.1, max_value=2)
-        self.__parameter[PARAMETERS.FACE_THRESHOLD_RIGHT] = self.Parameter(
-            name=PARAMETERS.FACE_THRESHOLD_RIGHT, _type="ANY")
-        self.__parameter[PARAMETERS.FACE_THRESHOLD_LEFT] = self.Parameter(
-            name=PARAMETERS.FACE_THRESHOLD_LEFT, _type="ANY")
-        self.__parameter[PARAMETERS.FACE_THRESHOLD_VERTICAL] = self.Parameter(
-            name=PARAMETERS.FACE_THRESHOLD_VERTICAL, _type="ANY")
+            name=PARAMETERS.INPUT_IMAGE_FORMAT, _type="ANY")
+        self.__parameter[PARAMETERS.CONTEXT_STRING] = self.Parameter(
+            name=PARAMETERS.CONTEXT_STRING, _type="ANY")
+        self.__parameter[PARAMETERS.INPUT_TYPE] = self.Parameter(
+            name=PARAMETERS.INPUT_TYPE, _type="ANY")
         self.__parameter[PARAMETERS.CONF_SCORE_THR_ENROLL] = self.Parameter(
-            name=PARAMETERS.CONF_SCORE_THR_ENROLL, _type="NUMBER", min_value=-0.1, max_value=2)
+            name=PARAMETERS.CONF_SCORE_THR_ENROLL, _type="ANY")
         self.__parameter[PARAMETERS.CONF_SCORE_THR_PREDICT] = self.Parameter(
-            name=PARAMETERS.CONF_SCORE_THR_PREDICT, _type="NUMBER", min_value=-0.1, max_value=2)
-        self.__parameter[PARAMETERS.MIN_DOCUMENT_BORDER] = self.Parameter(
-            name=PARAMETERS.MIN_DOCUMENT_BORDER, _type="ANY")
-        self.__parameter[PARAMETERS.DISALLOWED_RESULTS] = self.Parameter(
-            name=PARAMETERS.DISALLOWED_RESULTS, _type="ANY")
-        self.__parameter[PARAMETERS.ALLOWED_RESULTS] = self.Parameter(name=PARAMETERS.DISALLOWED_RESULTS,
-                                                                      _type="ANY")
-        self.__parameter[PARAMETERS.DOCUMENT_FACE_CHECK_VALIDITY] = self.Parameter(
-            name=PARAMETERS.DOCUMENT_FACE_CHECK_VALIDITY, _type="BOOL")
-        self.__parameter[PARAMETERS.DOCUMENT_CHECK_VALIDITY] = self.Parameter(
-            name=PARAMETERS.DOCUMENT_CHECK_VALIDITY, _type="BOOL")
-        self.__parameter[PARAMETERS.DOCUMENT_FACE_PREDICT] = self.Parameter(
-            name=PARAMETERS.DOCUMENT_FACE_PREDICT, _type="BOOL")
-        self.__parameter[PARAMETERS.ENABLE_DOC_PERSPECTIVE_CORRECTION] = self.Parameter(
-            name=PARAMETERS.ENABLE_DOC_PERSPECTIVE_CORRECTION, _type="BOOL")
-        self.__parameter[PARAMETERS.ENROLL_ALLOW_EYE_GLASS] = self.Parameter(
-            name=PARAMETERS.ENROLL_ALLOW_EYE_GLASS, _type="BOOL")
-        self.__parameter[PARAMETERS.ORIENTATION_ID_VALUE] = self.Parameter(
-            name=PARAMETERS.ORIENTATION_ID_VALUE, _type="ANY")
-        self.__parameter[PARAMETERS.FACE_DETECT_PREFERRED_SIZE] = self.Parameter(
-            name=PARAMETERS.FACE_DETECT_PREFERRED_SIZE, _type="ANY")
-        self.__parameter[PARAMETERS.FACE_DETECT_MAX_OUT_IMAGE_SIZE] = self.Parameter(
-            name=PARAMETERS.FACE_DETECT_MAX_OUT_IMAGE_SIZE, _type="ANY")
-        self.__parameter[PARAMETERS.SEND_ORIGINAL_IMAGES] = self.Parameter(
-            name=PARAMETERS.SEND_ORIGINAL_IMAGES, _type="BOOL")
-
-        # BILLING PARAMETERS
-        # self.__parameter[PARAMETERS.ISVALID_RESERVATION_CALLS] = self.Parameter(
-        #     name=PARAMETERS.ISVALID_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
-        # self.__parameter[PARAMETERS.PREDICT_RESERVATION_CALLS] = self.Parameter(
-        #     name=PARAMETERS.PREDICT_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
-
+            name=PARAMETERS.CONF_SCORE_THR_PREDICT, _type="ANY")
+        self.__parameter[PARAMETERS.BLUR_THRESHOLD_ENROLL_PRED] = self.Parameter(
+            name=PARAMETERS.BLUR_THRESHOLD_ENROLL_PRED, _type="ANY")
+        self.__parameter[PARAMETERS.THRESHOLD_PROFILE_ENROLL] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_PROFILE_ENROLL, _type="ANY")
+        self.__parameter[PARAMETERS.THRESHOLD_HIGH_VERTICAL_ENROLL] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_HIGH_VERTICAL_ENROLL, _type="ANY")
+        self.__parameter[PARAMETERS.THRESHOLD_DOWN_VERTICAL_ENROLL] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_DOWN_VERTICAL_ENROLL, _type="ANY")
+        self.__parameter[PARAMETERS.THRESHOLD_USER_RIGHT] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_USER_RIGHT, _type="ANY")
+        self.__parameter[PARAMETERS.THRESHOLD_USER_LEFT] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_USER_LEFT, _type="ANY")
+        self.__parameter[PARAMETERS.THRESHOLD_USER_TOO_FAR] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_USER_TOO_FAR, _type="ANY")
+        self.__parameter[PARAMETERS.THRESHOLD_USER_TOO_CLOSE] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_USER_TOO_CLOSE, _type="ANY")
+        self.__parameter[PARAMETERS.ANGLE_ROTATION_LEFT_THRESHOLD] = self.Parameter(
+            name=PARAMETERS.ANGLE_ROTATION_LEFT_THRESHOLD, _type="ANY")
+        self.__parameter[PARAMETERS.ANGLE_ROTATION_RIGHT_THRESHOLD] = self.Parameter(
+            name=PARAMETERS.ANGLE_ROTATION_RIGHT_THRESHOLD, _type="ANY")
+        self.__parameter[PARAMETERS.FACE_TOO_BRIGHT] = self.Parameter(
+            name=PARAMETERS.FACE_TOO_BRIGHT, _type="ANY")
+        self.__parameter[PARAMETERS.FACE_TOO_DARK] = self.Parameter(
+            name=PARAMETERS.FACE_TOO_DARK, _type="ANY")
         self.__parameter[PARAMETERS.DOC_FRONT_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.DOC_FRONT_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
-
+            name=PARAMETERS.DOC_FRONT_RESERVATION_CALLS, _type="ANY")
+        self.__parameter[PARAMETERS.DOC_FRONT_RESERVATION_CALLS] = self.Parameter(
+            name=PARAMETERS.DOC_FRONT_RESERVATION_CALLS, _type="ANY")
         self.__parameter[PARAMETERS.DOC_BACK_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.DOC_BACK_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
-
+            name=PARAMETERS.DOC_BACK_RESERVATION_CALLS, _type="ANY")
         self.__parameter[PARAMETERS.COMPARE_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.COMPARE_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
-
+            name=PARAMETERS.COMPARE_RESERVATION_CALLS, _type="ANY")
         self.__parameter[PARAMETERS.FACE_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.FACE_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
-
+            name=PARAMETERS.FACE_RESERVATION_CALLS, _type="ANY")
         self.__parameter[PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
-
+            name=PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS, _type="ANY")
         self.__parameter[PARAMETERS.FACE_ISO_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.FACE_ISO_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
+            name=PARAMETERS.FACE_ISO_RESERVATION_CALLS, _type="ANY")
+        self.__parameter[PARAMETERS.SKIP_ANTISPOOF] = self.Parameter(
+            name=PARAMETERS.SKIP_ANTISPOOF, _type="ANY")
+        self.__parameter[PARAMETERS.SPOOF_FILTER_THRESHOLD] = self.Parameter(
+            name=PARAMETERS.SPOOF_FILTER_THRESHOLD, _type="ANY")
+        self.__parameter[PARAMETERS.SINGLE_FACE_AGE_RESUL] = self.Parameter(
+            name=PARAMETERS.SINGLE_FACE_AGE_RESUL, _type="ANY")
+
 
     def validate(self, key, value):
         return self.__parameter[key].validate(value)

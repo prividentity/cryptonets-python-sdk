@@ -55,8 +55,6 @@ class NativeMethods:
 
         if self._config_object and self._config_object.get_config_param():
             config_dict = json.loads(self._config_object.get_config_param())
-            config_dict["cache_type"] = self._cache_type.value
-            config_dict["local_storage_path"] = self._local_storage_path
             config_data = json.dumps(config_dict)
             c_config_data = c_char_p(bytes(config_data, 'utf-8'))
             c_config_len = c_int(len(config_data))
