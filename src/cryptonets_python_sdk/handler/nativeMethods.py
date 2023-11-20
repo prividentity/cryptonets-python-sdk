@@ -121,6 +121,7 @@ class NativeMethods(object):
             config_dict = json.loads(self._config_object.get_config_param())
             config_dict["cache_type"] = self._cache_type.value
             config_dict["local_storage_path"] = self._local_storage_path
+            config_dict["skip_antispoof"] = True
             config_dict = json.dumps(config_dict)
             c_config_param = c_char_p(bytes(config_dict, "utf-8"))
             c_config_param_len = c_int(len(config_dict))
@@ -543,8 +544,11 @@ class NativeMethods(object):
                 )
                 c_config_param_len = c_int(len(config_object.get_config_param()))
             else:
-                c_config_param = c_char_p(bytes("", "utf-8"))
-                c_config_param_len = c_int(0)
+                config_dict = {}
+                config_dict["disable_enroll_mf"] = True
+                c_config_param = c_char_p(bytes(json.dumps(config_dict), "utf-8"))
+                c_config_param_len = c_int(len(json.dumps(config_dict)))
+                            
             self._spl_so_face.privid_enroll_onefa(
                 self._spl_so_face.handle,
                 c_config_param,
