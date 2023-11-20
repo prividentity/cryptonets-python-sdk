@@ -5,8 +5,7 @@ from ..result_objects.faceObjectResult import FaceObjectResult
 
 class FaceValidationResult:
     def __init__(self, error=-1, message=""):
-        """Face validation result class for handling the detected faces
-        """
+        """Face validation result class for handling the detected faces"""
         self._error = error
         self._message = message
         self._face_objects = []
@@ -32,11 +31,23 @@ class FaceValidationResult:
         """
         return self._face_objects
 
-    def append_face_objects(self, return_code=-100, message="", age=None, top_left_coordinate=None,
-                            bottom_right_coordinate=None):
+    def append_face_objects(
+        self,
+        return_code=-100,
+        message="",
+        age=None,
+        top_left_coordinate=None,
+        bottom_right_coordinate=None,
+    ):
         self._face_objects.append(
-            FaceObjectResult(return_code=return_code, message=message, age=age, top_left_coordinate=top_left_coordinate,
-                             bottom_right_coordinate=bottom_right_coordinate))
+            FaceObjectResult(
+                return_code=return_code,
+                message=message,
+                age=age,
+                top_left_coordinate=top_left_coordinate,
+                bottom_right_coordinate=bottom_right_coordinate,
+            )
+        )
 
     @message.setter
     def message(self, value):

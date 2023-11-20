@@ -10,5 +10,6 @@ class CacheType(str, Enum):
     on - Cache set in the local storage path
 
     """
+
     ON = "basic"
     OFF = "nocache"

@@ -9,3 +9,4 @@ dist
 venv/
 .vscode/
 src/privateid_local_storage/
+src/cryptonets_python_sdk/handler/lib/libprivid_fhe.so

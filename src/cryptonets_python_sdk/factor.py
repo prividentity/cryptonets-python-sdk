@@ -25,89 +25,105 @@ from .settings.supportedPlatforms import SupportedPlatforms
 
 class FaceFactor(metaclass=Singleton):
     """The FaceFactor class implements the methods for enrolling and predicting the Face module as part of the
-        Biometric Authentication.
+    Biometric Authentication.
 
-        It exposes five methods as part of the interface:
+    It exposes five methods as part of the interface:
 
-        1. is_valid: Verifies the face of the user.
-        2. estimate_age: Predicts the age of the face.
-        3. compare: Compare two faces for verification.
-        4. enroll: Enrolls the face of the user.
-        5. predict: Predicts the face of the user.
-        6. delete: Deletes the user from the system
+    1. is_valid: Verifies the face of the user.
+    2. estimate_age: Predicts the age of the face.
+    3. compare: Compare two faces for verification.
+    4. enroll: Enrolls the face of the user.
+    5. predict: Predicts the face of the user.
+    6. delete: Deletes the user from the system
 
-        Parameters
-        ----------
-        api_key : str
-            The API key for using the FaceFactor server.
+    Parameters
+    ----------
+    api_key : str
+        The API key for using the FaceFactor server.
 
-        server_url : str
-            The URL of the FaceFactor server.
+    server_url : str
+        The URL of the FaceFactor server.
 
-        local_storage_path : str (optional)
-            Absolute path to the local storage.
+    local_storage_path : str (optional)
+        Absolute path to the local storage.
 
-        logging_level : LoggingLevel (Optional)
-            LoggingLevel needed while performing operation
+    logging_level : LoggingLevel (Optional)
+        LoggingLevel needed while performing operation
 
-        tf_num_thread: int (Optional)
-            Number of thread to use for Tensorflow model inference
+    tf_num_thread: int (Optional)
+        Number of thread to use for Tensorflow model inference
 
-        cache_type: CacheType (Optional)
-            To set the cache on / off
+    cache_type: CacheType (Optional)
+        To set the cache on / off
 
-        config : ConfigObject (Optional)
-            Configuration class object with parameters
+    config : ConfigObject (Optional)
+        Configuration class object with parameters
 
-        Returns
-        -------
-        FaceFactor
-            Instance of the FaceFactor class.
+    Returns
+    -------
+    FaceFactor
+        Instance of the FaceFactor class.
 
-        Methods
-        -------
-        is_valid
-        estimate_age
-        compare
-        enroll
-        predict
-        delete
-        get_iso_face
+    Methods
+    -------
+    is_valid
+    estimate_age
+    compare
+    enroll
+    predict
+    delete
+    get_iso_face
     """
 
-    def __init__(self, api_key: str = None, server_url: str = None, local_storage_path: str = None,
-                 logging_level: LoggingLevel = LoggingLevel.off, tf_num_thread: int = 0,
-                 cache_type: CacheType = CacheType.OFF, config: ConfigObject = None):
+    def __init__(
+        self,
+        api_key: str = None,
+        server_url: str = None,
+        local_storage_path: str = None,
+        logging_level: LoggingLevel = LoggingLevel.off,
+        tf_num_thread: int = 0,
+        cache_type: CacheType = CacheType.OFF,
+        config: ConfigObject = None,
+    ):
 
         try:
             if platform.system() not in SupportedPlatforms.supportedOS.value:
                 raise OSError("Invalid OS")
-            if server_url is None and (os.environ.get('PI_SERVER_URL') is None or len(
-                    os.environ.get('PI_SERVER_URL')) <= 0):
+            if server_url is None and (
+                os.environ.get("PI_SERVER_URL") is None
+                or len(os.environ.get("PI_SERVER_URL")) <= 0
+            ):
                 raise ValueError("Server URL has to be configured")
-            if api_key is None and (os.environ.get('PI_API_KEY') is None or len(
-                    os.environ.get('PI_API_KEY')) <= 0):
+            if api_key is None and (
+                os.environ.get("PI_API_KEY") is None
+                or len(os.environ.get("PI_API_KEY")) <= 0
+            ):
                 raise ValueError("API Key is required.")
 
-            if tf_num_thread is None and (os.environ.get('PI_TF_NUM_THREAD') is None or len(
-                    os.environ.get('PI_TF_NUM_THREAD')) <= 0):
+            if tf_num_thread is None and (
+                os.environ.get("PI_TF_NUM_THREAD") is None
+                or len(os.environ.get("PI_TF_NUM_THREAD")) <= 0
+            ):
                 tf_num_thread = 0
 
             if tf_num_thread is None:
-                self._tf_num_thread = int(os.environ.get('PI_TF_NUM_THREAD'))
+                self._tf_num_thread = int(os.environ.get("PI_TF_NUM_THREAD"))
             else:
                 self._tf_num_thread = tf_num_thread
             if server_url is None:
-                self._server_url = os.environ.get('PI_SERVER_URL')
+                self._server_url = os.environ.get("PI_SERVER_URL")
             else:
                 self._server_url = server_url
             if api_key is None:
-                self._api_key = os.environ.get('PI_API_KEY')
+                self._api_key = os.environ.get("PI_API_KEY")
             else:
                 self._api_key = api_key
             if local_storage_path is None:
                 self._local_storage_path = str(
-                    pathlib.Path(__file__).parent.parent.joinpath("privateid_local_storage").resolve())
+                    pathlib.Path(__file__)
+                    .parent.parent.joinpath("privateid_local_storage")
+                    .resolve()
+                )
             else:
                 self._local_storage_path = local_storage_path
 
@@ -117,27 +133,40 @@ class FaceFactor(metaclass=Singleton):
             self._config_object = config
             self._logging_level = logging_level
             self._cache_type = cache_type
-            self.face_factor = Face(api_key=self._api_key, server_url=self._server_url,
-                                    local_storage_path=self._local_storage_path, logging_level=self._logging_level,
-                                    tf_num_thread=self._tf_num_thread, cache_type=self._cache_type,
-                                    config_object=self._config_object)
+            self.face_factor = Face(
+                api_key=self._api_key,
+                server_url=self._server_url,
+                local_storage_path=self._local_storage_path,
+                logging_level=self._logging_level,
+                tf_num_thread=self._tf_num_thread,
+                cache_type=self._cache_type,
+                config_object=self._config_object,
+            )
             self.message = Message()
         except ValueError as exp:
             print("Initialization Failed: {}\n".format(exp))
-            print("Please refer to the usage documentation for setting up "
-                  "Factor:: \nhttps://docs.private.id/cryptonets-python-sdk/usage.html")
+            print(
+                "Please refer to the usage documentation for setting up "
+                "Factor:: \nhttps://docs.private.id/cryptonets-python-sdk/usage.html"
+            )
             sys.exit(1)
         except OSError as exp:
             print("Initialization Failed: {}\n".format(exp))
-            print("Please refer to the usage documentation for setting up "
-                  "Factor:: \nhttps://docs.private.id/cryptonets-python-sdk/usage.html")
+            print(
+                "Please refer to the usage documentation for setting up "
+                "Factor:: \nhttps://docs.private.id/cryptonets-python-sdk/usage.html"
+            )
             sys.exit(1)
 
     def update_config(self, config):
         self.face_factor.update_config(config_object=config)
 
-    def is_valid(self, image_path: str = None, image_data: np.array = None,
-                 config: ConfigObject = None) -> FaceValidationResult:
+    def is_valid(
+        self,
+        image_path: str = None,
+        image_data: np.array = None,
+        config: ConfigObject = None,
+    ) -> FaceValidationResult:
         """Check if the image is valid for using in the face recognition
 
         Parameters
@@ -162,18 +191,30 @@ class FaceFactor(metaclass=Singleton):
 
         """
         try:
-            if config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param:
+            if (
+                config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param
+            ):
                 input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
-            elif self.config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param:
+            elif (
+                self.config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param
+            ):
                 input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
             else:
                 input_format = "rgb"
-            if (image_path is not None and image_data is not None) or (image_path is None and image_data is None):
-                return FaceValidationResult(message="Specify either image_path or image_data")
+            if (image_path is not None and image_data is not None) or (
+                image_path is None and image_data is None
+            ):
+                return FaceValidationResult(
+                    message="Specify either image_path or image_data"
+                )
             img_data = None
             if image_data is not None:
                 if not isinstance(image_data, np.ndarray):
-                    return FaceValidationResult(message="Required numpy array in RGB/RGBA/BGR format")
+                    return FaceValidationResult(
+                        message="Required numpy array in RGB/RGBA/BGR format"
+                    )
                 img_data = image_data
             if image_path is not None and len(image_path) > 0:
                 if not os.path.exists(image_path):
@@ -184,11 +225,17 @@ class FaceFactor(metaclass=Singleton):
             return self.face_factor.is_valid(image_data=img_data, config_object=config)
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
-            print("Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues")
+            print(
+                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
+            )
             return FaceValidationResult(message=self.message.IS_VALID_ERROR)
 
-    def estimate_age(self, image_path: str = None, image_data: np.array = None,
-                     config: ConfigObject = None) -> FaceValidationResult:
+    def estimate_age(
+        self,
+        image_path: str = None,
+        image_data: np.array = None,
+        config: ConfigObject = None,
+    ) -> FaceValidationResult:
         """Check if the image is valid and returns the age of the image
 
         Parameters
@@ -213,18 +260,30 @@ class FaceFactor(metaclass=Singleton):
 
         """
         try:
-            if config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param:
+            if (
+                config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param
+            ):
                 input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
-            elif self.config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param:
+            elif (
+                self.config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param
+            ):
                 input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
             else:
                 input_format = "rgb"
-            if (image_path is not None and image_data is not None) or (image_path is None and image_data is None):
-                return FaceValidationResult(message="Specify either image_path or image_data")
+            if (image_path is not None and image_data is not None) or (
+                image_path is None and image_data is None
+            ):
+                return FaceValidationResult(
+                    message="Specify either image_path or image_data"
+                )
             img_data = None
             if image_data is not None:
                 if not isinstance(image_data, np.ndarray):
-                    return FaceValidationResult(message="Required numpy array in RGB/RGBA/BGR format")
+                    return FaceValidationResult(
+                        message="Required numpy array in RGB/RGBA/BGR format"
+                    )
                 img_data = image_data
             if image_path is not None and len(image_path) > 0:
                 if not os.path.exists(image_path):
@@ -232,14 +291,22 @@ class FaceFactor(metaclass=Singleton):
                 img_data = image_path_to_array(image_path, input_format=input_format)
             if img_data is None:
                 return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
-            return self.face_factor.estimate_age(image_data=img_data, config_object=config)
+            return self.face_factor.estimate_age(
+                image_data=img_data, config_object=config
+            )
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
-            print("Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues")
+            print(
+                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
+            )
             return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
 
-    def enroll(self, image_path: str = None, image_data: np.array = None,
-               config: ConfigObject = None) -> FaceEnrollPredictResult:
+    def enroll(
+        self,
+        image_path: str = None,
+        image_data: np.array = None,
+        config: ConfigObject = None,
+    ) -> FaceEnrollPredictResult:
         """Enrolls the image in the face recognition server
 
         Parameters
@@ -264,39 +331,61 @@ class FaceFactor(metaclass=Singleton):
 
             guid: str
 
-            uuid: str
+            puid: str
 
             token: str
         """
 
         try:
-            if config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param:
+            if (
+                config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param
+            ):
                 input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
-            elif self.config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param:
+            elif (
+                self.config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param
+            ):
                 input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
             else:
                 input_format = "rgb"
-            if (image_path is not None and image_data is not None) or (image_path is None and image_data is None):
-                return FaceEnrollPredictResult(message="Specify either image_path or image_data")
+            if (image_path is not None and image_data is not None) or (
+                image_path is None and image_data is None
+            ):
+                return FaceEnrollPredictResult(
+                    message="Specify either image_path or image_data"
+                )
             img_data = None
             if image_data is not None:
                 if not isinstance(image_data, np.ndarray):
-                    return FaceEnrollPredictResult(message="Required numpy array in RGB/RGBA/BGR format")
+                    return FaceEnrollPredictResult(
+                        message="Required numpy array in RGB/RGBA/BGR format"
+                    )
                 img_data = image_data
             if image_path is not None and len(image_path) > 0:
                 if not os.path.exists(image_path):
-                    return FaceEnrollPredictResult(message=self.message.get_message(101))
+                    return FaceEnrollPredictResult(
+                        message=self.message.get_message(101)
+                    )
                 img_data = image_path_to_array(image_path, input_format=input_format)
             if img_data is None:
-                return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_ENROLL)
+                return FaceEnrollPredictResult(
+                    message=self.message.EXCEPTION_ERROR_ENROLL
+                )
             return self.face_factor.enroll(image_data=img_data, config_object=config)
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
-            print("Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues")
+            print(
+                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
+            )
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_ENROLL)
 
-    def get_iso_face(self, image_path: str = None, image_data: np.array = None,
-                     config: ConfigObject = None) -> ISOFaceResult:
+    def get_iso_face(
+        self,
+        image_path: str = None,
+        image_data: np.array = None,
+        config: ConfigObject = None,
+    ) -> ISOFaceResult:
         """Takes the face image and gives back the image in ISO Spec format
 
         Parameters
@@ -329,18 +418,28 @@ class FaceFactor(metaclass=Singleton):
 
         """
         try:
-            if config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param:
+            if (
+                config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param
+            ):
                 input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
-            elif self.config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param:
+            elif (
+                self.config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param
+            ):
                 input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
             else:
                 input_format = "rgb"
-            if (image_path is not None and image_data is not None) or (image_path is None and image_data is None):
+            if (image_path is not None and image_data is not None) or (
+                image_path is None and image_data is None
+            ):
                 return ISOFaceResult(message="Specify either image_path or image_data")
             img_data = None
             if image_data is not None:
                 if not isinstance(image_data, np.ndarray):
-                    return ISOFaceResult(message="Required numpy array in RGB/RGBA/BGR format")
+                    return ISOFaceResult(
+                        message="Required numpy array in RGB/RGBA/BGR format"
+                    )
                 img_data = image_data
             if image_path is not None and len(image_path) > 0:
                 if not os.path.exists(image_path):
@@ -348,14 +447,22 @@ class FaceFactor(metaclass=Singleton):
                 img_data = image_path_to_array(image_path, input_format=input_format)
             if img_data is None:
                 return ISOFaceResult(message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)
-            return self.face_factor.get_iso_face(image_data=img_data, config_object=config)
+            return self.face_factor.get_iso_face(
+                image_data=img_data, config_object=config
+            )
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
-            print("Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues")
+            print(
+                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
+            )
             return ISOFaceResult(message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)
 
-    def predict(self, image_path: str = None, image_data: np.array = None,
-                config: ConfigObject = None) -> FaceEnrollPredictResult:
+    def predict(
+        self,
+        image_path: str = None,
+        image_data: np.array = None,
+        config: ConfigObject = None,
+    ) -> FaceEnrollPredictResult:
         """Predicts the image in the face recognition server
 
         Parameters
@@ -380,44 +487,62 @@ class FaceFactor(metaclass=Singleton):
 
             guid: str
 
-            uuid: str
+            puid: str
 
             token: str
 
         """
         try:
-            if config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param:
+            if (
+                config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param
+            ):
                 input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
-            elif self.config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param:
+            elif (
+                self.config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param
+            ):
                 input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
             else:
                 input_format = "rgb"
-            if (image_path is not None and image_data is not None) or (image_path is None and image_data is None):
-                return FaceEnrollPredictResult(message="Specify either image_path or image_data")
+            if (image_path is not None and image_data is not None) or (
+                image_path is None and image_data is None
+            ):
+                return FaceEnrollPredictResult(
+                    message="Specify either image_path or image_data"
+                )
             img_data = None
             if image_data is not None:
                 if not isinstance(image_data, np.ndarray):
-                    return FaceEnrollPredictResult(message="Required numpy array in RGB/RGBA/BGR format")
+                    return FaceEnrollPredictResult(
+                        message="Required numpy array in RGB/RGBA/BGR format"
+                    )
                 img_data = image_data
             if image_path is not None and len(image_path) > 0:
                 if not os.path.exists(image_path):
-                    return FaceEnrollPredictResult(message=self.message.get_message(101))
+                    return FaceEnrollPredictResult(
+                        message=self.message.get_message(101)
+                    )
                 img_data = image_path_to_array(image_path, input_format=input_format)
             if img_data is None:
-                return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
+                return FaceEnrollPredictResult(
+                    message=self.message.EXCEPTION_ERROR_PREDICT
+                )
             return self.face_factor.predict(image_data=img_data, config_object=config)
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
-            print("Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues")
+            print(
+                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
+            )
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
 
-    def delete(self, uuid: str) -> FaceDeleteResult:
+    def delete(self, puid: str) -> FaceDeleteResult:
         """Deletes the enrollment from the face recognition server
 
         Parameters
         ----------
-        uuid
-            UUID of the enrolled image
+        puid
+            puid of the enrolled image
 
         Returns
         -------
@@ -427,16 +552,24 @@ class FaceFactor(metaclass=Singleton):
             message: str [Message from the operation]
         """
         try:
-            if uuid is None:
-                return FaceDeleteResult(message="Missing UUID")
-            return self.face_factor.delete(uuid)
+            if puid is None:
+                return FaceDeleteResult(message="Missing puid")
+            return self.face_factor.delete(puid)
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
-            print("Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues")
+            print(
+                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
+            )
             return FaceDeleteResult(message=self.message.EXCEPTION_ERROR_DELETE)
 
-    def compare(self, image_path_1: str = None, image_path_2: str = None, image_data_1: np.array = None,
-                image_data_2: np.array = None, config: ConfigObject = None) -> FaceCompareResult:
+    def compare(
+        self,
+        image_path_1: str = None,
+        image_path_2: str = None,
+        image_data_1: np.array = None,
+        image_data_2: np.array = None,
+        config: ConfigObject = None,
+    ) -> FaceCompareResult:
         """Check if the images are of same person or not
 
         Parameters
@@ -478,35 +611,65 @@ class FaceFactor(metaclass=Singleton):
         """
 
         try:
-            if config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param:
+            if (
+                config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param
+            ):
                 input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
-            elif self.config is not None and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param:
+            elif (
+                self.config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param
+            ):
                 input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
             else:
                 input_format = "rgb"
-            if (image_path_1 is not None and image_path_2 is not None and
-                image_data_1 is not None and image_data_2 is not None) or (
-                    image_path_1 is None and image_path_2 is None and image_data_1 is None and image_data_2 is None):
-                return FaceCompareResult(message="Specify either image_path or image_data")
+            if (
+                image_path_1 is not None
+                and image_path_2 is not None
+                and image_data_1 is not None
+                and image_data_2 is not None
+            ) or (
+                image_path_1 is None
+                and image_path_2 is None
+                and image_data_1 is None
+                and image_data_2 is None
+            ):
+                return FaceCompareResult(
+                    message="Specify either image_path or image_data"
+                )
             img_data_1, img_data_2 = None, None
             if image_data_1 is not None and image_data_2 is not None:
-                if not isinstance(image_data_1, np.ndarray) or not isinstance(image_data_2, np.ndarray):
-                    return FaceCompareResult(message="Required numpy array in RGB/RGBA/BGR format")
+                if not isinstance(image_data_1, np.ndarray) or not isinstance(
+                    image_data_2, np.ndarray
+                ):
+                    return FaceCompareResult(
+                        message="Required numpy array in RGB/RGBA/BGR format"
+                    )
                 img_data_1 = image_data_1
                 img_data_2 = image_data_2
-            if (image_path_1 is not None and len(image_path_1) > 0) \
-                    or (image_path_2 is not None and len(image_path_2) > 0):
+            if (image_path_1 is not None and len(image_path_1) > 0) or (
+                image_path_2 is not None and len(image_path_2) > 0
+            ):
                 if not os.path.exists(image_path_1) or not os.path.exists(image_path_2):
                     return FaceCompareResult(message=self.message.get_message(101))
-                img_data_1 = image_path_to_array(image_path_1, input_format=input_format)
-                img_data_2 = image_path_to_array(image_path_2, input_format=input_format)
+                img_data_1 = image_path_to_array(
+                    image_path_1, input_format=input_format
+                )
+                img_data_2 = image_path_to_array(
+                    image_path_2, input_format=input_format
+                )
                 if img_data_1 is None or img_data_2 is None:
-                    return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
-            return self.face_factor.compare(image_data_1=img_data_1, image_data_2=img_data_2,
-                                            config_object=config)
+                    return FaceCompareResult(
+                        message=self.message.EXCEPTION_ERROR_COMPARE
+                    )
+            return self.face_factor.compare(
+                image_data_1=img_data_1, image_data_2=img_data_2, config_object=config
+            )
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
-            print("Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues")
+            print(
+                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
+            )
             return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
 
     @property
