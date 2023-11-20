@@ -267,8 +267,8 @@ checks the image to determine if a valid facial biometric that conforms to the s
 [if valid] augments and transforms the plaintext facial biometric(s) into 50 into a fifty fully homomorphic encryption (FHE) ciphertexts,
 deletes the original plaintext biometric, transmits the ciphertext to the backend, and
 
-returns (0) plus the resulting new UUID and GUID to the user;
-if the user is already enrolled, it returns (0) and the existing UUID and GUID to the user;
+returns (0) plus the resulting new PUID and GUID to the user;
+if the user is already enrolled, it returns (0) and the existing PUID and GUID to the user;
 if the facial biometric image is invalid, it returns (-1) and useful error code(s).
 
 | Method replies in 1400ms, including server call
@@ -291,7 +291,7 @@ Output:
     enroll_handle.status # Status of the operation
     enroll_handle.message # Message of the operation
     enroll_handle.enroll_level
-    enroll_handle.uuid
+    enroll_handle.puid
     enroll_handle.guid
     enroll_handle.token
 
@@ -304,7 +304,7 @@ Example:
     #Create a Face factor class instance
     face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)	
     enroll_handle = face_factor.enroll(image_path=img_path)
-    print("Status:{}\nMessage:{}\nEnroll Level:{}\nUUID:{}\nGUID:{}\nToken:{}\n".format(enroll_handle.status,enroll_handle.message,enroll_handle.enroll_level,enroll_handle.uuid,enroll_handle.guid,enroll_handle.token))
+    print("Status:{}\nMessage:{}\nEnroll Level:{}\nPUID:{}\nGUID:{}\nToken:{}\n".format(enroll_handle.status,enroll_handle.message,enroll_handle.enroll_level,enroll_handle.puid,enroll_handle.guid,enroll_handle.token))
             
 Output:
 
@@ -313,7 +313,7 @@ Output:
   Status:0          # enroll successful
   Message: Ok.
   Enroll Level:1
-  UUID:2o4747qo77op7140747o
+  PUID:2o4747qo77op7140747o
   GUID:rq0rqpo647s317n30145
   Token:None
 
@@ -327,7 +327,7 @@ checks the image to determine if a valid facial biometric that conforms to the s
 [if valid] transforms the plaintext facial biometric(s) into fully homomorphic encryption (FHE) ciphertexts,
 deletes the original plaintext image, transmits the ciphertext to the backend, and
 
-returns (0) plus the resulting UUID and GUID to the user;
+returns (0) plus the resulting PUID and GUID to the user;
 if the image does not contain any valid enrolled face(s), it returns (-1) and useful error code(s).
 
 | Method replies in 200ms, including the server call
@@ -350,7 +350,7 @@ Output:
     predict_handle.status # Status of the operation
     predict_handle.message # Message of the operation
     predict_handle.enroll_level
-    predict_handle.uuid
+    predict_handle.puid
     predict_handle.guid
     predict_handle.token
 
@@ -363,7 +363,7 @@ Example:
     #Create a Face factor class instance
     face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)	
     predict_handle = face_factor.predict(image_path=img_path)
-    print("Status:{}\nMessage:{}\nEnroll Level:{}\nUUID:{}\nGUID:{}\nToken:{}\n".format(predict_handle.status,predict_handle.message,predict_handle.enroll_level,predict_handle.uuid,predict_handle.guid,predict_handle.token))      
+    print("Status:{}\nMessage:{}\nEnroll Level:{}\nPUID:{}\nGUID:{}\nToken:{}\n".format(predict_handle.status,predict_handle.message,predict_handle.enroll_level,predict_handle.puid,predict_handle.guid,predict_handle.token))      
 
 Output:
 
@@ -372,24 +372,24 @@ Output:
   Status:0      # Predict successful
   Message: Ok.
   Enroll Level:1
-  UUID:2o4747qo77op7140747o
+  PUID:2o4747qo77op7140747o
   GUID:rq0rqpo647s317n30145
   Token:None
 
 See the :ref:`predict advanced instructions <predict_advanced>` section for more configuration options.
 
-remove user’s uuid from the server, and remove full enrollment if no other uuid’s remain
+remove user’s puid from the server, and remove full enrollment if no other puid’s remain
 ----------------------------------------------------------------------------------------
 
-Accepts a UUID and apiKey as input, if more than one UUIDs exist for the user then deletes the specified UUID from the identification system and
-returns (0); if only one UUID exists, then delete all enrollment data;
-if the specified UUID does not exist returns (-1).
+Accepts a PUID and apiKey as input, if more than one PUIDs exist for the user then deletes the specified PUID from the identification system and
+returns (0); if only one PUID exists, then delete all enrollment data;
+if the specified PUID does not exist returns (-1).
 
 .. code-block:: py
 
     # Delete the enrollment
 
-    delete_handle = face_factor.delete(uuid="uuid") ## Replace with the UUID
+    delete_handle = face_factor.delete(puid="puid") ## Replace with the PUID
 
 Output:
 
@@ -404,7 +404,7 @@ Example:
 
     #Create a Face factor class instance
     face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)	
-    delete_handle = face_factor.delete(uuid)
+    delete_handle = face_factor.delete(puid)
     print("Status:{}\nMessage:{}".format(delete_handle.status, delete_handle.message))
 
 Output:

@@ -39,10 +39,10 @@ def test_predict(predict_face_factor, predict_img_path, config=None):
     predict_start_time = default_timer()
     predict_handle = predict_face_factor.predict(image_path=predict_img_path, config=config)
     print("Duration:", default_timer() - predict_start_time, "\n")
-    print("Status:{}\nMessage:{}\nEnroll Level:{}\nUUID:{}\nGUID:{}\nToken:{}\n".format(predict_handle.status,
+    print("Status:{}\nMessage:{}\nEnroll Level:{}\nPUID:{}\nGUID:{}\nToken:{}\n".format(predict_handle.status,
                                                                                         predict_handle.message,
                                                                                         predict_handle.enroll_level,
-                                                                                        predict_handle.uuid,
+                                                                                        predict_handle.puid,
                                                                                         predict_handle.guid,
                                                                                         predict_handle.token))
     return predict_handle
@@ -53,10 +53,10 @@ def test_enroll(enroll_face_factor, enroll_img_path, config=None):
     enroll_start_time = default_timer()
     enroll_handle = enroll_face_factor.enroll(image_path=enroll_img_path, config=config)
     print("Duration:", default_timer() - enroll_start_time, "\n")
-    print("Status:{}\nMessage:{}\nEnroll Level:{}\nUUID:{}\nGUID:{}\nToken:{}\n".format(enroll_handle.status,
+    print("Status:{}\nMessage:{}\nEnroll Level:{}\nPUID:{}\nGUID:{}\nToken:{}\n".format(enroll_handle.status,
                                                                                         enroll_handle.message,
                                                                                         enroll_handle.enroll_level,
-                                                                                        enroll_handle.uuid,
+                                                                                        enroll_handle.puid,
                                                                                         enroll_handle.guid,
                                                                                         enroll_handle.token))
 
@@ -64,7 +64,7 @@ def test_enroll(enroll_face_factor, enroll_img_path, config=None):
 def test_delete(delete_face_factor, predict_handle):
     print(colored("{}\n{}".format("Delete", "=" * 25), "green"))
     delete_start_time = default_timer()
-    delete_handle = delete_face_factor.delete(predict_handle.uuid)
+    delete_handle = delete_face_factor.delete(predict_handle.puid)
     print("Duration:", default_timer() - delete_start_time, "\n")
     print("Status:{}\nMessage:{}".format(delete_handle.status, delete_handle.message))
 

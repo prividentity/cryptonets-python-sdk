@@ -8,4 +8,4 @@ FaceEnrollPredictResult
 This section covers how to use the Enroll / Predict result object.
 
 .. autoclass:: FaceEnrollPredictResult
-   :members: status, message, enroll_level, guid, uuid, token
+   :members: status, message, enroll_level, guid, puid, token

@@ -15,9 +15,9 @@ predict_handle = face_factor.predict(image_path=image_file_path)
 
 # Parse enroll result
 # See https://docs.private.id/cryptonets-python-sdk/ResultObjects/EnrollPredictResult.html for detailed information
-print("Status:{}\nMessage:{}\nEnroll Level:{}\nUUID:{}\nGUID:{}\nToken:{}\n".format(predict_handle.status,
+print("Status:{}\nMessage:{}\nEnroll Level:{}\nPUID:{}\nGUID:{}\nToken:{}\n".format(predict_handle.status,
                                                                                     predict_handle.message,
                                                                                     predict_handle.enroll_level,
-                                                                                    predict_handle.uuid,
+                                                                                    predict_handle.puid,
                                                                                     predict_handle.guid,
                                                                                     predict_handle.token))

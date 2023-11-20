@@ -265,7 +265,7 @@ class FaceFactor(metaclass=Singleton):
 
             guid: str
 
-            uuid: str
+            puid: str
 
             token: str
         """
@@ -381,7 +381,7 @@ class FaceFactor(metaclass=Singleton):
 
             guid: str
 
-            uuid: str
+            puid: str
 
             token: str
 
@@ -412,13 +412,13 @@ class FaceFactor(metaclass=Singleton):
             print("Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues")
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
 
-    def delete(self, uuid: str) -> FaceDeleteResult:
+    def delete(self, puid: str) -> FaceDeleteResult:
         """Deletes the enrollment from the face recognition server
 
         Parameters
         ----------
-        uuid
-            UUID of the enrolled image
+        puid
+            PUID of the enrolled image
 
         Returns
         -------
@@ -428,9 +428,9 @@ class FaceFactor(metaclass=Singleton):
             message: str [Message from the operation]
         """
         try:
-            if uuid is None:
-                return FaceDeleteResult(message="Missing UUID")
-            return self.face_factor.delete(uuid)
+            if puid is None:
+                return FaceDeleteResult(message="Missing PUID")
+            return self.face_factor.delete(puid)
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
             print("Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues")

@@ -148,9 +148,9 @@ def test_epd(factor_object, file_name, enroll_expected, predict_expected, delete
         assert (predict_expected.enroll_level == predict_actual.enroll_level)
     else:
         assert (enroll_actual.enroll_level == predict_actual.enroll_level)
-        assert (enroll_actual.uuid == predict_actual.uuid)
+        assert (enroll_actual.puid == predict_actual.puid)
         assert (enroll_actual.guid == predict_actual.guid)
-    if enroll_actual.uuid is not None:
-        actual = factor_object.delete(enroll_actual.uuid)
+    if enroll_actual.puid is not None:
+        actual = factor_object.delete(enroll_actual.puid)
         assert (delete_expected.status == actual.status)
         assert (delete_expected.message.lower() == actual.message.lower())

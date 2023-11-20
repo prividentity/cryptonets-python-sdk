@@ -48,7 +48,7 @@ class Face(metaclass=Singleton):
                                                message=json_data.get("message", self.message.EXCEPTION_ERROR_ENROLL))
             return FaceEnrollPredictResult(status=call_status,
                                            enroll_level=json_data["PI"].get("enroll_level", None),
-                                           uuid=json_data["PI"].get("uuid", None),
+                                           puid=json_data["PI"].get("puid", None),
                                            guid=json_data["PI"].get("guid", None),
                                            token=json_data["PI"].get("token", None),
                                            message=json_data.get("message", ""))
@@ -72,7 +72,7 @@ class Face(metaclass=Singleton):
                                                code=json_data.get("status", -1),
                                                message=json_data.get("message", self.message.EXCEPTION_ERROR_PREDICT))
             return FaceEnrollPredictResult(status=call_status, enroll_level=json_data["PI"].get("enroll_level", None),
-                                           uuid=json_data["PI"].get("uuid", None),
+                                           puid=json_data["PI"].get("puid", None),
                                            guid=json_data["PI"].get("guid", None),
                                            token=json_data["PI"].get("token", None),
                                            message=json_data.get("message", ""))
@@ -80,9 +80,9 @@ class Face(metaclass=Singleton):
             print(e, traceback.format_exc())
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
 
-    def delete(self, uuid: str) -> FaceDeleteResult:
+    def delete(self, puid: str) -> FaceDeleteResult:
         try:
-            json_response = self.face_factor_processor.delete(uuid)
+            json_response = self.face_factor_processor.delete(puid)
             if not json_response:
                 return FaceDeleteResult(message=self.message.EXCEPTION_ERROR_DELETE)
             return FaceDeleteResult(status=json_response.get("status", -1), message=json_response.get("message", ""))

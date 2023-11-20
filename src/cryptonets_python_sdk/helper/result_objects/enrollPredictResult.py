@@ -2,10 +2,10 @@ class FaceEnrollPredictResult:
     CALL_STATUS_SUCCESS = 0
     CALL_STATUS_ERROR = -1
 
-    def __init__(self, enroll_level=None, uuid=None, guid=None, token=None, code=None, status=CALL_STATUS_ERROR,
+    def __init__(self, enroll_level=None, puid=None, guid=None, token=None, code=None, status=CALL_STATUS_ERROR,
                  message=""):
         self._enroll_level = enroll_level
-        self._uuid = uuid
+        self._puid = puid
         self._guid = guid
         self._token = token
         self._status = status
@@ -23,13 +23,13 @@ class FaceEnrollPredictResult:
         return self._enroll_level
 
     @property
-    def uuid(self) -> str:
+    def puid(self) -> str:
         """
-        Returns the UUID of the user
+        Returns the PUID of the user
 
         Unique ID of length 20
         """
-        return self._uuid
+        return self._puid
 
     @property
     def guid(self) -> str:
@@ -87,9 +87,9 @@ class FaceEnrollPredictResult:
     def guid(self, value):
         self._guid = value
 
-    @uuid.setter
-    def uuid(self, value):
-        self._uuid = value
+    @puid.setter
+    def puid(self, value):
+        self._puid = value
 
     @status.setter
     def status(self, value):

@@ -175,15 +175,15 @@ class NativeMethods(object):
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB int privid_user_delete(
         #         void *session_ptr, const char *user_conf, const int conf_len,
-        #         const char *uuid, const int uuid_length,
+        #         const char *puid, const int puid_length,
         #         char **operation_result_out, int *operation_result_out_len);
         ##############################################################################################
         self._spl_so_face.privid_user_delete.argtypes = [
             c_void_p,  # void *session_ptr
             POINTER(c_char),  # const char *user_conf
             c_int,  # const int conf_len
-            POINTER(c_char),  # const char *uuid
-            c_int,  # const int uuid_length
+            POINTER(c_char),  # const char *puid
+            c_int,  # const int puid_length
             POINTER(c_char_p),  # char **operation_result_out
             POINTER(c_int)]  # int *operation_result_out_len
         self._spl_so_face.privid_user_delete.restype = c_int
@@ -426,8 +426,8 @@ class NativeMethods(object):
             print(e)
             return False
 
-    def delete(self, uuid: str) -> Any:
-        uuid = bytes(uuid, 'utf-8')
+    def delete(self, puid: str) -> Any:
+        puid = bytes(puid, 'utf-8')
         p_buffer_result = c_char_p()
         p_buffer_result_length = c_int()
         c_config_param = c_char_p(bytes("", 'utf-8'))
@@ -435,8 +435,8 @@ class NativeMethods(object):
         self._spl_so_face.privid_user_delete(self._spl_so_face.handle,
                                              c_config_param,
                                              c_config_param_len,
-                                             c_char_p(uuid),
-                                             c_int(len(uuid)),
+                                             c_char_p(puid),
+                                             c_int(len(puid)),
                                              byref(p_buffer_result),
                                              byref(p_buffer_result_length))
 

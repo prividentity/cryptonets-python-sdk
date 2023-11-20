@@ -49,7 +49,7 @@ class Jpg2:
                                                      message="Invalid Image")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
                                                       message="User not enrolled")
-        self.delete_result = FaceDeleteResult(status=-1, message="Missing UUID")
+        self.delete_result = FaceDeleteResult(status=-1, message="Missing PUID")
         self.set_face_objects()
 
     def set_face_objects(self):
@@ -74,7 +74,7 @@ class Png5:
                                                      message="Invalid Image")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
                                                       message="User not enrolled")
-        self.delete_result = FaceDeleteResult(message="Missing UUID")
+        self.delete_result = FaceDeleteResult(message="Missing PUID")
         self.set_face_objects()
 
     def set_face_objects(self):
@@ -121,7 +121,7 @@ class Png15:
                                                      message="Invalid Image")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
                                                       message="User not enrolled")
-        self.delete_result = FaceDeleteResult(message="Missing UUID")
+        self.delete_result = FaceDeleteResult(message="Missing PUID")
         self.set_face_objects()
 
     def set_face_objects(self):
@@ -145,7 +145,7 @@ class Png16:
                                                      message="Invalid Image")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
                                                       message="User not enrolled")
-        self.delete_result = FaceDeleteResult(message="Missing UUID")
+        self.delete_result = FaceDeleteResult(message="Missing PUID")
         self.set_face_objects()
 
     def set_face_objects(self):
@@ -188,7 +188,7 @@ class Png17:
                                                      message="Invalid Image")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
                                                       message="User not enrolled")
-        self.delete_result = FaceDeleteResult(message="Missing UUID")
+        self.delete_result = FaceDeleteResult(message="Missing PUID")
         self.set_face_objects()
 
     def set_face_objects(self):
@@ -423,7 +423,7 @@ class Jpeg10:
                                                      message="Invalid Image")
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-1,
                                                       message="User not enrolled")
-        self.delete_result = FaceDeleteResult(status=-1, message="Missing UUID")
+        self.delete_result = FaceDeleteResult(status=-1, message="Missing PUID")
         self.set_face_objects()
 
     def set_face_objects(self):
@@ -539,7 +539,7 @@ class Png6:
                                                      message=Message().EXCEPTION_ERROR_ENROLL)
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100,
                                                       message=Message().EXCEPTION_ERROR_PREDICT)
-        self.delete_result = FaceDeleteResult(message="Missing UUID")
+        self.delete_result = FaceDeleteResult(message="Missing PUID")
         self.set_face_objects()
 
     def set_face_objects(self):
@@ -559,7 +559,7 @@ class Png7:
                                                      message=Message().EXCEPTION_ERROR_ENROLL)
         self.predict_result = FaceEnrollPredictResult(status=FaceEnrollPredictResult.CALL_STATUS_SUCCESS, code=-100,
                                                       message=Message().EXCEPTION_ERROR_PREDICT)
-        self.delete_result = FaceDeleteResult(message="Missing UUID")
+        self.delete_result = FaceDeleteResult(message="Missing PUID")
         self.set_face_objects()
 
     def set_face_objects(self):
