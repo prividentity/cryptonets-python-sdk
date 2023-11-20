@@ -7,8 +7,12 @@ class Message:
         self.EXCEPTION_ERROR_PREDICT = "Something went wrong while doing predict."
         self.EXCEPTION_ERROR_DELETE = "Something went wrong while doing delete."
         self.EXCEPTION_ERROR_COMPARE = "Something went wrong while doing compare."
-        self.ENROLL_PROCESSED = "Enroll request successfully processed, Waiting for server response."
-        self.PREDICT_PROCESSED = "Predict request successfully processed, Waiting for server response."
+        self.ENROLL_PROCESSED = (
+            "Enroll request successfully processed, Waiting for server response."
+        )
+        self.PREDICT_PROCESSED = (
+            "Predict request successfully processed, Waiting for server response."
+        )
 
         self.APP_MESSAGES = {
             0: "Valid Image",
@@ -29,7 +33,7 @@ class Message:
             15: "UNUSED ERROR CODE",
             16: "Error Description: No face found in image.",
             17: "Error Description: API Error",
-            18:	"Error Description: Local Storage Error",
+            18: "Error Description: Local Storage Error",
             19: "Error Description: Memory Error",
             100: "Successfully registered",
             101: "Error Description: Image file does not exist.",
@@ -40,7 +44,7 @@ class Message:
             106: self.IS_VALID_ERROR,
             107: self.EXCEPTION_ERROR_ENROLL,
             108: self.EXCEPTION_ERROR_PREDICT,
-            109: "Error Description: Incorrect Usage."
+            109: "Error Description: Incorrect Usage.",
         }
 
     def get_message(self, code):

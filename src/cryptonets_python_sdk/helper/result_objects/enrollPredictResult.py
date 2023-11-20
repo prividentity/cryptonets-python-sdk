@@ -2,8 +2,16 @@ class FaceEnrollPredictResult:
     CALL_STATUS_SUCCESS = 0
     CALL_STATUS_ERROR = -1
 
-    def __init__(self, enroll_level=None, puid=None, guid=None, token=None, code=None, status=CALL_STATUS_ERROR,
-                 message=""):
+    def __init__(
+        self,
+        enroll_level=None,
+        puid=None,
+        guid=None,
+        token=None,
+        code=None,
+        status=CALL_STATUS_ERROR,
+        message="",
+    ):
         self._enroll_level = enroll_level
         self._puid = puid
         self._guid = guid

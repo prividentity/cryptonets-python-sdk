@@ -39,7 +39,6 @@ class Point(object):
 
 
 class BoundingBox(object):
-
     def __init__(self, top_left_coordinate=None, bottom_right_coordinate=None):
         """
         Bounding box class for capturing the coordinates of the detected image
@@ -47,9 +46,14 @@ class BoundingBox(object):
         self._bottom_right_coordinate = Point(None, None)
         self._top_left_coordinate = Point(None, None)
         if bottom_right_coordinate:
-            self._bottom_right_coordinate = Point(bottom_right_coordinate.get("x", None), bottom_right_coordinate.get("y", None))
+            self._bottom_right_coordinate = Point(
+                bottom_right_coordinate.get("x", None),
+                bottom_right_coordinate.get("y", None),
+            )
         if top_left_coordinate:
-            self._top_left_coordinate = Point(top_left_coordinate.get("x", None), top_left_coordinate.get("y", None))
+            self._top_left_coordinate = Point(
+                top_left_coordinate.get("x", None), top_left_coordinate.get("y", None)
+            )
 
     @property
     def bottom_right_coordinate(self) -> Point:
@@ -96,32 +100,31 @@ class FaceValidationCodeMeta(EnumMeta):
 
 
 class FaceValidationCode(Enum, metaclass=FaceValidationCodeMeta):
-    InvalidImage = -100             # Err = -100
-    NoFace = -1                     # faceNotDetected = -1
-    ValidBiometric = 0              # Ok = 0
-    ImageSpoof = 1                  # TODO Check  deprecated or new code? this does not exist in cpp core
-    VideoSpoof = 2                  # TODO Check  deprecated or new code? this does not exist in cpp core
-    TooClose = 3                    # faceTooClose = 3
-    TooFaraway = 4                  # faceTooFar = 4
-    TooFarToRight = 5               # faceRight = 5
-    TooFarToLeft = 6                # faceLeft = 6
-    TooFarUp = 7                    # faceUp = 7
-    TooFarDown = 8                  # faceDown = 8
-    TooBlurry = 9                   # imageBlurr = 9
-    GlassesOn = 10                  # faceWithGlass = 10
-    MaskOn = 11                     # faceWithMask = 11
-    ChinTooFarLeft = 12             # lookingLeft = 12
-    ChinTooFarRight = 13            # lookingRight = 13
-    ChinTooFarUp = 14               # lookingHigh = 14
-    ChinTooFarDown = 15             # lookingDown = 15
-    FaceTooDark = 16                # FaceTooDark = 16
-    FaceTooBright = 17              # FaceTooBright = 17
-    FaceLowValConf = 18             # FaceLowValConf = 18
-    InvalidFaceBackground = 19      # InvalidFaceBackground = 19
-    EyeBlink = 20                   # EyeBlink = 20
-    МouthOpened = 21                # МouthOpened = 21
-
-
-
-
-        
+    InvalidImage = -100  # Err = -100
+    NoFace = -1  # faceNotDetected = -1
+    ValidBiometric = 0  # Ok = 0
+    ImageSpoof = (
+        1  # TODO Check  deprecated or new code? this does not exist in cpp core
+    )
+    VideoSpoof = (
+        2  # TODO Check  deprecated or new code? this does not exist in cpp core
+    )
+    TooClose = 3  # faceTooClose = 3
+    TooFaraway = 4  # faceTooFar = 4
+    TooFarToRight = 5  # faceRight = 5
+    TooFarToLeft = 6  # faceLeft = 6
+    TooFarUp = 7  # faceUp = 7
+    TooFarDown = 8  # faceDown = 8
+    TooBlurry = 9  # imageBlurr = 9
+    GlassesOn = 10  # faceWithGlass = 10
+    MaskOn = 11  # faceWithMask = 11
+    ChinTooFarLeft = 12  # lookingLeft = 12
+    ChinTooFarRight = 13  # lookingRight = 13
+    ChinTooFarUp = 14  # lookingHigh = 14
+    ChinTooFarDown = 15  # lookingDown = 15
+    FaceTooDark = 16  # FaceTooDark = 16
+    FaceTooBright = 17  # FaceTooBright = 17
+    FaceLowValConf = 18  # FaceLowValConf = 18
+    InvalidFaceBackground = 19  # InvalidFaceBackground = 19
+    EyeBlink = 20  # EyeBlink = 20
+    МouthOpened = 21  # МouthOpened = 21

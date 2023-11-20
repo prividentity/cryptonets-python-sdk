@@ -14,6 +14,7 @@ class LoggingLevel(Enum):
     full - Complete logs
 
     """
+
     off = 0
     minimal = 1
     normal = 2

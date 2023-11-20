@@ -20,12 +20,16 @@ print("Error:{}\nMessage:{}".format(age_handle.error, age_handle.message))
 # See https://docs.private.id/cryptonets-python-sdk/ResultObjects/FaceValidationResult.html for detailed result parsing
 for index, face in enumerate(age_handle.face_objects):
     print(
-        "Face#:{}\n{}\nReturn Code:{}\nMessage:{}\nAge:{}\nBBox TL:{}\nBBox BR:{}\n".format(index + 1, '-' * 7,
-                                                                                            face.return_code,
-                                                                                            face.message,
-                                                                                            face.age,
-                                                                                            face.bounding_box.top_left_coordinate.__str__(),
-                                                                                            face.bounding_box.bottom_right_coordinate.__str__()))
+        "Face#:{}\n{}\nReturn Code:{}\nMessage:{}\nAge:{}\nBBox TL:{}\nBBox BR:{}\n".format(
+            index + 1,
+            "-" * 7,
+            face.return_code,
+            face.message,
+            face.age,
+            face.bounding_box.top_left_coordinate.__str__(),
+            face.bounding_box.bottom_right_coordinate.__str__(),
+        )
+    )
 
 # Check if no faces are found in the image
 if len(age_handle.face_objects) == 0:

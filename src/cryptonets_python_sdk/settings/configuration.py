@@ -12,6 +12,7 @@ class __PARAMETERSMETA(EnumMeta):
 class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     """PARAMETERS contains the valid key values for configuring additional parameters in the factor processor.
     """
+
     INPUT_IMAGE_FORMAT = "input_image_format"
     CONTEXT_STRING = "context_string"
     CONF_FAST_PROCESS = "conf_fast_process"
@@ -78,85 +79,172 @@ class ParameterValidator:
 
     def __populate_parameters(self):
         self.__parameter[PARAMETERS.INPUT_IMAGE_FORMAT] = self.Parameter(
-            name=PARAMETERS.INPUT_IMAGE_FORMAT, _type="SET", valid_set=["rgb", "rgba", "bgr"])
-        self.__parameter[PARAMETERS.CONTEXT_STRING] = self.Parameter(name=PARAMETERS.CONTEXT_STRING,
-                                                                     _type="SET",
-                                                                     valid_set=["enroll", "predict"])
-        self.__parameter[PARAMETERS.CONF_FAST_PROCESS] = self.Parameter(name=PARAMETERS.CONF_FAST_PROCESS,
-                                                                        _type="BOOL")
-        self.__parameter[PARAMETERS.INPUT_TYPE] = self.Parameter(name=PARAMETERS.INPUT_TYPE, _type="SET",
-                                                                 valid_set=["face", "document-id",
-                                                                            "document-barcode"])
+            name=PARAMETERS.INPUT_IMAGE_FORMAT,
+            _type="SET",
+            valid_set=["rgb", "rgba", "bgr"],
+        )
+        self.__parameter[PARAMETERS.CONTEXT_STRING] = self.Parameter(
+            name=PARAMETERS.CONTEXT_STRING, _type="SET", valid_set=["enroll", "predict"]
+        )
+        self.__parameter[PARAMETERS.CONF_FAST_PROCESS] = self.Parameter(
+            name=PARAMETERS.CONF_FAST_PROCESS, _type="BOOL"
+        )
+        self.__parameter[PARAMETERS.INPUT_TYPE] = self.Parameter(
+            name=PARAMETERS.INPUT_TYPE,
+            _type="SET",
+            valid_set=["face", "document-id", "document-barcode"],
+        )
         self.__parameter[PARAMETERS.FACE_THRESHOLDS_REM_BAD_EMB] = self.Parameter(
-            name=PARAMETERS.FACE_THRESHOLDS_REM_BAD_EMB, _type="NUMBER", min_value=0, max_value=2)
+            name=PARAMETERS.FACE_THRESHOLDS_REM_BAD_EMB,
+            _type="NUMBER",
+            min_value=0,
+            max_value=2,
+        )
         self.__parameter[PARAMETERS.BLUR_THRESHOLD_DOC_LEVEL_1] = self.Parameter(
-            name=PARAMETERS.BLUR_THRESHOLD_DOC_LEVEL_1, _type="NUMBER", min_value=0, max_value=10000)
+            name=PARAMETERS.BLUR_THRESHOLD_DOC_LEVEL_1,
+            _type="NUMBER",
+            min_value=0,
+            max_value=10000,
+        )
         self.__parameter[PARAMETERS.BLUR_THRESHOLD_DOC_LEVEL_2] = self.Parameter(
-            name=PARAMETERS.BLUR_THRESHOLD_DOC_LEVEL_2, _type="NUMBER", min_value=0, max_value=10000)
+            name=PARAMETERS.BLUR_THRESHOLD_DOC_LEVEL_2,
+            _type="NUMBER",
+            min_value=0,
+            max_value=10000,
+        )
         self.__parameter[PARAMETERS.BLUR_THRESHOLD_ENROLL_PRED] = self.Parameter(
-            name=PARAMETERS.BLUR_THRESHOLD_ENROLL_PRED, _type="NUMBER", min_value=0, max_value=10000)
+            name=PARAMETERS.BLUR_THRESHOLD_ENROLL_PRED,
+            _type="NUMBER",
+            min_value=0,
+            max_value=10000,
+        )
         self.__parameter[PARAMETERS.THRESHOLD_PROFILE_ENROLL] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_PROFILE_ENROLL, _type="NUMBER", min_value=-0.1, max_value=2)
+            name=PARAMETERS.THRESHOLD_PROFILE_ENROLL,
+            _type="NUMBER",
+            min_value=-0.1,
+            max_value=2,
+        )
         self.__parameter[PARAMETERS.THRESHOLD_PROFILE_PREDICT] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_PROFILE_PREDICT, _type="NUMBER", min_value=-0.1, max_value=2)
+            name=PARAMETERS.THRESHOLD_PROFILE_PREDICT,
+            _type="NUMBER",
+            min_value=-0.1,
+            max_value=2,
+        )
         self.__parameter[PARAMETERS.THRESHOLD_VERTICAL_ENROLL] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_VERTICAL_ENROLL, _type="NUMBER", min_value=-0.1, max_value=2)
+            name=PARAMETERS.THRESHOLD_VERTICAL_ENROLL,
+            _type="NUMBER",
+            min_value=-0.1,
+            max_value=2,
+        )
         self.__parameter[PARAMETERS.THRESHOLD_VERTICAL_PREDICT] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_VERTICAL_PREDICT, _type="NUMBER", min_value=-0.1, max_value=2)
+            name=PARAMETERS.THRESHOLD_VERTICAL_PREDICT,
+            _type="NUMBER",
+            min_value=-0.1,
+            max_value=2,
+        )
         self.__parameter[PARAMETERS.THRESHOLD_USER_RIGHT] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_USER_RIGHT, _type="NUMBER", min_value=-0.1, max_value=2)
+            name=PARAMETERS.THRESHOLD_USER_RIGHT,
+            _type="NUMBER",
+            min_value=-0.1,
+            max_value=2,
+        )
         self.__parameter[PARAMETERS.THRESHOLD_USER_LEFT] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_USER_LEFT, _type="NUMBER", min_value=-0.1, max_value=2)
+            name=PARAMETERS.THRESHOLD_USER_LEFT,
+            _type="NUMBER",
+            min_value=-0.1,
+            max_value=2,
+        )
         self.__parameter[PARAMETERS.THRESHOLD_USER_TOO_FAR] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_USER_TOO_FAR, _type="NUMBER", min_value=-0.1, max_value=2)
+            name=PARAMETERS.THRESHOLD_USER_TOO_FAR,
+            _type="NUMBER",
+            min_value=-0.1,
+            max_value=2,
+        )
         self.__parameter[PARAMETERS.THRESHOLD_USER_TOO_CLOSE] = self.Parameter(
-            name=PARAMETERS.THRESHOLD_USER_TOO_CLOSE, _type="NUMBER", min_value=-0.1, max_value=2)
-        self.__parameter[PARAMETERS.IMAGE_BORDER] = self.Parameter(name=PARAMETERS.IMAGE_BORDER,
-                                                                   _type="NUMBER", min_value=0, max_value=0.1)
-        self.__parameter[PARAMETERS.IMAGE_PRE_PROC] = self.Parameter(name=PARAMETERS.IMAGE_PRE_PROC,
-                                                                     _type="SET",
-                                                                     valid_set=["zoom_pan", "rotate90",
-                                                                                "rotate180", "rotate270", "blur",
-                                                                                "fliplr", "none"])
-        self.__parameter[PARAMETERS.THRESHOLD_GLASS] = self.Parameter(name=PARAMETERS.THRESHOLD_GLASS,
-                                                                      _type="NUMBER", min_value=-0.1,
-                                                                      max_value=2)
-        self.__parameter[PARAMETERS.THRESHOLD_MASK] = self.Parameter(name=PARAMETERS.THRESHOLD_MASK,
-                                                                     _type="NUMBER", min_value=-0.1, max_value=2)
+            name=PARAMETERS.THRESHOLD_USER_TOO_CLOSE,
+            _type="NUMBER",
+            min_value=-0.1,
+            max_value=2,
+        )
+        self.__parameter[PARAMETERS.IMAGE_BORDER] = self.Parameter(
+            name=PARAMETERS.IMAGE_BORDER, _type="NUMBER", min_value=0, max_value=0.1
+        )
+        self.__parameter[PARAMETERS.IMAGE_PRE_PROC] = self.Parameter(
+            name=PARAMETERS.IMAGE_PRE_PROC,
+            _type="SET",
+            valid_set=[
+                "zoom_pan",
+                "rotate90",
+                "rotate180",
+                "rotate270",
+                "blur",
+                "fliplr",
+                "none",
+            ],
+        )
+        self.__parameter[PARAMETERS.THRESHOLD_GLASS] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_GLASS, _type="NUMBER", min_value=-0.1, max_value=2
+        )
+        self.__parameter[PARAMETERS.THRESHOLD_MASK] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_MASK, _type="NUMBER", min_value=-0.1, max_value=2
+        )
         self.__parameter[PARAMETERS.FACE_THRESHOLD_RIGHT] = self.Parameter(
-            name=PARAMETERS.FACE_THRESHOLD_RIGHT, _type="ANY")
+            name=PARAMETERS.FACE_THRESHOLD_RIGHT, _type="ANY"
+        )
         self.__parameter[PARAMETERS.FACE_THRESHOLD_LEFT] = self.Parameter(
-            name=PARAMETERS.FACE_THRESHOLD_LEFT, _type="ANY")
+            name=PARAMETERS.FACE_THRESHOLD_LEFT, _type="ANY"
+        )
         self.__parameter[PARAMETERS.FACE_THRESHOLD_VERTICAL] = self.Parameter(
-            name=PARAMETERS.FACE_THRESHOLD_VERTICAL, _type="ANY")
+            name=PARAMETERS.FACE_THRESHOLD_VERTICAL, _type="ANY"
+        )
         self.__parameter[PARAMETERS.CONF_SCORE_THR_ENROLL] = self.Parameter(
-            name=PARAMETERS.CONF_SCORE_THR_ENROLL, _type="NUMBER", min_value=-0.1, max_value=2)
+            name=PARAMETERS.CONF_SCORE_THR_ENROLL,
+            _type="NUMBER",
+            min_value=-0.1,
+            max_value=2,
+        )
         self.__parameter[PARAMETERS.CONF_SCORE_THR_PREDICT] = self.Parameter(
-            name=PARAMETERS.CONF_SCORE_THR_PREDICT, _type="NUMBER", min_value=-0.1, max_value=2)
+            name=PARAMETERS.CONF_SCORE_THR_PREDICT,
+            _type="NUMBER",
+            min_value=-0.1,
+            max_value=2,
+        )
         self.__parameter[PARAMETERS.MIN_DOCUMENT_BORDER] = self.Parameter(
-            name=PARAMETERS.MIN_DOCUMENT_BORDER, _type="ANY")
+            name=PARAMETERS.MIN_DOCUMENT_BORDER, _type="ANY"
+        )
         self.__parameter[PARAMETERS.DISALLOWED_RESULTS] = self.Parameter(
-            name=PARAMETERS.DISALLOWED_RESULTS, _type="ANY")
-        self.__parameter[PARAMETERS.ALLOWED_RESULTS] = self.Parameter(name=PARAMETERS.DISALLOWED_RESULTS,
-                                                                      _type="ANY")
+            name=PARAMETERS.DISALLOWED_RESULTS, _type="ANY"
+        )
+        self.__parameter[PARAMETERS.ALLOWED_RESULTS] = self.Parameter(
+            name=PARAMETERS.DISALLOWED_RESULTS, _type="ANY"
+        )
         self.__parameter[PARAMETERS.DOCUMENT_FACE_CHECK_VALIDITY] = self.Parameter(
-            name=PARAMETERS.DOCUMENT_FACE_CHECK_VALIDITY, _type="BOOL")
+            name=PARAMETERS.DOCUMENT_FACE_CHECK_VALIDITY, _type="BOOL"
+        )
         self.__parameter[PARAMETERS.DOCUMENT_CHECK_VALIDITY] = self.Parameter(
-            name=PARAMETERS.DOCUMENT_CHECK_VALIDITY, _type="BOOL")
+            name=PARAMETERS.DOCUMENT_CHECK_VALIDITY, _type="BOOL"
+        )
         self.__parameter[PARAMETERS.DOCUMENT_FACE_PREDICT] = self.Parameter(
-            name=PARAMETERS.DOCUMENT_FACE_PREDICT, _type="BOOL")
+            name=PARAMETERS.DOCUMENT_FACE_PREDICT, _type="BOOL"
+        )
         self.__parameter[PARAMETERS.ENABLE_DOC_PERSPECTIVE_CORRECTION] = self.Parameter(
-            name=PARAMETERS.ENABLE_DOC_PERSPECTIVE_CORRECTION, _type="BOOL")
+            name=PARAMETERS.ENABLE_DOC_PERSPECTIVE_CORRECTION, _type="BOOL"
+        )
         self.__parameter[PARAMETERS.ENROLL_ALLOW_EYE_GLASS] = self.Parameter(
-            name=PARAMETERS.ENROLL_ALLOW_EYE_GLASS, _type="BOOL")
+            name=PARAMETERS.ENROLL_ALLOW_EYE_GLASS, _type="BOOL"
+        )
         self.__parameter[PARAMETERS.ORIENTATION_ID_VALUE] = self.Parameter(
-            name=PARAMETERS.ORIENTATION_ID_VALUE, _type="ANY")
+            name=PARAMETERS.ORIENTATION_ID_VALUE, _type="ANY"
+        )
         self.__parameter[PARAMETERS.FACE_DETECT_PREFERRED_SIZE] = self.Parameter(
-            name=PARAMETERS.FACE_DETECT_PREFERRED_SIZE, _type="ANY")
+            name=PARAMETERS.FACE_DETECT_PREFERRED_SIZE, _type="ANY"
+        )
         self.__parameter[PARAMETERS.FACE_DETECT_MAX_OUT_IMAGE_SIZE] = self.Parameter(
-            name=PARAMETERS.FACE_DETECT_MAX_OUT_IMAGE_SIZE, _type="ANY")
+            name=PARAMETERS.FACE_DETECT_MAX_OUT_IMAGE_SIZE, _type="ANY"
+        )
         self.__parameter[PARAMETERS.SEND_ORIGINAL_IMAGES] = self.Parameter(
-            name=PARAMETERS.SEND_ORIGINAL_IMAGES, _type="BOOL")
+            name=PARAMETERS.SEND_ORIGINAL_IMAGES, _type="BOOL"
+        )
 
         # BILLING PARAMETERS
         # self.__parameter[PARAMETERS.ISVALID_RESERVATION_CALLS] = self.Parameter(
@@ -165,22 +253,46 @@ class ParameterValidator:
         #     name=PARAMETERS.PREDICT_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
 
         self.__parameter[PARAMETERS.DOC_FRONT_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.DOC_FRONT_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
+            name=PARAMETERS.DOC_FRONT_RESERVATION_CALLS,
+            _type="NUMBER",
+            min_value=0,
+            max_value=100000000,
+        )
 
         self.__parameter[PARAMETERS.DOC_BACK_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.DOC_BACK_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
+            name=PARAMETERS.DOC_BACK_RESERVATION_CALLS,
+            _type="NUMBER",
+            min_value=0,
+            max_value=100000000,
+        )
 
         self.__parameter[PARAMETERS.COMPARE_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.COMPARE_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
+            name=PARAMETERS.COMPARE_RESERVATION_CALLS,
+            _type="NUMBER",
+            min_value=0,
+            max_value=100000000,
+        )
 
         self.__parameter[PARAMETERS.FACE_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.FACE_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
+            name=PARAMETERS.FACE_RESERVATION_CALLS,
+            _type="NUMBER",
+            min_value=0,
+            max_value=100000000,
+        )
 
         self.__parameter[PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
+            name=PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS,
+            _type="NUMBER",
+            min_value=0,
+            max_value=100000000,
+        )
 
         self.__parameter[PARAMETERS.FACE_ISO_RESERVATION_CALLS] = self.Parameter(
-            name=PARAMETERS.FACE_ISO_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
+            name=PARAMETERS.FACE_ISO_RESERVATION_CALLS,
+            _type="NUMBER",
+            min_value=0,
+            max_value=100000000,
+        )
 
     def validate(self, key, value):
         return self.__parameter[key].validate(value)
@@ -189,7 +301,9 @@ class ParameterValidator:
         return key in self.__billing_reservation_parameters
 
     class Parameter:
-        def __init__(self, name=None, _type=None, min_value=None, max_value=None, valid_set=None):
+        def __init__(
+            self, name=None, _type=None, min_value=None, max_value=None, valid_set=None
+        ):
             self.__name = name
             # ANY, BOOL, SET, NUMBER
             self.__type = _type
@@ -211,7 +325,10 @@ class ParameterValidator:
                 return False
 
             if self.__type == "NUMBER":
-                if isinstance(value, (int, float)) and self.__min_value <= value <= self.__max_value:
+                if (
+                    isinstance(value, (int, float))
+                    and self.__min_value <= value <= self.__max_value
+                ):
                     return True
                 return False
 
@@ -246,10 +363,14 @@ class ConfigObject:
         try:
             for key, value in self._config_param.items():
                 if key not in PARAMETERS:
-                    raise ValueError("Invalid key '{}' in config parameters".format(key))
+                    raise ValueError(
+                        "Invalid key '{}' in config parameters".format(key)
+                    )
 
                 if not self._validate_parameter.validate(key, value):
-                    raise ValueError("Invalid key value pair\n'{}' : '{}'".format(key, value))
+                    raise ValueError(
+                        "Invalid key value pair\n'{}' : '{}'".format(key, value)
+                    )
         except ValueError as exp:
             print("Config Error:", exp)
             sys.exit(1)

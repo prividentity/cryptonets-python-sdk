@@ -37,37 +37,34 @@ AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
 URL = "https://private.id/"
 VERSION = "1.1.3"
-REQUIRES = [
-    "numpy >= 1.21.0",
-    "pillow >= 9.1.0"
-]
+REQUIRES = ["numpy >= 1.21.0", "pillow >= 9.1.0"]
 
-LONG_DESCRIPTION = ''
-if os.path.exists('./README.md'):
-    with open("README.md", encoding='utf-8') as fp:
+LONG_DESCRIPTION = ""
+if os.path.exists("./README.md"):
+    with open("README.md", encoding="utf-8") as fp:
         LONG_DESCRIPTION = fp.read()
 setup(
     name=NAME,
     version=VERSION,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     license="",
     url=URL,
     keywords=["privateid", "cryptonets", "face identification"],
-    packages=find_packages(where='src', exclude=["tests*"]),
+    packages=find_packages(where="src", exclude=["tests*"]),
     include_package_data=True,
     platforms="any",
     install_requires=REQUIRES,
     python_requires=">=3.6",
-    package_dir={'': 'src'},
+    package_dir={"": "src"},
     project_urls={
-        "Bug Reports": 'https://github.com/prividentity/cryptonets-python-sdk/issues',
-        "Source": 'https://github.com/prividentity/cryptonets-python-sdk',
+        "Bug Reports": "https://github.com/prividentity/cryptonets-python-sdk/issues",
+        "Source": "https://github.com/prividentity/cryptonets-python-sdk",
         "Documentation": "https://docs.private.id/cryptonets-python-sdk/index.html",
-        "Release Notes": "https://docs.private.id/cryptonets-python-sdk/changelog.html"
+        "Release Notes": "https://docs.private.id/cryptonets-python-sdk/changelog.html",
     },
     classifiers=[
         "Intended Audience :: Developers",
@@ -75,16 +72,18 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        "Topic :: Software Development"
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Topic :: Software Development",
     ],
     py_modules=[NAME],
     package_data={
-        "cryptonets_python_sdk": ['handler/lib/lib_fhe.so',
-                                  'handler/lib/libcrypto-1_1-x64.dll',
-                                  'handler/lib/libssl-1_1-x64.dll',
-                                  'handler/lib/privid_fhe.dll']
-    }
+        "cryptonets_python_sdk": [
+            "handler/lib/lib_fhe.so",
+            "handler/lib/libcrypto-1_1-x64.dll",
+            "handler/lib/libssl-1_1-x64.dll",
+            "handler/lib/privid_fhe.dll",
+        ]
+    },
 )
