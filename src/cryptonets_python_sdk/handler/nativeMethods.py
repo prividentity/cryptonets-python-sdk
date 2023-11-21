@@ -672,7 +672,6 @@ class NativeMethods(object):
 
             len_ = np.fromiter(c_result_out[:1], dtype=np.uint32, count=-1)[0]
             output_json_str = c_result.value[:len_].decode()
-            print(output_json_str)
             self._spl_so_face.privid_free_char_buffer(c_result)
             if output_json_str is not None and len(output_json_str) > 0:
                 output = json.loads(output_json_str)
@@ -736,7 +735,6 @@ class NativeMethods(object):
             self._spl_so_face.privid_free_char_buffer(c_result)
             if output_json_str is not None and len(output_json_str) > 0:
                 output = json.loads(output_json_str)
-                print(output)
                 return output
             return False
         except Exception as e:

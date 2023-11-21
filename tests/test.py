@@ -373,8 +373,7 @@ def test_get_iso_image_with_no_cache():
 
 
 if __name__ == "__main__":
-    os.environ["PI_SERVER_URL"] = "https://api.develv2.cryptonets.ai/node"
-    os.environ["PI_API_KEY"] = "00000000000000001962"
+
     (face_factor, image_path,) = setup_test(
         "8.png",
     )
@@ -382,7 +381,7 @@ if __name__ == "__main__":
         "3_predict_cropped_images_0.png", "8.png"
     )
     (face_factor, img1, img2) = setup_compare_test("8.png", "8.png")
-    # test_enroll(face_factor, image_path)  # => no billing reservation
+    test_enroll(face_factor, image_path)  # => no billing reservation
     # result_handle = test_predict(face_factor, image_path) # => no billing reservation
 
     # test_delete(face_factor, result_handle) # => no billing for delete

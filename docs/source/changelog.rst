@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Version 1.1.4 (2023-11-21)
+---------------------------
+
+Enhancements and New Features:
+
+* Integration of an improved embeddings model to enhance accuracy in various scenarios.
+* Implementation of more robust validation models to ensure higher reliability and precision.
+* Fixed a critical memory leak issue that impacted system performance and stability.
+
 Version 1.1.3 (2023-03-23)
 ---------------------------
 
