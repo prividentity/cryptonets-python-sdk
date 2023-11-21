@@ -4,4 +4,5 @@ build
 dist
 **.egg-info
 .venv/
-handler/lib/*
+src/cryptonets_python_sdk/handler/lib/*
+src/privateid_local_storage/uuids

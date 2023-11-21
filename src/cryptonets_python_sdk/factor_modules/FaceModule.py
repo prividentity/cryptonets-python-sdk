@@ -270,6 +270,3 @@ class Face(metaclass=Singleton):
         except Exception as e:
             print(e, traceback.format_exc())
             return ISOFaceResult(message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)
-
-    def get_verion(self) -> str:
-        return self.face_factor_processor.get_version()

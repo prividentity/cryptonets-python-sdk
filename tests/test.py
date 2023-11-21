@@ -1,7 +1,8 @@
 import pathlib
 import sys
+import os
 from timeit import default_timer
-
+import os
 from PIL import Image
 from termcolor import colored
 
@@ -83,6 +84,7 @@ def test_enroll(enroll_face_factor, enroll_img_path, config=None):
 def test_delete(delete_face_factor, predict_handle):
     print(colored("{}\n{}".format("Delete", "=" * 25), "green"))
     delete_start_time = default_timer()
+    print(predict_handle.puid)
     delete_handle = delete_face_factor.delete(predict_handle.puid)
     print("Duration:", default_timer() - delete_start_time, "\n")
     print("Status:{}\nMessage:{}".format(delete_handle.status, delete_handle.message))
@@ -187,6 +189,33 @@ def setup_test(
     )
 
     return face_factor, image_file_path
+
+
+def setup_compare_test(
+    image1_filename=None,
+    image2_filename=None,
+    operation_threshold_parameter_name=None,
+    threshold_value=0,
+    use_cache=False,
+    call_context="predict",
+):
+    image1_file_path = build_sample_image_path(image1_filename)
+    image2_file_path = build_sample_image_path(image2_filename)
+    config_param = {
+        PARAMETERS.INPUT_IMAGE_FORMAT: "rgb",
+        PARAMETERS.CONTEXT_STRING: call_context,
+    }
+    if operation_threshold_parameter_name is not None:
+        config_param[operation_threshold_parameter_name] = threshold_value
+    config_object = ConfigObject(config_param)
+
+    a_cache_type = CacheType.ON if use_cache is False else CacheType.ON
+
+    face_factor = FaceFactor(
+        logging_level=LoggingLevel.off, config=config_object, cache_type=a_cache_type
+    )
+
+    return face_factor, image1_file_path, image2_file_path
 
 
 def test_predict_enrol_valid_image_with_cache():
@@ -344,14 +373,36 @@ def test_get_iso_image_with_no_cache():
 
 
 if __name__ == "__main__":
-    # test_predict_enrol_valid_image_with_cache()
+    os.environ["PI_SERVER_URL"] = "https://api.develv2.cryptonets.ai/node"
+    os.environ["PI_API_KEY"] = "00000000000000001962"
+    (face_factor, image_path,) = setup_test(
+        "8.png",
+    )
+    (face_factor, img1, img2) = setup_compare_test(
+        "3_predict_cropped_images_0.png", "8.png"
+    )
+    (face_factor, img1, img2) = setup_compare_test("8.png", "8.png")
+    # test_enroll(face_factor, image_path)  # => no billing reservation
+    # result_handle = test_predict(face_factor, image_path) # => no billing reservation
+
+    # test_delete(face_factor, result_handle) # => no billing for delete
+    result_handle = test_predict(face_factor, image_path)  # => no billing reservation
+    test_delete(face_factor, result_handle)
     # test_predict_enrol_valid_image_with_no_cache()
     # test_valid_with_cache()
-    # test_valid_with_badimg_and_no_cache()
-    # test_age_estimate_with_cache()
+    test_age_estimate(face_factor, image_path)
+
     # test_age_estimate_with_no_cache()
-    # test_compare_with_cache()
-    test_compare_with_no_cache()
+    # compare_start_time = default_timer()
+    # compare_handle = face_factor.compare(image_path_1=img1,image_path_2=img2)
+    # print("Duration:", default_timer() - compare_start_time, "\n")
+    # print("Status:{}\nResult:{}\nMessage:{}\nMin:{}\nMean:{}\nMax:{}\n1VR:{}\n2VR:{}\n".format(
+    #     compare_handle.status,
+    #     compare_handle.result, compare_handle.message, compare_handle.distance_min,
+    #     compare_handle.distance_mean,
+    #     compare_handle.distance_max, compare_handle.first_validation_result,
+    #     compare_handle.second_validation_result))
+    # test_compare_with_no_cache()
     # test_get_iso_image_with_cache()
     # test_get_iso_image_with_no_cache()
-    print("Done")
+    # print("Done")

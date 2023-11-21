@@ -142,7 +142,6 @@ class FaceFactor(metaclass=Singleton):
                 cache_type=self._cache_type,
                 config_object=self._config_object,
             )
-            self._version = self.face_factor.get_verion()
             self.message = Message()
         except ValueError as exp:
             print("Initialization Failed: {}\n".format(exp))
