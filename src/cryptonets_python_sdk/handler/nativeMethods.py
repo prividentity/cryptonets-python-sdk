@@ -11,7 +11,8 @@ import platform
 from ..settings.cacheType import CacheType
 from ..settings.configuration import ConfigObject
 from ..settings.loggingLevel import LoggingLevel
-
+import boto3
+import tqdm
 
 class NativeMethods(object):
     def __init__(
@@ -26,53 +27,140 @@ class NativeMethods(object):
     ):
         try:
             self._config_object = config_object
-            if platform.system() == "Linux":
-                self._library_path = str(
-                    pathlib.Path(__file__)
-                    .parent.joinpath("lib/lib_fhe.so")
-                    .resolve()
-                )
-                self._spl_so_face = ctypes.CDLL(self._library_path)
-            elif platform.system() == "Windows":
-                self._library_path = str(
-                    pathlib.Path(__file__)
-                    .parent.joinpath("lib/privid_fhe.dll")
-                    .resolve()
-                )
-                self._library_path_2 = str(
-                    pathlib.Path(__file__)
-                    .parent.joinpath("lib/libssl-1_1-x64.dll")
-                    .resolve()
-                )
-                self._library_path_3 = str(
-                    pathlib.Path(__file__)
-                    .parent.joinpath("lib/libcrypto-1_1-x64.dll")
-                    .resolve()
-                )
-                ctypes.CDLL(self._library_path_3, mode=1)
-                ctypes.CDLL(self._library_path_2, mode=1)
-                self._spl_so_face = ctypes.CDLL(self._library_path)
-            elif platform.system() == "Darwin":
-                self._library_path = str(
-                    pathlib.Path(__file__)
-                    .parent.joinpath("lib/libprivid_fhe.dylib")
-                    .resolve()
-                )
-                self._spl_so_face = ctypes.CDLL(self._library_path)
+            self._local_lib_path = pathlib.Path(__file__).parent.joinpath("lib")
+            self._local_lib_path.mkdir(parents=True, exist_ok=True)
 
-            self._embedding_length = 128
-            self._num_embeddings = 80
-            self._aug_size = 224 * 224 * 4 * self._num_embeddings
-            self._tf_num_thread = tf_num_thread
-            self._api_key = bytes(api_key, "utf-8")
-            self._server_url = bytes(server_url, "utf-8")
-            self._logging_level = logging_level
-            self._local_storage_path = local_storage_path
-            self._cache_type = cache_type
+            self._check_and_download_files()
+
+            if platform.system() == "Linux":
+                self._load_linux_libraries()
+            elif platform.system() == "Windows":
+                self._load_windows_libraries()
+            elif platform.system() == "Darwin":
+                self._load_macos_libraries()
+
+            self._initialize_properties(tf_num_thread, api_key, server_url, local_storage_path, logging_level, cache_type)
             self._face_setup()
         except Exception as e:
             print("Error ", e)
             sys.exit(1)
+
+    def _check_and_download_files(self):
+        required_files = [
+            "lib_fhe.so",
+            "libcrypto-1_1-x64.dll",
+            "libprivid_fhe.dylib",
+            "libssl-1_1-x64.dll",
+            "privid_fhe.dll"
+        ]
+
+        s3 = boto3.client('s3')
+        bucket_name = "cryptonets-python-sdk"
+
+        for file_name in required_files:
+            file_path = self._local_lib_path.joinpath(file_name)
+            if not file_path.exists():
+                print(f"Downloading {file_name}...")
+                self._download_from_s3(s3, bucket_name, file_name, file_path)
+
+    def _download_from_s3(self, s3_client, bucket, file_name, local_path):
+        with open(local_path, 'wb') as f:
+            response = s3_client.get_object(Bucket=bucket, Key=file_name)
+            file_size = response['ContentLength']
+
+            with tqdm.tqdm(total=file_size, unit='B', unit_scale=True, desc=file_name) as bar:
+                for chunk in response['Body'].iter_chunks(chunk_size=1024):
+                    f.write(chunk)
+                    bar.update(len(chunk))
+
+    def _load_linux_libraries(self):
+        self._library_path = str(self._local_lib_path.joinpath("lib_fhe.so").resolve())
+        self._spl_so_face = ctypes.CDLL(self._library_path)
+
+    def _load_windows_libraries(self):
+        self._library_path = str(self._local_lib_path.joinpath("privid_fhe.dll").resolve())
+        self._library_path_2 = str(self._local_lib_path.joinpath("libssl-1_1-x64.dll").resolve())
+        self._library_path_3 = str(self._local_lib_path.joinpath("libcrypto-1_1-x64.dll").resolve())
+        ctypes.CDLL(self._library_path_3, mode=1)
+        ctypes.CDLL(self._library_path_2, mode=1)
+        self._spl_so_face = ctypes.CDLL(self._library_path)
+
+    def _load_macos_libraries(self):
+        self._library_path = str(self._local_lib_path.joinpath("libprivid_fhe.dylib").resolve())
+        self._spl_so_face = ctypes.CDLL(self._library_path)
+
+    def _initialize_properties(self, tf_num_thread, api_key, server_url, local_storage_path, logging_level, cache_type):
+        self._embedding_length = 128
+        self._num_embeddings = 80
+        self._aug_size = 224 * 224 * 4 * self._num_embeddings
+        self._tf_num_thread = tf_num_thread
+        self._api_key = bytes(api_key, "utf-8")
+        self._server_url = bytes(server_url, "utf-8")
+        self._logging_level = logging_level
+        self._local_storage_path = local_storage_path
+        self._cache_type = cache_type
+
+
+# class NativeMethods(object):
+#     def __init__(
+#         self,
+#         api_key: str,
+#         server_url: str,
+#         local_storage_path: str,
+#         logging_level: LoggingLevel,
+#         tf_num_thread: int,
+#         cache_type: CacheType,
+#         config_object: ConfigObject = None,
+#     ):
+#         try:
+#             self._config_object = config_object
+#             if platform.system() == "Linux":
+#                 self._library_path = str(
+#                     pathlib.Path(__file__)
+#                     .parent.joinpath("lib/lib_fhe.so")
+#                     .resolve()
+#                 )
+#                 self._spl_so_face = ctypes.CDLL(self._library_path)
+#             elif platform.system() == "Windows":
+#                 self._library_path = str(
+#                     pathlib.Path(__file__)
+#                     .parent.joinpath("lib/privid_fhe.dll")
+#                     .resolve()
+#                 )
+#                 self._library_path_2 = str(
+#                     pathlib.Path(__file__)
+#                     .parent.joinpath("lib/libssl-1_1-x64.dll")
+#                     .resolve()
+#                 )
+#                 self._library_path_3 = str(
+#                     pathlib.Path(__file__)
+#                     .parent.joinpath("lib/libcrypto-1_1-x64.dll")
+#                     .resolve()
+#                 )
+#                 ctypes.CDLL(self._library_path_3, mode=1)
+#                 ctypes.CDLL(self._library_path_2, mode=1)
+#                 self._spl_so_face = ctypes.CDLL(self._library_path)
+#             elif platform.system() == "Darwin":
+#                 self._library_path = str(
+#                     pathlib.Path(__file__)
+#                     .parent.joinpath("lib/libprivid_fhe.dylib")
+#                     .resolve()
+#                 )
+#                 self._spl_so_face = ctypes.CDLL(self._library_path)
+
+#             self._embedding_length = 128
+#             self._num_embeddings = 80
+#             self._aug_size = 224 * 224 * 4 * self._num_embeddings
+#             self._tf_num_thread = tf_num_thread
+#             self._api_key = bytes(api_key, "utf-8")
+#             self._server_url = bytes(server_url, "utf-8")
+#             self._logging_level = logging_level
+#             self._local_storage_path = local_storage_path
+#             self._cache_type = cache_type
+#             self._face_setup()
+#         except Exception as e:
+#             print("Error ", e)
+#             sys.exit(1)
 
     def update_config(self, config_object):
         self._config_object = config_object
