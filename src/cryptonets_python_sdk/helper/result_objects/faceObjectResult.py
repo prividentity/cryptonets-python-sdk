@@ -2,8 +2,14 @@ from ..utils import BoundingBox
 
 
 class FaceObjectResult(object):
-
-    def __init__(self, return_code=-100, message="", age=None, top_left_coordinate=None, bottom_right_coordinate=None):
+    def __init__(
+        self,
+        return_code=-100,
+        message="",
+        age=None,
+        top_left_coordinate=None,
+        bottom_right_coordinate=None,
+    ):
         self._return_code = return_code
         self._message = message
         self._age = age

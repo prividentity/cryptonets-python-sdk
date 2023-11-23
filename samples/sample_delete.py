@@ -11,7 +11,7 @@ image_file_path = "path_to_the_image"
 face_factor = FaceFactor(api_key=api_key, server_url=server_url)
 
 # Call delete from the face factor object
-delete_handle = face_factor.delete(uuid="uuid_to_be_deleted")
+delete_handle = face_factor.delete(puid="puid_to_be_deleted")
 
 # Parse enroll result
 # See https://docs.private.id/cryptonets-python-sdk/ResultObjects/DeleteResult.html for detailed information
