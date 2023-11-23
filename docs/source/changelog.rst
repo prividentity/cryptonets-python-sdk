@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Version 1.1.5 (2023-11-23)
+---------------------------
+
+Bug Fixes and Improvements:
+
+* Default configuration thresholds updated.
+* Documentation updated to the latest version of cryptonets python sdk.
+
+
 Version 1.1.4 (2023-11-21)
 ---------------------------
 
