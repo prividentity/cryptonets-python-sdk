@@ -219,7 +219,16 @@ class NativeMethods(object):
         ]  # const int user_config_length
         self._spl_so_face.privid_set_configuration.restype = c_bool
         # Configure parameters
-        if self._config_object and self._config_object.get_config_param():
+        if self._config_object is None:
+            config_dict={}
+            config_dict["skip_antispoof"] = True
+            config_dict = json.dumps(config_dict)
+            c_config_param = c_char_p(bytes(config_dict, "utf-8"))
+            c_config_param_len = c_int(len(config_dict))
+            self._spl_so_face.privid_set_configuration(
+                self._spl_so_face.handle, c_config_param, c_config_param_len
+            )    
+        elif self._config_object and self._config_object.get_config_param():
             config_dict = json.loads(self._config_object.get_config_param())
             config_dict["cache_type"] = self._cache_type.value
             config_dict["local_storage_path"] = self._local_storage_path

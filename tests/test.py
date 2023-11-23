@@ -174,18 +174,18 @@ def setup_test(
     call_context="predict",
 ):
     image_file_path = build_sample_image_path(image_filename)
-    config_param = {
-        PARAMETERS.INPUT_IMAGE_FORMAT: "rgb",
-        PARAMETERS.CONTEXT_STRING: call_context,
-    }
-    if operation_threshold_parameter_name is not None:
-        config_param[operation_threshold_parameter_name] = threshold_value
-    config_object = ConfigObject(config_param)
+    # config_param = {
+    #     PARAMETERS.INPUT_IMAGE_FORMAT: "rgb",
+    #     PARAMETERS.CONTEXT_STRING: call_context,
+    # }
+    # if operation_threshold_parameter_name is not None:
+    #     config_param[operation_threshold_parameter_name] = threshold_value
+    # config_object = ConfigObject(config_param)
 
-    a_cache_type = CacheType.ON if use_cache is False else CacheType.ON
+    # a_cache_type = CacheType.ON if use_cache is False else CacheType.ON
 
     face_factor = FaceFactor(
-        logging_level=LoggingLevel.off, config=config_object, cache_type=a_cache_type
+        logging_level=LoggingLevel.off
     )
 
     return face_factor, image_file_path
@@ -371,25 +371,39 @@ def test_get_iso_image_with_no_cache():
         face_factor, build_sample_image_path("6.png")
     )  # no billing reservation
 
+def get_image_paths(folder_path):
+    """
+    Returns a list of paths for all image files in the specified folder.
+    Supported image formats: jpg, jpeg, png, gif, bmp
+    """
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp']
 
+    image_paths = [os.path.join(folder_path, file) 
+                   for file in os.listdir(folder_path) 
+                   if os.path.splitext(file)[1].lower() in image_extensions]
+    return image_paths
 if __name__ == "__main__":
-
-    (face_factor, image_path,) = setup_test(
-        "8.png",
+    # os.environ["PI_SERVER_URL"] = "https://api.prodv2.cryptonets.ai/node"
+    # os.environ["PI_API_KEY"] = "00000000000000001962"
+   
+    (face_factor, image_path_1,) = setup_test(
+        "test.jpeg",
     )
-    (face_factor, img1, img2) = setup_compare_test(
-        "3_predict_cropped_images_0.png", "8.png"
-    )
-    (face_factor, img1, img2) = setup_compare_test("8.png", "8.png")
-    test_enroll(face_factor, image_path)  # => no billing reservation
+    # (face_factor, img1, img2) = setup_compare_test(
+    #     "3_predict_cropped_images_0.png", "8.png"
+    # )
+    # (face_factor, img1, img2) = setup_compare_test("8.png", "8.png")
+    # test_enroll(face_factor, image_path)  # => no billing reservation
     # result_handle = test_predict(face_factor, image_path) # => no billing reservation
 
     # test_delete(face_factor, result_handle) # => no billing for delete
-    result_handle = test_predict(face_factor, image_path)  # => no billing reservation
-    test_delete(face_factor, result_handle)
+    # result_handle = test_predict(face_factor, image_path)  # => no billing reservation
+    # test_delete(face_factor, result_handle)
     # test_predict_enrol_valid_image_with_no_cache()
     # test_valid_with_cache()
-    test_age_estimate(face_factor, image_path)
+    for image_path in get_image_paths("/home/azam/projects/openinfer/python sdk/cryptonets-python-sdk/tests/example/test_images"):
+        print(image_path)
+        test_age_estimate(face_factor, image_path)
 
     # test_age_estimate_with_no_cache()
     # compare_start_time = default_timer()

@@ -128,3 +128,5 @@ class FaceValidationCode(Enum, metaclass=FaceValidationCodeMeta):
     InvalidFaceBackground = 19  # InvalidFaceBackground = 19
     EyeBlink = 20  # EyeBlink = 20
     МouthOpened = 21  # МouthOpened = 21
+    faceRotatedRight = 22
+    faceRotatedLeft = 23
