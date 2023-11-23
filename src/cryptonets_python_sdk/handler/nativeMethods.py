@@ -4,7 +4,6 @@ import pathlib
 import sys
 from ctypes import *
 from typing import Any
-
 import numpy as np
 from PIL import Image
 import platform
@@ -12,8 +11,8 @@ from ..settings.cacheType import CacheType
 from ..settings.configuration import ConfigObject
 from ..settings.loggingLevel import LoggingLevel
 import boto3
+import botocore
 import tqdm
-
 class NativeMethods(object):
     def __init__(
         self,
@@ -29,7 +28,6 @@ class NativeMethods(object):
             self._config_object = config_object
             self._local_lib_path = pathlib.Path(__file__).parent.joinpath("lib")
             self._local_lib_path.mkdir(parents=True, exist_ok=True)
-
             self._check_and_download_files()
 
             if platform.system() == "Linux":
@@ -38,7 +36,6 @@ class NativeMethods(object):
                 self._load_windows_libraries()
             elif platform.system() == "Darwin":
                 self._load_macos_libraries()
-
             self._initialize_properties(tf_num_thread, api_key, server_url, local_storage_path, logging_level, cache_type)
             self._face_setup()
         except Exception as e:
@@ -53,8 +50,9 @@ class NativeMethods(object):
             "libssl-1_1-x64.dll",
             "privid_fhe.dll"
         ]
-
-        s3 = boto3.client('s3')
+       # Create an unauthenticated session
+        session = boto3.Session()
+        s3 = session.client('s3', config=botocore.config.Config(signature_version=botocore.UNSIGNED))
         bucket_name = "cryptonets-python-sdk"
 
         for file_name in required_files:
