@@ -174,18 +174,18 @@ def setup_test(
     call_context="predict",
 ):
     image_file_path = build_sample_image_path(image_filename)
-    # config_param = {
-    #     PARAMETERS.INPUT_IMAGE_FORMAT: "rgb",
-    #     PARAMETERS.CONTEXT_STRING: call_context,
-    # }
-    # if operation_threshold_parameter_name is not None:
-    #     config_param[operation_threshold_parameter_name] = threshold_value
-    # config_object = ConfigObject(config_param)
+    config_param = {
+        PARAMETERS.INPUT_IMAGE_FORMAT: "rgb",
+        PARAMETERS.CONTEXT_STRING: call_context,
+    }
+    if operation_threshold_parameter_name is not None:
+        config_param[operation_threshold_parameter_name] = threshold_value
+    config_object = ConfigObject(config_param)
 
-    # a_cache_type = CacheType.ON if use_cache is False else CacheType.ON
+    a_cache_type = CacheType.ON if use_cache is False else CacheType.ON
 
     face_factor = FaceFactor(
-        logging_level=LoggingLevel.off
+        logging_level=LoggingLevel.off,config=config_object
     )
 
     return face_factor, image_file_path
@@ -383,8 +383,8 @@ def get_image_paths(folder_path):
                    if os.path.splitext(file)[1].lower() in image_extensions]
     return image_paths
 if __name__ == "__main__":
-    # os.environ["PI_SERVER_URL"] = "https://api.prodv2.cryptonets.ai/node"
-    # os.environ["PI_API_KEY"] = "00000000000000001962"
+    os.environ["PI_SERVER_URL"] = "https://api.prodv2.cryptonets.ai/node"
+    os.environ["PI_API_KEY"] = "00000000000000001962"
    
     (face_factor, image_path_1,) = setup_test(
         "test.jpeg",
@@ -401,20 +401,23 @@ if __name__ == "__main__":
     # test_delete(face_factor, result_handle)
     # test_predict_enrol_valid_image_with_no_cache()
     # test_valid_with_cache()
-    for image_path in get_image_paths("/home/azam/projects/openinfer/python sdk/cryptonets-python-sdk/tests/example/test_images"):
-        print(image_path)
-        test_age_estimate(face_factor, image_path)
+    # test_valid(face_factor, "/home/azam/projects/openinfer/python sdk/cryptonets-python-sdk/docs/source/Usage/images/johny.jpg")
+    # test_age_estimate(face_factor, "/home/azam/projects/openinfer/python sdk/cryptonets-python-sdk/tests/example/test_images/12.jpeg")
+    # for image_path in get_image_paths("/home/azam/projects/openinfer/python sdk/cryptonets-python-sdk/tests/example/test_images"):
+    #     print(image_path)
+    #     test_age_estimate(face_factor, image_path)
+        
 
     # test_age_estimate_with_no_cache()
-    # compare_start_time = default_timer()
-    # compare_handle = face_factor.compare(image_path_1=img1,image_path_2=img2)
-    # print("Duration:", default_timer() - compare_start_time, "\n")
-    # print("Status:{}\nResult:{}\nMessage:{}\nMin:{}\nMean:{}\nMax:{}\n1VR:{}\n2VR:{}\n".format(
-    #     compare_handle.status,
-    #     compare_handle.result, compare_handle.message, compare_handle.distance_min,
-    #     compare_handle.distance_mean,
-    #     compare_handle.distance_max, compare_handle.first_validation_result,
-    #     compare_handle.second_validation_result))
+    compare_start_time = default_timer()
+    compare_handle = face_factor.compare(image_path_1="/home/azam/projects/openinfer/python sdk/cryptonets-python-sdk/docs/source/Usage/images/tom_hanks.png",image_path_2="/home/azam/projects/openinfer/python sdk/cryptonets-python-sdk/docs/source/Usage/images/tom_hanks_2.jpg")
+    print("Duration:", default_timer() - compare_start_time, "\n")
+    print("Status:{}\nResult:{}\nMessage:{}\nMin:{}\nMean:{}\nMax:{}\n1VR:{}\n2VR:{}\n".format(
+        compare_handle.status,
+        compare_handle.result, compare_handle.message, compare_handle.distance_min,
+        compare_handle.distance_mean,
+        compare_handle.distance_max, compare_handle.first_validation_result,
+        compare_handle.second_validation_result))
     # test_compare_with_no_cache()
     # test_get_iso_image_with_cache()
     # test_get_iso_image_with_no_cache()

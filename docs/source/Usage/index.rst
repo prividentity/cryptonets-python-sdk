@@ -92,7 +92,7 @@ Output:
 
 Example:
 
-.. image:: images/test.jpeg
+.. image:: images/johny.jpg
    :width: 400
 .. code-block:: py
 
@@ -109,17 +109,14 @@ Output:
 
 .. code-block:: py
 
-    Face#:1         // The closest (largest) face
-    Return Code:0
-    Message:ValidBiometric
-    BBox TL:Point(257.5,151.0)
-    BBox BR:Point(430.5,313.0)
 
-    Face#:2         // The next closest face
+    Face#:1
+    -------
     Return Code:0
     Message:ValidBiometric
-    BBox TL:Point(130.0,45.5)
-    BBox BR:Point(290.0,212.5)
+    Age:None
+    BBox TL:Point(187.0,153.0)
+    BBox BR:Point(382.0,334.0)
 
 See the :ref:`is_valid advanced instructions <isvalid_advanced>` section for more configuration options.
 
@@ -160,7 +157,7 @@ See :ref:`return codes <return_codes>` for all result and status codes
     
 Example:
 
-.. image:: images/test.jpeg
+.. image:: images/estimate_age.jpeg
    :width: 400
 .. code-block:: py
 
@@ -177,19 +174,23 @@ See :ref:`return codes <return_codes>` for all result and status codes
 
 .. code-block:: py
 
-    Face#:1                     //The closest (largest) face
+    Face#:1
+    -------
     Return Code:0
     Message:ValidBiometric
-    Age:29.490659713745117
-    BBox TL:Point(257.5,151.0)
-    BBox BR:Point(430.5,313.0)
+    Age:21.465137481689453
+    BBox TL:Point(859.0,189.0)
+    BBox BR:Point(1296.0,759.0)
 
-    Face#:2                     //The next closest face
+    Face#:2
+    -------
     Return Code:0
     Message:ValidBiometric
-    Age:20.64322280883789
-    BBox TL:Point(130.0,45.5)
-    BBox BR:Point(290.0,212.5)
+    Age:18.190135955810547
+    BBox TL:Point(134.0,356.0)
+    BBox BR:Point(580.0,908.0)
+
+
 
 See the :ref:`estimate_age advanced instructions <age_advanced>` section for more configuration options.
 
@@ -248,14 +249,14 @@ See :ref:`return codes <return_codes>` for all result and status codes
 
 .. code-block:: py
 
-  Status:1
-  Result:1
-  Message: OK
-  Min:0.9422853589057922
-  Mean:0.9422853589057922
-  Max:0.9422853589057922
-  1VR:0
-  2VR:0
+    Status:0
+    Result:1
+    Message:
+    Min:0.4671628773212433
+    Mean:0.4671628773212433
+    Max:0.4671628773212433
+    1VR:0
+    2VR:0
 
 See the :ref:`compare advanced instructions <compare_advanced>` section for more configuration options.
 
