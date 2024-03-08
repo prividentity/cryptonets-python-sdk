@@ -50,6 +50,7 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     FACE_DETECT_PREFERRED_SIZE = "face_detect_preferred_size"
     FACE_DETECT_MAX_OUT_IMAGE_SIZE = "face_detect_max_out_image_size"
     SEND_ORIGINAL_IMAGES = "send_original_images"
+    PREDICT_COLLECTION = "predict_collection"
 
     # BILLING PARAMETERS
     # ISVALID_RESERVATION_CALLS = "is_valid"
@@ -293,6 +294,9 @@ class ParameterValidator:
             min_value=0,
             max_value=100000000,
         )
+
+        self.__parameter[PARAMETERS.PREDICT_COLLECTION] = self.Parameter(
+            name=PARAMETERS.PREDICT_COLLECTION, _type="ANY")
 
     def validate(self, key, value):
         return self.__parameter[key].validate(value)

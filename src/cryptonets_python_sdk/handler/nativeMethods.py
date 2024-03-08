@@ -73,6 +73,8 @@ class NativeMethods(object):
 
     def _load_linux_libraries(self):
         self._library_path = str(self._local_lib_path.joinpath("lib_fhe.so").resolve())
+        self._library_path_2 = str(self._local_lib_path.joinpath("libtensorflow-lite.so").resolve())
+        ctypes.CDLL(self._library_path_2, mode=1)
         self._spl_so_face = ctypes.CDLL(self._library_path)
 
     def _load_windows_libraries(self):
@@ -207,6 +209,26 @@ class NativeMethods(object):
         if not return_type:
             raise Exception("Wrong API_KEY or Server URL.")
         ##############################################################################################
+
+        ##############################################################################################
+        # (ok) PRIVID_API_ATTRIB bool privid_set_configuration(void *session_ptr, const char *user_config,
+        # const int user_config_length);
+        ##############################################################################################
+        self._spl_so_face.privid_configure_predict_urls.argtypes = [
+            c_void_p,  # void *session_ptr
+            c_char_p,  # const char *user_config
+            c_int,
+        ]  # const int user_config_length
+        self._spl_so_face.privid_configure_predict_urls.restype = c_bool
+        config_dict = {}
+        named_url_a = dict(url_name="collection_a", url="api.develv3.cryptonets.ai/node/FACE3_1")
+        named_url_b = dict(url_name="collection_b", url="api.develv3.cryptonets.ai/node/FACE3_2")
+        config_dict["named_urls"] = [named_url_a, named_url_b]
+        config_dict = json.dumps(config_dict)
+        c_config_param = c_char_p(bytes(config_dict, "utf-8"))
+        c_config_param_len = c_int(len(config_dict))
+        self._spl_so_face.privid_configure_predict_urls(
+            self._spl_so_face.handle, c_config_param, c_config_param_len)
 
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_set_configuration(void *session_ptr, const char *user_config,

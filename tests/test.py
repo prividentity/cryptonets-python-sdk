@@ -185,7 +185,7 @@ def setup_test(
     a_cache_type = CacheType.ON if use_cache is False else CacheType.ON
 
     face_factor = FaceFactor(
-        logging_level=LoggingLevel.off,config=config_object
+        logging_level=LoggingLevel.full, config=config_object
     )
 
     return face_factor, image_file_path
@@ -384,15 +384,19 @@ def get_image_paths(folder_path):
     return image_paths
 if __name__ == "__main__":
 
-    (face_factor, image_path_1,) = setup_test(
-        "test.jpeg",
-    )
+    (face_factor, image_path,) = setup_test("18.jpg")
     # (face_factor, img1, img2) = setup_compare_test(
     #     "3_predict_cropped_images_0.png", "8.png"
     # )
     # (face_factor, img1, img2) = setup_compare_test("8.png", "8.png")
     # test_enroll(face_factor, image_path)  # => no billing reservation
-    # result_handle = test_predict(face_factor, image_path) # => no billing reservation
+
+    config_param = {
+        PARAMETERS.PREDICT_COLLECTION: "collection_a",
+    }
+    config_object = ConfigObject(config_param)
+
+    result_handle = test_predict(face_factor, image_path, config=config_object) # => no billing reservation
 
     # test_delete(face_factor, result_handle) # => no billing for delete
     # result_handle = test_predict(face_factor, image_path)  # => no billing reservation
