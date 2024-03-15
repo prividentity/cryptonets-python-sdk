@@ -536,7 +536,7 @@ class FaceFactor(metaclass=Singleton):
             )
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
 
-    def delete(self, puid: str) -> FaceDeleteResult:
+    def delete(self, puid: str,config: ConfigObject = None)-> FaceDeleteResult:
         """Deletes the enrollment from the face recognition server
 
         Parameters
@@ -554,7 +554,7 @@ class FaceFactor(metaclass=Singleton):
         try:
             if puid is None:
                 return FaceDeleteResult(message="Missing PUID")
-            return self.face_factor.delete(puid)
+            return self.face_factor.delete(puid,config)
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
             print(

@@ -118,9 +118,9 @@ class Face(metaclass=Singleton):
             print(e, traceback.format_exc())
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
 
-    def delete(self, puid: str) -> FaceDeleteResult:
+    def delete(self, puid: str, config_object: ConfigObject = None,) -> FaceDeleteResult:
         try:
-            json_response = self.face_factor_processor.delete(puid)
+            json_response = self.face_factor_processor.delete(puid,config_object)
             if not json_response:
                 return FaceDeleteResult(message=self.message.EXCEPTION_ERROR_DELETE)
             return FaceDeleteResult(

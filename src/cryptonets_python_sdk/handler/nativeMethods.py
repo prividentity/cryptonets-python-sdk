@@ -45,10 +45,10 @@ class NativeMethods(object):
     def _check_and_download_files(self):
         required_files = [
             "lib_fhe.so",
-            "libcrypto-1_1-x64.dll",
-            "libprivid_fhe.dylib",
-            "libssl-1_1-x64.dll",
-            "privid_fhe.dll"
+            # "libcrypto-1_1-x64.dll",
+            # "libprivid_fhe.dylib",
+            # "libssl-1_1-x64.dll",
+            # "privid_fhe.dll"
         ]
        # Create an unauthenticated session
         session = boto3.Session()
@@ -221,14 +221,46 @@ class NativeMethods(object):
         ]  # const int user_config_length
         self._spl_so_face.privid_configure_predict_urls.restype = c_bool
         config_dict = {}
-        named_url_a = dict(url_name="collection_a", url="api.develv3.cryptonets.ai/node/FACE3_1")
-        named_url_b = dict(url_name="collection_b", url="api.develv3.cryptonets.ai/node/FACE3_2")
+        named_url_a = dict(url_name="collection_a", url="api.develv3.cryptonets.ai/node/FACE3_1/predict")
+        named_url_b = dict(url_name="collection_b", url="api.develv3.cryptonets.ai/node/FACE3_2/predict")
         config_dict["named_urls"] = [named_url_a, named_url_b]
         config_dict = json.dumps(config_dict)
         c_config_param = c_char_p(bytes(config_dict, "utf-8"))
         c_config_param_len = c_int(len(config_dict))
         self._spl_so_face.privid_configure_predict_urls(
             self._spl_so_face.handle, c_config_param, c_config_param_len)
+
+        self._spl_so_face.privid_configure_enroll_urls.argtypes = [
+            c_void_p,  # void *session_ptr
+            c_char_p,  # const char *user_config
+            c_int,
+        ]  # const int user_config_length
+        self._spl_so_face.privid_configure_enroll_urls.restype = c_bool
+        config_dict = {}
+        named_url_a = dict(url_name="collection_a", url="api.develv3.cryptonets.ai/node/FACE3_1/enroll")
+        named_url_b = dict(url_name="collection_b", url="api.develv3.cryptonets.ai/node/FACE3_2/enroll")
+        config_dict["named_urls"] = [named_url_a, named_url_b]
+        config_dict = json.dumps(config_dict)
+        c_config_param_enroll = c_char_p(bytes(config_dict, "utf-8"))
+        c_config_param_enroll_len = c_int(len(config_dict))
+        self._spl_so_face.privid_configure_enroll_urls(
+            self._spl_so_face.handle, c_config_param_enroll, c_config_param_enroll_len)
+
+        self._spl_so_face.privid_configure_delete_urls.argtypes = [
+            c_void_p,  # void *session_ptr
+            c_char_p,  # const char *user_config
+            c_int,
+        ]  # const int user_config_length
+        self._spl_so_face.privid_configure_delete_urls.restype = c_bool
+        config_dict = {}
+        named_url_a = dict(url_name="collection_a", url="api.develv3.cryptonets.ai/node/FACE3_1/deleteUser")
+        named_url_b = dict(url_name="collection_b", url="api.develv3.cryptonets.ai/node/FACE3_2/deleteUser")
+        config_dict["named_urls"] = [named_url_a, named_url_b]
+        config_dict = json.dumps(config_dict)
+        c_config_param_delete = c_char_p(bytes(config_dict, "utf-8"))
+        c_config_param_delete_len = c_int(len(config_dict))
+        self._spl_so_face.privid_configure_delete_urls(
+            self._spl_so_face.handle, c_config_param_delete, c_config_param_delete_len)
 
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_set_configuration(void *session_ptr, const char *user_config,
@@ -625,12 +657,18 @@ class NativeMethods(object):
             print(e)
             return False
 
-    def delete(self, puid: str) -> Any:
+    def delete(self, puid: str,config_object) -> Any:
         puid = bytes(puid, "utf-8")
         p_buffer_result = c_char_p()
         p_buffer_result_length = c_int()
-        c_config_param = c_char_p(bytes("", "utf-8"))
-        c_config_param_len = c_int(0)
+        if config_object and config_object.get_config_param():
+                c_config_param = c_char_p(
+                    bytes(config_object.get_config_param(), "utf-8")
+                )
+                c_config_param_len = c_int(len(config_object.get_config_param()))
+        else:
+                c_config_param = c_char_p(bytes("", "utf-8"))
+                c_config_param_len = c_int(0)
         self._spl_so_face.privid_user_delete(
             self._spl_so_face.handle,
             c_config_param,
@@ -769,6 +807,12 @@ class NativeMethods(object):
                 config_dict["disable_enroll_mf"] = True
                 c_config_param = c_char_p(bytes(json.dumps(config_dict), "utf-8"))
                 c_config_param_len = c_int(len(json.dumps(config_dict)))
+            
+            config_dict = {"enroll_collection":"collection_a","disable_enroll_mf" : True}
+            config_dict = json.dumps(config_dict)
+            p_buffer_result_length = c_int()
+            c_config_param = c_char_p(bytes(config_dict, "utf-8"))
+            c_config_param_len = c_int(len(config_dict))
 
             best_input_out = c_uint8()  # uint8_t** best_input_out
             best_input_length = c_int()  # int *best_input_length

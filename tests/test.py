@@ -81,11 +81,11 @@ def test_enroll(enroll_face_factor, enroll_img_path, config=None):
     )
 
 
-def test_delete(delete_face_factor, predict_handle):
+def test_delete(delete_face_factor, predict_handle,config):
     print(colored("{}\n{}".format("Delete", "=" * 25), "green"))
     delete_start_time = default_timer()
     print(predict_handle.puid)
-    delete_handle = delete_face_factor.delete(predict_handle.puid)
+    delete_handle = delete_face_factor.delete(predict_handle.puid,config)
     print("Duration:", default_timer() - delete_start_time, "\n")
     print("Status:{}\nMessage:{}".format(delete_handle.status, delete_handle.message))
 
@@ -389,18 +389,20 @@ if __name__ == "__main__":
     #     "3_predict_cropped_images_0.png", "8.png"
     # )
     # (face_factor, img1, img2) = setup_compare_test("8.png", "8.png")
-    # test_enroll(face_factor, image_path)  # => no billing reservation
+
 
     config_param = {
-        PARAMETERS.PREDICT_COLLECTION: "collection_a",
+        PARAMETERS.ENROLL_COLLECTION :"collection_a",
+        PARAMETERS.PREDICT_COLLECTION :"collection_a",
+         PARAMETERS.DELETE_COLLECTION :"collection_a"
     }
     config_object = ConfigObject(config_param)
-
+    test_enroll(face_factor, image_path,config=config_object)  # => no billing reservation
     result_handle = test_predict(face_factor, image_path, config=config_object) # => no billing reservation
-
-    # test_delete(face_factor, result_handle) # => no billing for delete
+    test_delete(face_factor, result_handle, config=config_object)
+    result_handle = test_predict(face_factor, image_path, config=config_object) #
     # result_handle = test_predict(face_factor, image_path)  # => no billing reservation
-    # test_delete(face_factor, result_handle)
+    # test_delete(face_factor)
     # test_predict_enrol_valid_image_with_no_cache()
     # test_valid_with_cache()
     # test_valid(face_factor, "/home/azam/projects/openinfer/python sdk/cryptonets-python-sdk/docs/source/Usage/images/johny.jpg")
