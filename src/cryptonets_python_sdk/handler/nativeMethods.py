@@ -26,6 +26,7 @@ class NativeMethods(object):
     ):
         try:
             self._config_object = config_object
+            self._server_url_string=server_url
             self._local_lib_path = pathlib.Path(__file__).parent.joinpath("lib")
             self._local_lib_path.mkdir(parents=True, exist_ok=True)
             self._check_and_download_files()
@@ -230,10 +231,10 @@ class NativeMethods(object):
        
         def configure_url(action_type, urls):
             config_dict = {"named_urls": [
-                {"url_name": "collection_a", "url": f"api.develv3.cryptonets.ai/node/FACE3_1/{action_type}"},
-                {"url_name": "collection_b", "url": f"api.develv3.cryptonets.ai/node/FACE3_2/{action_type}"},
-                {"url_name": "collection_c", "url": f"api.develv3.cryptonets.ai/node/FACE3_3/{action_type}"},
-                {"url_name": "collection_d", "url": f"api.develv3.cryptonets.ai/node/FACE3_4/{action_type}"},
+                {"url_name": "collection_a", "url": f"{self._server_url_string}/FACE3_1/{action_type}"},
+                {"url_name": "collection_b", "url": f"{self._server_url_string}/FACE3_2/{action_type}"},
+                {"url_name": "collection_c", "url": f"{self._server_url_string}/FACE3_3/{action_type}"},
+                {"url_name": "collection_d", "url": f"{self._server_url_string}/FACE3_4/{action_type}"},
             
             ]}
             config_json = json.dumps(config_dict)
