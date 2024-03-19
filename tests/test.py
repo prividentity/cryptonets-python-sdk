@@ -14,6 +14,7 @@ from src.cryptonets_python_sdk.settings.configuration import PARAMETERS
 from src.cryptonets_python_sdk.factor import FaceFactor
 from src.cryptonets_python_sdk.settings.loggingLevel import LoggingLevel
 from src.cryptonets_python_sdk.settings.cacheType import CacheType
+from src.cryptonets_python_sdk.helper.utils import FaceValidationCode
 
 
 def image_path_to_array(image_path: str) -> np.ndarray:
@@ -394,14 +395,17 @@ if __name__ == "__main__":
     config_param = {
         PARAMETERS.ENROLL_COLLECTION :"collection_a",
         PARAMETERS.PREDICT_COLLECTION :"collection_a",
-         PARAMETERS.DELETE_COLLECTION :"collection_a"
+        PARAMETERS.DELETE_COLLECTION :"collection_a",
+        PARAMETERS.ALLOWED_RESULTS: [FaceValidationCode.GlassesOn.value]
     }
     config_object = ConfigObject(config_param)
     test_enroll(face_factor, image_path,config=config_object)  # => no billing reservation
-    result_handle = test_predict(face_factor, image_path, config=config_object) # => no billing reservation
-    test_delete(face_factor, result_handle, config=config_object)
-    result_handle = test_predict(face_factor, image_path, config=config_object) #
+    
+    # result_handle = test_predict(face_factor, image_path, config=config_object) # => no billing reservation
+    # test_delete(face_factor, result_handle, config=config_object)
+    # result_handle = test_predict(face_factor, image_path, config=config_object) #
     # result_handle = test_predict(face_factor, image_path)  # => no billing reservation
+
     # test_delete(face_factor)
     # test_predict_enrol_valid_image_with_no_cache()
     # test_valid_with_cache()

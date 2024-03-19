@@ -221,7 +221,7 @@ class ParameterValidator:
             name=PARAMETERS.DISALLOWED_RESULTS, _type="ANY"
         )
         self.__parameter[PARAMETERS.ALLOWED_RESULTS] = self.Parameter(
-            name=PARAMETERS.DISALLOWED_RESULTS, _type="ANY"
+            name=PARAMETERS.ALLOWED_RESULTS, _type="ANY"
         )
         self.__parameter[PARAMETERS.DOCUMENT_FACE_CHECK_VALIDITY] = self.Parameter(
             name=PARAMETERS.DOCUMENT_FACE_CHECK_VALIDITY, _type="BOOL"
