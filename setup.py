@@ -79,8 +79,7 @@ setup(
     ],
     py_modules=[NAME],
     package_data={
-        "cryptonets_python_sdk": [
-            
+        "cryptonets_python_sdk": ['handler/lib/lib_fhe.so',"handler/lib/libtensorflow-lite.so"            
         ]
     },
 )
