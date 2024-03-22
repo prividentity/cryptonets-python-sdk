@@ -9,6 +9,7 @@ class FaceEnrollPredictResult:
         guid=None,
         token=None,
         code=None,
+        score=None,
         status=CALL_STATUS_ERROR,
         message="",
     ):
@@ -19,6 +20,7 @@ class FaceEnrollPredictResult:
         self._status = status
         self._message = message
         self._code = code
+        self._score=score
 
     @property
     def enroll_level(self) -> int:
@@ -75,7 +77,12 @@ class FaceEnrollPredictResult:
         Returns the message of the operation
         """
         return self._message
-
+    @property
+    def score(self) -> str:
+        """
+        Returns the message of the operation
+        """
+        return self._score
     @property
     def code(self) -> int:
         """

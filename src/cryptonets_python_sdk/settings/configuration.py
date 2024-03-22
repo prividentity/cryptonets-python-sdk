@@ -53,7 +53,7 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     PREDICT_COLLECTION = "predict_collection"
     ENROLL_COLLECTION = "enroll_collection"
     DELETE_COLLECTION = "delete_collection"
-    
+    USER_IDENTIFIER="identifier"
 
 
     # BILLING PARAMETERS
@@ -249,6 +249,9 @@ class ParameterValidator:
         )
         self.__parameter[PARAMETERS.SEND_ORIGINAL_IMAGES] = self.Parameter(
             name=PARAMETERS.SEND_ORIGINAL_IMAGES, _type="BOOL"
+        )
+        self.__parameter[PARAMETERS.USER_IDENTIFIER] = self.Parameter(
+            name=PARAMETERS.USER_IDENTIFIER, _type="ANY"
         )
 
         # BILLING PARAMETERS

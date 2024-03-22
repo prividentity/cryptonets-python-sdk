@@ -75,6 +75,7 @@ class Face(metaclass=Singleton):
                 puid=json_data.get("puid", None),
                 guid=json_data.get("guid", None),
                 token=json_data.get("token", None),
+                score=json_data.get("score", None),
                 message=json_data.get("message", ""),
             )
         except Exception as e:
@@ -112,6 +113,7 @@ class Face(metaclass=Singleton):
                 puid=json_data.get("puid", None),
                 guid=json_data.get("guid", None),
                 token=json_data.get("token", None),
+                score=json_data.get("score", None),
                 message=json_data.get("message", ""),
             )
         except Exception as e:

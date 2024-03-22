@@ -53,13 +53,14 @@ def test_predict(predict_face_factor, predict_img_path, config=None):
     )
     print("Duration:", default_timer() - predict_start_time, "\n")
     print(
-        "Status:{}\nMessage:{}\nEnroll Level:{}\nPUID:{}\nGUID:{}\nToken:{}\n".format(
+        "Status:{}\nMessage:{}\nEnroll Level:{}\nPUID:{}\nGUID:{}\nToken:{}\nScore:{}\n".format(
             predict_handle.status,
             predict_handle.message,
             predict_handle.enroll_level,
             predict_handle.puid,
             predict_handle.guid,
             predict_handle.token,
+            predict_handle.score
         )
     )
     return predict_handle
@@ -385,7 +386,7 @@ def get_image_paths(folder_path):
     return image_paths
 if __name__ == "__main__":
 
-    (face_factor, image_path,) = setup_test("18.jpg")
+    (face_factor, image_path,) = setup_test("MakotoKawamura_resized_error.jpg")
     # (face_factor, img1, img2) = setup_compare_test(
     #     "3_predict_cropped_images_0.png", "8.png"
     # )
@@ -393,15 +394,17 @@ if __name__ == "__main__":
 
 
     config_param = {
-        PARAMETERS.ENROLL_COLLECTION :"collection_a",
-        PARAMETERS.PREDICT_COLLECTION :"collection_a",
-        PARAMETERS.DELETE_COLLECTION :"collection_a",
-        PARAMETERS.ALLOWED_RESULTS: [FaceValidationCode.GlassesOn.value]
+        PARAMETERS.ENROLL_COLLECTION :"collection_d",
+        PARAMETERS.PREDICT_COLLECTION :"collection_d",
+        PARAMETERS.DELETE_COLLECTION :"collection_d",
+        PARAMETERS.ALLOWED_RESULTS: [FaceValidationCode.GlassesOn.value],
+        PARAMETERS.USER_IDENTIFIER:"Azam Test"
+
     }
     config_object = ConfigObject(config_param)
     test_enroll(face_factor, image_path,config=config_object)  # => no billing reservation
     
-    # result_handle = test_predict(face_factor, image_path, config=config_object) # => no billing reservation
+    result_handle = test_predict(face_factor, image_path, config=config_object) # => no billing reservation
     # test_delete(face_factor, result_handle, config=config_object)
     # result_handle = test_predict(face_factor, image_path, config=config_object) #
     # result_handle = test_predict(face_factor, image_path)  # => no billing reservation
