@@ -27,6 +27,7 @@ class NativeMethods(object):
         try:
             self._config_object = config_object
             self._server_url_string=server_url
+            self._api_key_string=api_key
             self._local_lib_path = pathlib.Path(__file__).parent.joinpath("lib")
             self._local_lib_path.mkdir(parents=True, exist_ok=True)
             self._check_and_download_files()
@@ -180,33 +181,56 @@ class NativeMethods(object):
 
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_initialize_session(
-        #         const char* api_key, const unsigned int key_api_length,
-        #         const char* base_url, const unsigned int base_url_length,
-        #         const int debug_level,void** session_ptr_out);
+        #         const char* settings_buffer, const unsigned int settings_length,
+        #         void** session_ptr_out);
         ##############################################################################################
 
         self._spl_so_face.privid_initialize_session.argtypes = [
             c_char_p,  # const char* api_key
-            c_int,  # const unsigned int key_api_length
-            c_char_p,  # const char* base_url
-            c_int,  # const unsigned int base_url_length
             c_int,
-            c_int,  # const int debug_level
             POINTER(c_void_p),
         ]  # void** session_ptr_out
         self._spl_so_face.privid_initialize_session.restype = c_bool
         self._spl_so_face.handle = c_void_p()  # TODO rename to session
         # create a session
 
+        def named_urls(path):
+            return { 
+                "named_urls": {
+                    "predict": f"{self._server_url_string}/{path}/predict",
+                    "enroll": f"{self._server_url_string}/{path}/enroll",
+                    "deleteUser": f"{self._server_url_string}/{path}/deleteUser",
+                    "addbillingrecord": f"{self._server_url_string}/addbillingrecord", # Temporary for testing
+                    "api-key/checkApiKeyValid": f"{self._server_url_string}/api_check", # Temporary for testing
+                    "syncUUID": f"{self._server_url_string}/syncUUID" # Temporary for testing
+                 }
+             }
+
+        config_dict = {
+	    "collections": {
+                "default": {
+                    "named_urls": {
+                        "base_url": self._server_url_string
+                   }
+                },
+                "collection_a": named_urls("FACE3_1"),
+                "collection_b": named_urls("FACE3_2"),
+                "collection_c": named_urls("FACE3_3"),
+                "collection_d": named_urls("FACE3_4")
+            },
+            "session_token": self._api_key_string,
+            "debug_level": self._logging_level.value,
+            "request_timeout_ms": 5000
+        }
+
+        config_json = json.dumps(config_dict)
+        c_config_param = c_char_p(bytes(config_json, "utf-8"))
+        c_config_param_len = c_int(len(config_json))
+
         return_type = self._spl_so_face.privid_initialize_session(
-            c_char_p(self._api_key),
-            c_int32(len(self._api_key)),
-            c_char_p(self._server_url),
-            c_int32(len(self._server_url)),
-            c_int32(5000),
-            self._logging_level.value,
-            byref(self._spl_so_face.handle),
-        )
+            c_config_param, c_config_param_len,
+            byref(self._spl_so_face.handle))
+
         if not return_type:
             raise Exception("Wrong API_KEY or Server URL.")
         ##############################################################################################
@@ -215,43 +239,10 @@ class NativeMethods(object):
         # (ok) PRIVID_API_ATTRIB bool privid_set_configuration(void *session_ptr, const char *user_config,
         # const int user_config_length);
         ##############################################################################################
-        common_argtypes = [
-        c_void_p,
-        c_char_p, 
-        c_int, ]
-
-        self._spl_so_face.privid_configure_predict_urls.argtypes = common_argtypes
-        self._spl_so_face.privid_configure_predict_urls.restype = c_bool
-
-        self._spl_so_face.privid_configure_enroll_urls.argtypes = common_argtypes
-        self._spl_so_face.privid_configure_enroll_urls.restype = c_bool
-
-        self._spl_so_face.privid_configure_delete_urls.argtypes = common_argtypes
-        self._spl_so_face.privid_configure_delete_urls.restype = c_bool
        
-        def configure_url(action_type, urls):
-            config_dict = {"named_urls": [
-                {"url_name": "collection_a", "url": f"{self._server_url_string}/FACE3_1/{action_type}"},
-                {"url_name": "collection_b", "url": f"{self._server_url_string}/FACE3_2/{action_type}"},
-                {"url_name": "collection_c", "url": f"{self._server_url_string}/FACE3_3/{action_type}"},
-                {"url_name": "collection_d", "url": f"{self._server_url_string}/FACE3_4/{action_type}"},
-            
-            ]}
-            config_json = json.dumps(config_dict)
-            c_config_param = c_char_p(bytes(config_json, "utf-8"))
-            c_config_param_len = c_int(len(config_json))
-            return c_config_param, c_config_param_len
-        c_config_param, c_config_param_len = configure_url("predict", self._spl_so_face)
-        
-        self._spl_so_face.privid_configure_predict_urls(self._spl_so_face.handle, c_config_param, c_config_param_len)
-
-        # Configure enroll URLs
-        c_config_param_enroll, c_config_param_enroll_len = configure_url("enroll", self._spl_so_face)
-        self._spl_so_face.privid_configure_enroll_urls(self._spl_so_face.handle, c_config_param_enroll, c_config_param_enroll_len)
-
-        # Configure delete URLs
-        c_config_param_delete, c_config_param_delete_len = configure_url("deleteUser", self._spl_so_face)
-        self._spl_so_face.privid_configure_delete_urls(self._spl_so_face.handle, c_config_param_delete, c_config_param_delete_len)
+        # c_config_param, c_config_param_len = configure_url("predict", self._spl_so_face)
+        # c_config_param_enroll, c_config_param_enroll_len = configure_url("enroll", self._spl_so_face)
+        # c_config_param_delete, c_config_param_delete_len = configure_url("deleteUser", self._spl_so_face)
 
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_set_configuration(void *session_ptr, const char *user_config,
@@ -841,26 +832,11 @@ class NativeMethods(object):
             p_buffer_images_in = img_data
             c_p_buffer_images_in = p_buffer_images_in.ctypes.data_as(POINTER(c_uint8))
             im_size = im_height * im_width * im_channel
-            p_buffer_embeddings_out = np.zeros(
-                4 * self._embedding_length * self._num_embeddings, dtype=np.float32
-            )
-            c_p_buffer_embeddings_out = p_buffer_embeddings_out.ctypes.data_as(
-                POINTER(c_float)
-            )
 
-            augmented_images = np.zeros(self._aug_size, dtype=np.int8)
-            c_augmented_images = augmented_images.ctypes.data_as(POINTER(c_uint8))
-
+            c_result = c_char_p()
             result_out = np.zeros(1, dtype=np.int32)
             c_result_out = result_out.ctypes.data_as(POINTER(ctypes.c_int32))
 
-            emb_out_lenght = np.zeros(1, dtype=np.int32)
-            emb_out_lenght = emb_out_lenght.ctypes.data_as(POINTER(ctypes.c_int32))
-            c_result = c_char_p()
-            augmented_images_length = np.zeros(1, dtype=np.int32)
-            c_augmented_images_length = augmented_images_length.ctypes.data_as(
-                POINTER(ctypes.c_int32)
-            )
             if config_object and config_object.get_config_param():
                 c_config_param = c_char_p(
                     bytes(config_object.get_config_param(), "utf-8")
@@ -869,6 +845,7 @@ class NativeMethods(object):
             else:
                 c_config_param = c_char_p(bytes("", "utf-8"))
                 c_config_param_len = c_int(0)
+
             self._spl_so_face.privid_face_predict_onefa(
                 self._spl_so_face.handle,
                 c_config_param,

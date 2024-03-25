@@ -50,11 +50,9 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     FACE_DETECT_PREFERRED_SIZE = "face_detect_preferred_size"
     FACE_DETECT_MAX_OUT_IMAGE_SIZE = "face_detect_max_out_image_size"
     SEND_ORIGINAL_IMAGES = "send_original_images"
-    PREDICT_COLLECTION = "predict_collection"
-    ENROLL_COLLECTION = "enroll_collection"
-    DELETE_COLLECTION = "delete_collection"
+    COLLECTION_NAME = "collection_name"
     USER_IDENTIFIER="identifier"
-
+    NEIGHBORS="neighbors"
 
     # BILLING PARAMETERS
     # ISVALID_RESERVATION_CALLS = "is_valid"
@@ -302,13 +300,11 @@ class ParameterValidator:
             max_value=100000000,
         )
 
-        self.__parameter[PARAMETERS.PREDICT_COLLECTION] = self.Parameter(
-            name=PARAMETERS.PREDICT_COLLECTION, _type="ANY")
-        self.__parameter[PARAMETERS.ENROLL_COLLECTION] = self.Parameter(
-            name=PARAMETERS.ENROLL_COLLECTION, _type="ANY")
+        self.__parameter[PARAMETERS.COLLECTION_NAME] = self.Parameter(
+            name=PARAMETERS.COLLECTION_NAME, _type="ANY")
 
-        self.__parameter[PARAMETERS.DELETE_COLLECTION] = self.Parameter(
-            name=PARAMETERS.DELETE_COLLECTION, _type="ANY")
+        self.__parameter[PARAMETERS.NEIGHBORS] = self.Parameter(
+            name=PARAMETERS.NEIGHBORS,_type="NUMBER", min_value=1, max_value=100)
 
     def validate(self, key, value):
         return self.__parameter[key].validate(value)
