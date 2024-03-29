@@ -484,6 +484,19 @@ class NativeMethods(object):
             self._spl_so_face.privid_set_billing_record_threshold(
                 self._spl_so_face.handle, c_config_param, c_config_param_len
             )
+        # privid_doc_scan_face
+        self._spl_so_face.privid_doc_scan_face.argtypes = [
+            c_void_p, c_char_p, c_int, POINTER(c_uint8), c_int, c_int,
+            POINTER(POINTER(c_uint8)), POINTER(c_int), POINTER(POINTER(c_uint8)), POINTER(c_int), 
+            POINTER(c_char_p), POINTER(c_int)]
+        self._spl_so_face.privid_doc_scan_face.restype = c_int
+
+        # privid_doc_scan_barcode
+        self._spl_so_face.privid_doc_scan_barcode.argtypes = [
+            c_void_p, c_char_p, c_int, POINTER(c_uint8), c_int, c_int,
+            POINTER(POINTER(c_uint8)), POINTER(c_int), POINTER(POINTER(c_uint8)), POINTER(c_int), 
+            POINTER(c_char_p), POINTER(c_int)]
+        self._spl_so_face.privid_doc_scan_barcode.restype = c_int
 
     def is_valid_without_age(
         self, image_data: np.array, config_object: ConfigObject = None
@@ -935,4 +948,68 @@ class NativeMethods(object):
             return output
         except Exception as e:
             print(e)
+            return False
+    
+    def doc_scan_face(self, image_data: np.array, config_object: ConfigObject = None
+    ) -> Any:
+        try:
+            img = image_data
+            im_width = img.shape[1]
+            im_height = img.shape[0]
+
+            p_buffer_images_in = img.flatten()
+            c_p_buffer_images_in = p_buffer_images_in.ctypes.data_as(POINTER(c_uint8))
+
+            c_result = c_char_p()
+            c_result_len = c_int()
+            c_cropped_doc = pointer(c_uint8())
+            c_cropped_doc_len = c_int()
+            c_cropped_face = pointer(c_uint8())
+            c_cropped_face_len = c_int()
+            if config_object and config_object.get_config_param():
+                c_config_param = c_char_p(bytes(config_object.get_config_param(), 'utf-8'))
+                c_config_param_len = c_int(len(config_object.get_config_param()))
+            else:
+                c_config_param = c_char_p(bytes("", 'utf-8'))
+                c_config_param_len = c_int(0)
+            config_={"document_face_check_validity":True,"document_face_predict":True}
+
+            c_config_param = c_char_p(bytes(json.dumps(config_), 'utf-8'))
+            c_config_param_len = c_int(len(json.dumps(config_)))
+            print("config",json.dumps(config_))
+            self._spl_so_face.privid_doc_scan_face(
+                self._spl_so_face.handle, c_config_param, c_config_param_len,
+                c_p_buffer_images_in, c_int(im_width), c_int(im_height),
+                byref(c_cropped_doc), byref(c_cropped_doc_len),
+                byref(c_cropped_face), byref(c_cropped_face_len),
+                byref(c_result), byref(c_result_len))
+
+            if not c_result.value or not c_result_len.value:
+                raise Exception("Something went wrong. Couldn't process the image for Document API. ")
+            output_json = c_result.value[:c_result_len.value].decode()
+            # self._spl_so_face.FHE_free_api_memory(c_result)
+            print("output_json",output_json)
+            output_json = json.loads(output_json)
+            print("output_json_2",output_json)
+            cropped_doc_bytes = c_cropped_doc[:c_cropped_doc_len.value]
+            output_json["c_crop_document"] = Image.fromarray(np.uint8(np.reshape(cropped_doc_bytes, (
+                    output_json.get("cropped_doc_height", 0), output_json.get("cropped_doc_width", 0),
+                    output_json.get("cropped_doc_channels", 0))))).convert(
+                    "RGBA" if output_json.get("crop_doc_channels", 0) == 4 else "RGB")
+            print("output_json_3",output_json)
+            cropped_face_bytes = c_cropped_face[:c_cropped_face_len.value]
+            try :
+                output_json["c_cropped_face"] = Image.fromarray(np.uint8(np.reshape(cropped_face_bytes, (
+                    output_json.get("cropped_face_height", 0), output_json.get("cropped_face_width", 0),
+                    output_json.get("cropped_face_channels", 0))))).convert(
+                    "RGBA" if output_json.get("cropped_face_channels", 0) == 4 else "RGB")
+                print("output_json",output_json)
+                return output_json
+            except:
+                print("output_json_2",output_json)
+                return output_json
+
+            
+        except Exception as e:
+            print(e,)
             return False

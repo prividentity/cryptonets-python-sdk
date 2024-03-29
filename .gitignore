@@ -9,3 +9,4 @@ src/privateid_local_storage/uuids
 tests/example/test_images/MakotoKawamura_FaceFromBadge.png
 tests/example/test_images/MakotoKawamura_resized_error.jpg
 tests/example/test_images/MakotoKawamura_WithoutGlasses_resized.jpg
+tests/example/test_images/img.jpg

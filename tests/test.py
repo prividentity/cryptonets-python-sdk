@@ -386,7 +386,7 @@ def get_image_paths(folder_path):
     return image_paths
 if __name__ == "__main__":
 
-    (face_factor, image_path,) = setup_test("MakotoKawamura_resized_error.jpg")
+    (face_factor, image_path,) = setup_test("img.jpg")
     # (face_factor, img1, img2) = setup_compare_test(
     #     "3_predict_cropped_images_0.png", "8.png"
     # )
@@ -402,9 +402,11 @@ if __name__ == "__main__":
 
     }
     config_object = ConfigObject(config_param)
-    test_enroll(face_factor, image_path,config=config_object)  # => no billing reservation
+    print(face_factor.doc_scan_face(image_path=image_path))
+
+    # test_enroll(face_factor, image_path,config=config_object)  # => no billing reservation
     
-    result_handle = test_predict(face_factor, image_path, config=config_object) # => no billing reservation
+    # result_handle = test_predict(face_factor, image_path, config=config_object) # => no billing reservation
     # test_delete(face_factor, result_handle, config=config_object)
     # result_handle = test_predict(face_factor, image_path, config=config_object) #
     # result_handle = test_predict(face_factor, image_path)  # => no billing reservation

@@ -132,6 +132,17 @@ class Face(metaclass=Singleton):
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceDeleteResult(message=self.message.EXCEPTION_ERROR_DELETE)
+     
+    def doc_scan_face(self, image_data: np.array, config_object: ConfigObject = None):
+        try:
+            json_data = self.face_factor_processor.doc_scan_face(
+                image_data, config_object=config_object
+            )
+            print("json_data",json_data)
+        except Exception as e:
+            print(e, traceback.format_exc())
+            return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
+
 
     def compare(
         self,

@@ -535,7 +535,56 @@ class FaceFactor(metaclass=Singleton):
                 "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
             )
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
-
+    def doc_scan_face(
+        self,
+        image_path: str = None,
+        image_data: np.array = None,
+        config: ConfigObject = None,
+    ) :
+        try:
+            # if (
+            #     config is not None
+            #     and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param
+            # ):
+            #     input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
+            # elif (
+            #     self.config is not None
+            #     and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param
+            # ):
+            #     input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
+            # else:
+            #     input_format = "rgb"
+            # if (image_path is not None and image_data is not None) or (
+            #     image_path is None and image_data is None
+            # ):
+            #     return FaceEnrollPredictResult(
+            #         message="Specify either image_path or image_data"
+            #     )
+            # img_data = None
+            # if image_data is not None:
+            #     if not isinstance(image_data, np.ndarray):
+            #         return FaceEnrollPredictResult(
+            #             message="Required numpy array in RGB/RGBA/BGR format"
+            #         )
+            #     img_data = image_data
+            # if image_path is not None and len(image_path) > 0:
+            #     if not os.path.exists(image_path):
+            #         return FaceEnrollPredictResult(
+            #             message=self.message.get_message(101)
+            #         )
+            img_data = image_path_to_array(image_path, input_format="rgb")
+            if img_data is None:
+                return FaceEnrollPredictResult(
+                    message=self.message.EXCEPTION_ERROR_PREDICT
+                )
+            return self.face_factor.doc_scan_face(image_data=img_data, config_object=config)
+        except Exception as e:
+            print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
+            print(
+                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
+            )
+            return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
+        
     def delete(self, puid: str,config: ConfigObject = None)-> FaceDeleteResult:
         """Deletes the enrollment from the face recognition server
 
