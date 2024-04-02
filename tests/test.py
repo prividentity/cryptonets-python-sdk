@@ -394,9 +394,7 @@ if __name__ == "__main__":
 
 
     config_param = {
-        PARAMETERS.ENROLL_COLLECTION :"collection_d",
-        PARAMETERS.PREDICT_COLLECTION :"collection_d",
-        PARAMETERS.DELETE_COLLECTION :"collection_d",
+        PARAMETERS.COLLECTION_NAME:"collection_d",
         PARAMETERS.ALLOWED_RESULTS: [FaceValidationCode.GlassesOn.value],
         PARAMETERS.USER_IDENTIFIER:"Azam Test"
 

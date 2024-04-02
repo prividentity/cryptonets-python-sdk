@@ -58,25 +58,15 @@ class Face(metaclass=Singleton):
                 # we received a json response and thus call is successful
                 call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS
 
-            if "token" not in json_data:
-                # This is a quick fix to pick up the 'error' instead of 'status' field
-                # TODO Check the json structure consistency then pick up the right fields to generate
-                # the correct and informative 'FaceEnrollPredictResult'
-                return FaceEnrollPredictResult(
-                    status=call_status,
-                    code=json_data.get("error", -1),
-                    message=json_data.get(
-                        "message", self.message.EXCEPTION_ERROR_ENROLL
-                    ),
-                )
+            api_response=json_data.get("enroll_onefa", {}).get("api_response", {});
             return FaceEnrollPredictResult(
                 status=call_status,
                 enroll_level=json_data.get("enroll_level", None),
-                puid=json_data.get("puid", None),
-                guid=json_data.get("guid", None),
-                token=json_data.get("token", None),
-                score=json_data.get("score", None),
-                message=json_data.get("message", ""),
+                puid=api_response.get("puid", None),
+                guid=api_response.get("guid", None),
+                token=api_response.get("token", None),
+                score=api_response.get("score", None),
+                message=api_response.get("message", ""),
             )
         except Exception as e:
             print(e, traceback.format_exc())
@@ -97,24 +87,16 @@ class Face(metaclass=Singleton):
             else:
                 # we received a json response and thus call is successful
                 call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS
-            if "token" not in json_data:
-                # TODO Check the json structure consistency then pick up the right fields to generate
-                # the correct and informative 'FaceEnrollPredictResult'
-                return FaceEnrollPredictResult(
-                    status=call_status,
-                    code=json_data.get("status", -1),
-                    message=json_data.get(
-                        "message", self.message.EXCEPTION_ERROR_PREDICT
-                    ),
-                )
+
+            api_response=json_data.get("predict_onefa", {}).get("api_response", {});
             return FaceEnrollPredictResult(
                 status=call_status,
                 enroll_level=json_data.get("enroll_level", None),
-                puid=json_data.get("puid", None),
-                guid=json_data.get("guid", None),
-                token=json_data.get("token", None),
-                score=json_data.get("score", None),
-                message=json_data.get("message", ""),
+                puid=api_response.get("puid", None),
+                guid=api_response.get("guid", None),
+                token=api_response.get("token", None),
+                score=api_response.get("score", None),
+                message=api_response.get("message", ""),
             )
         except Exception as e:
             print(e, traceback.format_exc())
