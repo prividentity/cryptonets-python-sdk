@@ -52,18 +52,31 @@ def test_predict(predict_face_factor, predict_img_path, config=None):
         image_path=predict_img_path, config=config
     )
     print("Duration:", default_timer() - predict_start_time, "\n")
+    
+    if isinstance(predict_handle, list):
+        # Handle the case where predict_handle is a list
+        for index, handle in enumerate(predict_handle):
+            print("Result #{}".format(index + 1))
+            print_details(handle)
+    else:
+        # Handle the case where predict_handle is a single instance
+        print_details(predict_handle)
+
+    return predict_handle
+
+def print_details(handle):
+    """Prints the details of a FaceEnrollPredictResult instance."""
     print(
         "Status:{}\nMessage:{}\nEnroll Level:{}\nPUID:{}\nGUID:{}\nToken:{}\nScore:{}\n".format(
-            predict_handle.status,
-            predict_handle.message,
-            predict_handle.enroll_level,
-            predict_handle.puid,
-            predict_handle.guid,
-            predict_handle.token,
-            predict_handle.score
+            handle.status,
+            handle.message,
+            handle.enroll_level,
+            handle.puid,
+            handle.guid,
+            handle.token,
+            handle.score
         )
     )
-    return predict_handle
 
 
 def test_enroll(enroll_face_factor, enroll_img_path, config=None):
@@ -386,7 +399,7 @@ def get_image_paths(folder_path):
     return image_paths
 if __name__ == "__main__":
 
-    (face_factor, image_path,) = setup_test("img.jpg")
+    (face_factor, image_path,) = setup_test("18.jpg")
     # (face_factor, img1, img2) = setup_compare_test(
     #     "3_predict_cropped_images_0.png", "8.png"
     # )
@@ -396,17 +409,17 @@ if __name__ == "__main__":
     config_param = {
         PARAMETERS.COLLECTION_NAME:"collection_d",
         PARAMETERS.ALLOWED_RESULTS: [FaceValidationCode.GlassesOn.value],
-        PARAMETERS.USER_IDENTIFIER:"Azam Test"
+
 
     }
     config_object = ConfigObject(config_param)
-    print(face_factor.doc_scan_face(image_path=image_path))
+    # print(face_factor.doc_scan_face(image_path=image_path))
 
-    # test_enroll(face_factor, image_path,config=config_object)  # => no billing reservation
+    test_enroll(face_factor, image_path,config=config_object)  # => no billing reservation
     
     # result_handle = test_predict(face_factor, image_path, config=config_object) # => no billing reservation
     # test_delete(face_factor, result_handle, config=config_object)
-    # result_handle = test_predict(face_factor, image_path, config=config_object) #
+    result_handle = test_predict(face_factor, image_path, config=config_object) #
     # result_handle = test_predict(face_factor, image_path)  # => no billing reservation
 
     # test_delete(face_factor)

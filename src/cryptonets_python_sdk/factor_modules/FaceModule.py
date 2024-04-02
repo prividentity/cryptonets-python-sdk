@@ -1,6 +1,6 @@
 import string
 import traceback
-
+from typing import Union, List
 import numpy as np
 
 from ..handler.nativeMethods import NativeMethods
@@ -74,7 +74,7 @@ class Face(metaclass=Singleton):
 
     def predict(
         self, image_data: np.array, config_object: ConfigObject = None
-    ) -> FaceEnrollPredictResult:
+    ) -> Union[FaceEnrollPredictResult, List[FaceEnrollPredictResult]]:
         try:
             json_data = self.face_factor_processor.predict(
                 image_data, config_object=config_object
@@ -89,15 +89,25 @@ class Face(metaclass=Singleton):
                 call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS
 
             api_response=json_data.get("predict_onefa", {}).get("api_response", {});
-            return FaceEnrollPredictResult(
-                status=call_status,
-                enroll_level=json_data.get("enroll_level", None),
-                puid=api_response.get("puid", None),
-                guid=api_response.get("guid", None),
-                token=api_response.get("token", None),
-                score=api_response.get("score", None),
-                message=api_response.get("message", ""),
-            )
+            if not api_response.get("PI_list", []):
+                return FaceEnrollPredictResult(
+                    status=call_status,
+                    enroll_level=json_data.get("enroll_level", None),
+                    puid=api_response.get("puid", None),
+                    guid=api_response.get("guid", None),
+                    token=api_response.get("token", None),
+                    score=api_response.get("score", None),
+                    message=api_response.get("message", ""),
+                )
+            else:
+                return [FaceEnrollPredictResult(
+                    status=call_status,
+                    enroll_level=json_data.get("enroll_level", None),
+                    puid=person.get("puid", None),
+                    guid=person.get("guid", None),
+                    score=person.get("score", None),
+                    message=api_response.get("message", "Something went wrong"),
+                ) for person in api_response.get("PI_list", [])]
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
@@ -137,7 +147,7 @@ class Face(metaclass=Singleton):
                 image_data_1, image_data_2, config_object=config_object
             )
             call_status = FaceCompareResult.CALL_STATUS_ERROR
-            if not json_data:
+            if not json_dpredict(ata:
                 return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
             else:
                 # we received a json response and thus call is successful

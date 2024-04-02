@@ -5,7 +5,7 @@ import pathlib
 import platform
 import sys
 import traceback
-
+from typing import Union, List
 import numpy as np
 
 from .factor_modules.FaceModule import Face
@@ -462,7 +462,7 @@ class FaceFactor(metaclass=Singleton):
         image_path: str = None,
         image_data: np.array = None,
         config: ConfigObject = None,
-    ) -> FaceEnrollPredictResult:
+    ) -> Union[FaceEnrollPredictResult, List[FaceEnrollPredictResult]]:
         """Predicts the image in the face recognition server
 
         Parameters
