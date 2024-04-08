@@ -659,7 +659,7 @@ class NativeMethods(object):
             )
             p_buffer_result = c_char_p()
             p_buffer_result_length = c_int()
-            config_object_default = {"face_thresholds_rem_bad_emb_default": 1.96, "face_thresholds_med": 1.96}
+            config_object_default = {"face_thresholds_rem_bad_emb_default": 0.96, "face_thresholds_med": 0.96}
 
             config_default_str = json.dumps(config_object_default)
 
