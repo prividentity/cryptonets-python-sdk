@@ -535,56 +535,50 @@ class FaceFactor(metaclass=Singleton):
                 "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
             )
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
-    def doc_scan_face(
+    def _doc_scan_face(
         self,
         image_path: str = None,
         image_data: np.array = None,
         config: ConfigObject = None,
     ) :
         try:
-            # if (
-            #     config is not None
-            #     and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param
-            # ):
-            #     input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
-            # elif (
-            #     self.config is not None
-            #     and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param
-            # ):
-            #     input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
-            # else:
-            #     input_format = "rgb"
-            # if (image_path is not None and image_data is not None) or (
-            #     image_path is None and image_data is None
-            # ):
-            #     return FaceEnrollPredictResult(
-            #         message="Specify either image_path or image_data"
-            #     )
-            # img_data = None
-            # if image_data is not None:
-            #     if not isinstance(image_data, np.ndarray):
-            #         return FaceEnrollPredictResult(
-            #             message="Required numpy array in RGB/RGBA/BGR format"
-            #         )
-            #     img_data = image_data
-            # if image_path is not None and len(image_path) > 0:
-            #     if not os.path.exists(image_path):
-            #         return FaceEnrollPredictResult(
-            #             message=self.message.get_message(101)
-            #         )
-            img_data = image_path_to_array(image_path, input_format="rgb")
+            if (
+                config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param
+            ):
+                input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
+            elif (
+                self.config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param
+            ):
+                input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
+            else:
+                input_format = "rgb"
+            if (image_path is not None and image_data is not None) or (
+                image_path is None and image_data is None
+            ):
+                return "Specify either image_path or image_data"
+                
+            img_data = None
+            if image_data is not None:
+                if not isinstance(image_data, np.ndarray):
+                    return "Required numpy array in RGB/RGBA/BGR format"
+                
+                img_data = image_data
+            if image_path is not None and len(image_path) > 0:
+                if not os.path.exists(image_path):
+                    return self.message.get_message(101)
+            img_data = image_path_to_array(image_path, input_format)
             if img_data is None:
-                return FaceEnrollPredictResult(
-                    message=self.message.EXCEPTION_ERROR_PREDICT
-                )
-            return self.face_factor.doc_scan_face(image_data=img_data, config_object=config)
+                return self.message.EXCEPTION_ERROR_PREDICT
+            return self.face_factor._doc_scan_face(image_data=img_data, config_object=config)
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
             print(
                 "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
             )
-            return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
-        
+            return self.message.EXCEPTION_ERROR_PREDICT
+
     def delete(self, puid: str,config: ConfigObject = None)-> FaceDeleteResult:
         """Deletes the enrollment from the face recognition server
 
@@ -610,6 +604,117 @@ class FaceFactor(metaclass=Singleton):
                 "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
             )
             return FaceDeleteResult(message=self.message.EXCEPTION_ERROR_DELETE)
+
+    def compare_doc_with_face(
+        self,
+        face_path: str = None,
+        doc_path: str = None,
+        face_data: np.array = None,
+        doc_data: np.array = None,
+        config: ConfigObject = None,
+    ) -> FaceCompareResult:
+        """Check if the images are of same person or not
+
+        Parameters
+        ----------
+        image_path_1
+            Directory path to the first image file
+
+        image_path_2
+            Directory path to the second image file
+
+        config (Optional)
+            Additional configuration parameters for the operation
+
+        image_data_1 (Optional)
+            First Image data in numpy RGB format
+
+        image_data_2 (Optional)
+            Second Image data in numpy RGB format
+
+        Returns
+        -------
+        FaceCompareResult
+            status: int [0 if same, 1 if different, -1 if unsuccessful]
+
+            message: str [Message from the operation]
+
+            result: str
+
+            distance_min: str
+
+            distance_mean: str
+
+            distance_max: str
+
+            first_validation_result: str
+
+            second_validation_result: str
+
+        """
+
+        try:
+            if (
+                config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param
+            ):
+                input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
+            elif (
+                self.config is not None
+                and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param
+            ):
+                input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
+            else:
+                input_format = "rgb"
+            if (
+                face_path is not None
+                and doc_path is not None
+                and face_data is not None
+                and doc_data is not None
+            ) or (
+                face_path is None
+                and doc_path is None
+                and face_data is None
+                and doc_data is None
+            ):
+                return FaceCompareResult(
+                    message="Specify either image_path or image_data"
+                )
+            img_data_1, img_data_2 = None, None
+            if doc_data is not None and face_data is not None:
+                if not isinstance(face_data, np.ndarray) or not isinstance(
+                    doc_data, np.ndarray
+                ):
+                    return FaceCompareResult(
+                        message="Required numpy array in RGB/RGBA/BGR format"
+                    )
+                img_data_1 = face_data
+                img_data_2 = doc_data
+            if (face_path is not None and len(face_path) > 0) or (
+                doc_path is not None and len(doc_path) > 0
+            ):
+                if not os.path.exists(face_path) or not os.path.exists(doc_path):
+                    return FaceCompareResult(message=self.message.get_message(101))
+                img_data_1 = image_path_to_array(
+                    face_path, input_format=input_format
+                )
+                img_data_2 = image_path_to_array(
+                    doc_path, input_format=input_format
+                )
+                if img_data_1 is None or img_data_2 is None:
+                    return FaceCompareResult(
+                        message=self.message.EXCEPTION_ERROR_COMPARE
+                    )
+            return self.face_factor.compare_doc_with_face(
+                face_data=img_data_1, doc_data=img_data_2, config_object=config
+            )
+        except Exception as e:
+            print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
+            print(
+                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
+            )
+            return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
+
 
     def compare(
         self,

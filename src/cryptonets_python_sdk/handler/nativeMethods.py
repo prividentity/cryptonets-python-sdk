@@ -102,68 +102,6 @@ class NativeMethods(object):
         self._local_storage_path = local_storage_path
         self._cache_type = cache_type
 
-
-# class NativeMethods(object):
-#     def __init__(
-#         self,
-#         api_key: str,
-#         server_url: str,
-#         local_storage_path: str,
-#         logging_level: LoggingLevel,
-#         tf_num_thread: int,
-#         cache_type: CacheType,
-#         config_object: ConfigObject = None,
-#     ):
-#         try:
-#             self._config_object = config_object
-#             if platform.system() == "Linux":
-#                 self._library_path = str(
-#                     pathlib.Path(__file__)
-#                     .parent.joinpath("lib/lib_fhe.so")
-#                     .resolve()
-#                 )
-#                 self._spl_so_face = ctypes.CDLL(self._library_path)
-#             elif platform.system() == "Windows":
-#                 self._library_path = str(
-#                     pathlib.Path(__file__)
-#                     .parent.joinpath("lib/privid_fhe.dll")
-#                     .resolve()
-#                 )
-#                 self._library_path_2 = str(
-#                     pathlib.Path(__file__)
-#                     .parent.joinpath("lib/libssl-1_1-x64.dll")
-#                     .resolve()
-#                 )
-#                 self._library_path_3 = str(
-#                     pathlib.Path(__file__)
-#                     .parent.joinpath("lib/libcrypto-1_1-x64.dll")
-#                     .resolve()
-#                 )
-#                 ctypes.CDLL(self._library_path_3, mode=1)
-#                 ctypes.CDLL(self._library_path_2, mode=1)
-#                 self._spl_so_face = ctypes.CDLL(self._library_path)
-#             elif platform.system() == "Darwin":
-#                 self._library_path = str(
-#                     pathlib.Path(__file__)
-#                     .parent.joinpath("lib/libprivid_fhe.dylib")
-#                     .resolve()
-#                 )
-#                 self._spl_so_face = ctypes.CDLL(self._library_path)
-
-#             self._embedding_length = 128
-#             self._num_embeddings = 80
-#             self._aug_size = 224 * 224 * 4 * self._num_embeddings
-#             self._tf_num_thread = tf_num_thread
-#             self._api_key = bytes(api_key, "utf-8")
-#             self._server_url = bytes(server_url, "utf-8")
-#             self._logging_level = logging_level
-#             self._local_storage_path = local_storage_path
-#             self._cache_type = cache_type
-#             self._face_setup()
-#         except Exception as e:
-#             print("Error ", e)
-#             sys.exit(1)
-
     def update_config(self, config_object):
         self._config_object = config_object
         if self._config_object and self._config_object.get_config_param():
@@ -230,6 +168,14 @@ class NativeMethods(object):
         return_type = self._spl_so_face.privid_initialize_session(
             c_config_param, c_config_param_len,
             byref(self._spl_so_face.handle))
+
+        # self._spl_so_face.privid_get_version.argtypes = []
+        # self._spl_so_face.privid_get_version.restype = c_char_p
+
+        # # Call the function and decode the byte string to print
+        # version_bytes = self._spl_so_face.privid_get_version()
+        # version_str = version_bytes.decode('utf-8')  # Decoding to string
+        # print(version_str)
 
         if not return_type:
             raise Exception("Wrong API_KEY or Server URL.")
@@ -696,7 +642,7 @@ class NativeMethods(object):
         try:
             left_img_data_buffer = left_image.flatten()
             right_img_data_buffer = right_image.flatten()
-
+            print(len(left_img_data_buffer),len(right_img_data_buffer))
             left_c_img_data_buffer = left_img_data_buffer.ctypes.data_as(
                 POINTER(c_uint8)
             )
@@ -711,9 +657,10 @@ class NativeMethods(object):
             rim_size = (
                 right_image.shape[1] * right_image.shape[0] * right_image.shape[2]
             )
-
             p_buffer_result = c_char_p()
             p_buffer_result_length = c_int()
+            config_object_default={"face_thresholds_rem_bad_emb_default":1.96,"face_thresholds_med":1.96}
+            
             if config_object and config_object.get_config_param():
                 c_config_param = c_char_p(
                     bytes(config_object.get_config_param(), "utf-8")
@@ -722,6 +669,8 @@ class NativeMethods(object):
             else:
                 c_config_param = c_char_p(bytes("", "utf-8"))
                 c_config_param_len = c_int(0)
+
+    
             success = self._spl_so_face.privid_face_compare_files(
                 self._spl_so_face.handle,
                 c_float(fudge_factor),
@@ -747,6 +696,7 @@ class NativeMethods(object):
 
             self._spl_so_face.privid_free_char_buffer(p_buffer_result)
             if output_json_str is not None and len(output_json_str) > 0:
+                print("output_json_str",output_json_str)
                 output = json.loads(output_json_str)
                 # the status should receive the value of the success of the api call
                 # according to FaceCompareResult (that is used in unit tests!!) comments and thus should have
@@ -927,8 +877,7 @@ class NativeMethods(object):
             print(e)
             return False
     
-    def doc_scan_face(self, image_data: np.array, config_object: ConfigObject = None
-    ) -> Any:
+    def doc_scan_face(self, image_data: np.array, config_object: ConfigObject = None) -> Any:
         try:
             img = image_data
             im_width = img.shape[1]
@@ -944,16 +893,22 @@ class NativeMethods(object):
             c_cropped_face = pointer(c_uint8())
             c_cropped_face_len = c_int()
             if config_object and config_object.get_config_param():
-                c_config_param = c_char_p(bytes(config_object.get_config_param(), 'utf-8'))
-                c_config_param_len = c_int(len(config_object.get_config_param()))
+                config_dict = json.loads(config_object.get_config_param())
             else:
-                c_config_param = c_char_p(bytes("", 'utf-8'))
-                c_config_param_len = c_int(0)
-            config_={"document_face_check_validity":True,"document_face_predict":True}
+                config_dict = {}
+            default_values = {
+                "threshold_doc_x": 0.0,
+                "threshold_doc_y": 0.0,
+                "threshold_doc_too_far": 0.0,
+                "threshold_doc_too_close": 1.0
+            }
 
-            c_config_param = c_char_p(bytes(json.dumps(config_), 'utf-8'))
-            c_config_param_len = c_int(len(json.dumps(config_)))
-            print("config",json.dumps(config_))
+            for key, value in default_values.items():
+                config_dict.setdefault(key, value)
+            config_json = json.dumps(config_dict)
+            c_config_param = c_char_p(bytes(config_json, 'utf-8'))
+            c_config_param_len = c_int(len(config_json))
+
             self._spl_so_face.privid_doc_scan_face(
                 self._spl_so_face.handle, c_config_param, c_config_param_len,
                 c_p_buffer_images_in, c_int(im_width), c_int(im_height),
@@ -962,31 +917,23 @@ class NativeMethods(object):
                 byref(c_result), byref(c_result_len))
 
             if not c_result.value or not c_result_len.value:
-                raise Exception("Something went wrong. Couldn't process the image for Document API. ")
-            output_json = c_result.value[:c_result_len.value].decode()
-            # self._spl_so_face.FHE_free_api_memory(c_result)
-            print("output_json",output_json)
-            output_json = json.loads(output_json)
-            print("output_json_2",output_json)
-            cropped_doc_bytes = c_cropped_doc[:c_cropped_doc_len.value]
-            output_json["c_crop_document"] = Image.fromarray(np.uint8(np.reshape(cropped_doc_bytes, (
-                    output_json.get("cropped_doc_height", 0), output_json.get("cropped_doc_width", 0),
-                    output_json.get("cropped_doc_channels", 0))))).convert(
-                    "RGBA" if output_json.get("crop_doc_channels", 0) == 4 else "RGB")
-            print("output_json_3",output_json)
-            cropped_face_bytes = c_cropped_face[:c_cropped_face_len.value]
-            try :
-                output_json["c_cropped_face"] = Image.fromarray(np.uint8(np.reshape(cropped_face_bytes, (
-                    output_json.get("cropped_face_height", 0), output_json.get("cropped_face_width", 0),
-                    output_json.get("cropped_face_channels", 0))))).convert(
-                    "RGBA" if output_json.get("cropped_face_channels", 0) == 4 else "RGB")
-                print("output_json",output_json)
-                return output_json
-            except:
-                print("output_json_2",output_json)
-                return output_json
+                raise Exception("Something went wrong. Couldn't process the image for Document API.")
+            output_json = json.loads(c_result.value[:c_result_len.value].decode())
 
-            
+
+            if output_json.get("doc_face",{}).get("document_data",{}).get("document_validation_status",-1)==0:
+                doc_info = output_json['doc_face']['document_data']['cropped_document_image']['info']
+                face_info = output_json['doc_face']['cropped_face_image']['info']
+        
+                cropped_doc_bytes = c_cropped_doc[:c_cropped_doc_len.value]
+                output_json["doc_face"]["cropped_document"] =np.uint8(np.reshape(cropped_doc_bytes, (
+                        doc_info['height'], doc_info['width'], doc_info['channels']
+                    )))  
+                cropped_face_bytes = c_cropped_face[:c_cropped_face_len.value]
+                output_json["doc_face"]["cropped_face"] = np.uint8(np.reshape(cropped_face_bytes, (
+                        face_info['height'], face_info['width'], face_info['channels']
+                    )))
+            return output_json
         except Exception as e:
-            print(e,)
+            print("Error",e)
             return False

@@ -125,16 +125,61 @@ class Face(metaclass=Singleton):
             print(e, traceback.format_exc())
             return FaceDeleteResult(message=self.message.EXCEPTION_ERROR_DELETE)
      
-    def doc_scan_face(self, image_data: np.array, config_object: ConfigObject = None):
+    def _doc_scan_face(self, image_data: np.array, config_object: ConfigObject = None):
         try:
             json_data = self.face_factor_processor.doc_scan_face(
                 image_data, config_object=config_object
             )
-            print("json_data",json_data)
+            return json_data
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
 
+
+
+    def compare_doc_with_face(
+        self,
+        face_data: np.array,
+        doc_data: np.array,
+        config_object: ConfigObject = None,
+    ) -> FaceCompareResult:
+        try:
+            processed_document=self._doc_scan_face(image_data=doc_data)
+            if processed_document.get("doc_face",{}).get("document_data",{}).get("document_validation_status",-1)!=0:
+                 return FaceCompareResult(message= processed_document.get("doc_face",{}).get("document_data",{}).get("status_message","Something went wrong"))
+            from PIL import Image
+
+            cropped_face_array = processed_document.get("doc_face",{}).get("cropped_face")
+            print(processed_document.get("doc_face",{}))
+            if cropped_face_array is not None:
+                print(cropped_face_array)
+                cropped_face_image = Image.fromarray(cropped_face_array)
+                cropped_face_image.save("cropped_face_debug_2.png")  
+            
+            json_data_all = self.face_factor_processor.compare_files(
+                face_data, processed_document.get("doc_face",{}).get("cropped_face"), config_object=config_object
+            )
+
+            call_status = FaceCompareResult.CALL_STATUS_ERROR
+            if not json_data_all:
+                return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
+            else:
+                # we received a json response and thus call is successful
+                call_status = FaceCompareResult.CALL_STATUS_SUCCESS
+            json_data=json_data_all.get("face_compare",{})
+            return FaceCompareResult(
+                result=json_data.get("result", None),
+                distance_min=json_data.get("distance_min", None),
+                first_validation_result=json_data.get("valid_flag_a", None),
+                second_validation_result=json_data.get("valid_flag_b", None),
+                distance_max=json_data.get("distance_max", None),
+                distance_mean=json_data.get("distance_mean", None),
+                status=call_status,
+                message=json_data.get("message", ""),
+            )
+        except Exception as e:
+            print(e, traceback.format_exc())
+            return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
 
     def compare(
         self,
@@ -147,7 +192,7 @@ class Face(metaclass=Singleton):
                 image_data_1, image_data_2, config_object=config_object
             )
             call_status = FaceCompareResult.CALL_STATUS_ERROR
-            if not json_dpredict(ata:
+            if not json_data:
                 return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
             else:
                 # we received a json response and thus call is successful

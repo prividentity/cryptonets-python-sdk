@@ -227,7 +227,7 @@ def setup_compare_test(
     a_cache_type = CacheType.ON if use_cache is False else CacheType.ON
 
     face_factor = FaceFactor(
-        logging_level=LoggingLevel.off, config=config_object, cache_type=a_cache_type
+        logging_level=LoggingLevel.full, config=config_object, cache_type=a_cache_type
     )
 
     return face_factor, image1_file_path, image2_file_path
@@ -399,7 +399,11 @@ def get_image_paths(folder_path):
     return image_paths
 if __name__ == "__main__":
 
-    (face_factor, image_path,) = setup_test("18.jpg")
+    # (face_factor, image_path,) = setup_test("IMG_3843.jpg")
+    (face_factor, mike_dl,) = setup_test("mike_dl.jpg")
+    (face_factor, mike_face,) = setup_test("mike_face.png")
+    (face_factor, test_im,) = setup_test("18.jpg")
+    (face_factor, test_im_dl,) = setup_test("18_dl.png")
     # (face_factor, img1, img2) = setup_compare_test(
     #     "3_predict_cropped_images_0.png", "8.png"
     # )
@@ -413,13 +417,64 @@ if __name__ == "__main__":
 
     }
     config_object = ConfigObject(config_param)
-    # print(face_factor.doc_scan_face(image_path=image_path))
 
-    test_enroll(face_factor, image_path,config=config_object)  # => no billing reservation
+
+    print(colored("{}\n{}".format("Compare", "=" * 25), "green"))
+
+    compare_start_time = default_timer()
+    compare_handle = face_factor.compare_doc_with_face(face_path=mike_face,doc_path=mike_dl)
+    print("Duration:", default_timer() - compare_start_time, "\n")
+    print(
+        "Status:{}\nResult:{}\nMessage:{}\nMin:{}\nMean:{}\nMax:{}\n1VR:{}\n2VR:{}\n".format(
+            compare_handle.status,
+            compare_handle.result,
+            compare_handle.message,
+            compare_handle.distance_min,
+            compare_handle.distance_mean,
+            compare_handle.distance_max,
+            compare_handle.first_validation_result,
+            compare_handle.second_validation_result,
+        )
+    )
+
+    # print(colored("{}\n{}".format("Compare", "=" * 25), "green"))
+
+    # compare_start_time = default_timer()
+    # compare_handle = face_factor.compare(image_path_1=mike_face,image_path_2=mike_face)
+    # print("Duration:", default_timer() - compare_start_time, "\n")
+    # print(
+    #     "Status:{}\nResult:{}\nMessage:{}\nMin:{}\nMean:{}\nMax:{}\n1VR:{}\n2VR:{}\n".format(
+    #         compare_handle.status,
+    #         compare_handle.result,
+    #         compare_handle.message,
+    #         compare_handle.distance_min,
+    #         compare_handle.distance_mean,
+    #         compare_handle.distance_max,
+    #         compare_handle.first_validation_result,
+    #         compare_handle.second_validation_result,
+    #     )
+    # )
+    # compare_handle = face_factor.compare(image_path_1=mike_face,image_path_2=test_im)
+    # print("Duration:", default_timer() - compare_start_time, "\n")
+    # print(
+    #     "Status:{}\nResult:{}\nMessage:{}\nMin:{}\nMean:{}\nMax:{}\n1VR:{}\n2VR:{}\n".format(
+    #         compare_handle.status,
+    #         compare_handle.result,
+    #         compare_handle.message,
+    #         compare_handle.distance_min,
+    #         compare_handle.distance_mean,
+    #         compare_handle.distance_max,
+    #         compare_handle.first_validation_result,
+    #         compare_handle.second_validation_result,
+    #     )
+    # )
+
+
+    # test_enroll(face_factor, image_path,config=config_object)  # => no billing reservation
     
     # result_handle = test_predict(face_factor, image_path, config=config_object) # => no billing reservation
     # test_delete(face_factor, result_handle, config=config_object)
-    result_handle = test_predict(face_factor, image_path, config=config_object) #
+    # result_handle = test_predict(face_factor, image_path, config=config_object) #
     # result_handle = test_predict(face_factor, image_path)  # => no billing reservation
 
     # test_delete(face_factor)
