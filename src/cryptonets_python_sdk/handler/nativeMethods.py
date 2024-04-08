@@ -659,16 +659,19 @@ class NativeMethods(object):
             )
             p_buffer_result = c_char_p()
             p_buffer_result_length = c_int()
-            config_object_default={"face_thresholds_rem_bad_emb_default":1.96,"face_thresholds_med":1.96}
-            
+            config_object_default = {"face_thresholds_rem_bad_emb_default": 1.96, "face_thresholds_med": 1.96}
+
+            config_default_str = json.dumps(config_object_default)
+
+
             if config_object and config_object.get_config_param():
-                c_config_param = c_char_p(
-                    bytes(config_object.get_config_param(), "utf-8")
-                )
-                c_config_param_len = c_int(len(config_object.get_config_param()))
+                config_param_str = config_object.get_config_param()
             else:
-                c_config_param = c_char_p(bytes("", "utf-8"))
-                c_config_param_len = c_int(0)
+
+                config_param_str = config_default_str
+
+            c_config_param = c_char_p(bytes(config_param_str, "utf-8"))
+            c_config_param_len = c_int(len(config_param_str))
 
     
             success = self._spl_so_face.privid_face_compare_files(
@@ -696,15 +699,8 @@ class NativeMethods(object):
 
             self._spl_so_face.privid_free_char_buffer(p_buffer_result)
             if output_json_str is not None and len(output_json_str) > 0:
-                print("output_json_str",output_json_str)
+
                 output = json.loads(output_json_str)
-                # the status should receive the value of the success of the api call
-                # according to FaceCompareResult (that is used in unit tests!!) comments and thus should have
-                # * 0 : If successfully obtained result from server => API call success
-                # * -1 : In case of error => API call failed
-                # The 'result' in the other hand is a value returned by the operation
-                #  which can be any basic type having any value
-                output["status"] = 0 if success else -1
                 return output
             else:
                 return False
@@ -917,7 +913,7 @@ class NativeMethods(object):
                 byref(c_result), byref(c_result_len))
 
             if not c_result.value or not c_result_len.value:
-                raise Exception("Something went wrong. Couldn't process the image for Document API.")
+                raise Exception("Something went wrong. Couldn't process the image for Document.")
             output_json = json.loads(c_result.value[:c_result_len.value].decode())
 
 

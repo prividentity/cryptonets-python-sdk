@@ -635,17 +635,13 @@ class FaceFactor(metaclass=Singleton):
         Returns
         -------
         FaceCompareResult
-            status: int [0 if same, 1 if different, -1 if unsuccessful]
+            status: int 
 
             message: str [Message from the operation]
 
-            result: str
+            result: int [0 if same, 1 if different, -1 if unsuccessful]
 
-            distance_min: str
-
-            distance_mean: str
-
-            distance_max: str
+            distance: str
 
             first_validation_result: str
 
