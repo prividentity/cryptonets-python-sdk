@@ -404,6 +404,8 @@ if __name__ == "__main__":
     (face_factor, mike_face,) = setup_test("mike_face.png")
     (face_factor, test_im,) = setup_test("18.jpg")
     (face_factor, test_im_dl,) = setup_test("18_dl.png")
+
+    (face_factor, dl_with_glasses,) = setup_test("dl_with_glasses.png")
     # (face_factor, img1, img2) = setup_compare_test(
     #     "3_predict_cropped_images_0.png", "8.png"
     # )
@@ -413,6 +415,7 @@ if __name__ == "__main__":
     config_param = {
         PARAMETERS.COLLECTION_NAME:"collection_d",
         PARAMETERS.ALLOWED_RESULTS: [FaceValidationCode.GlassesOn.value],
+        PARAMETERS.K:100
 
 
     }
@@ -423,6 +426,8 @@ if __name__ == "__main__":
 
     compare_start_time = default_timer()
     compare_handle = face_factor.compare_doc_with_face(face_path=mike_face,doc_path=mike_dl)
+    # compare_handle = face_factor.compare_doc_with_face(face_path=test_im,doc_path=test_im_dl)
+    # compare_handle = face_factor.compare_doc_with_face(face_path=test_im,doc_path=dl_with_glasses)
     print("Duration:", default_timer() - compare_start_time, "\n")
     print(
         "Status:{}\nResult:{}\nMessage:{}\nDistance {}\n1VR:{}\n2VR:{}\n".format(
@@ -452,25 +457,10 @@ if __name__ == "__main__":
     #         compare_handle.second_validation_result,
     #     )
     # )
-    # compare_handle = face_factor.compare(image_path_1=mike_face,image_path_2=test_im)
-    # print("Duration:", default_timer() - compare_start_time, "\n")
-    # print(
-    #     "Status:{}\nResult:{}\nMessage:{}\nMin:{}\nMean:{}\nMax:{}\n1VR:{}\n2VR:{}\n".format(
-    #         compare_handle.status,
-    #         compare_handle.result,
-    #         compare_handle.message,
-    #         compare_handle.distance_min,
-    #         compare_handle.distance_mean,
-    #         compare_handle.distance_max,
-    #         compare_handle.first_validation_result,
-    #         compare_handle.second_validation_result,
-    #     )
-    # )
 
-
-    # test_enroll(face_factor, image_path,config=config_object)  # => no billing reservation
+    test_enroll(face_factor, test_im,config=config_object)  # => no billing reservation
     
-    # result_handle = test_predict(face_factor, image_path, config=config_object) # => no billing reservation
+    result_handle = test_predict(face_factor, test_im, config=config_object) # => no billing reservation
     # test_delete(face_factor, result_handle, config=config_object)
     # result_handle = test_predict(face_factor, image_path, config=config_object) #
     # result_handle = test_predict(face_factor, image_path)  # => no billing reservation

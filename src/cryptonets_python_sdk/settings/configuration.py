@@ -52,7 +52,7 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     SEND_ORIGINAL_IMAGES = "send_original_images"
     COLLECTION_NAME = "collection_name"
     USER_IDENTIFIER="identifier"
-    NEIGHBORS="neighbors"
+    K="neighbors"
 
     # BILLING PARAMETERS
     # ISVALID_RESERVATION_CALLS = "is_valid"
@@ -303,8 +303,8 @@ class ParameterValidator:
         self.__parameter[PARAMETERS.COLLECTION_NAME] = self.Parameter(
             name=PARAMETERS.COLLECTION_NAME, _type="ANY")
 
-        self.__parameter[PARAMETERS.NEIGHBORS] = self.Parameter(
-            name=PARAMETERS.NEIGHBORS,_type="NUMBER", min_value=1, max_value=100)
+        self.__parameter[PARAMETERS.K] = self.Parameter(
+            name=PARAMETERS.K,_type="NUMBER", min_value=1, max_value=100)
 
     def validate(self, key, value):
         return self.__parameter[key].validate(value)
