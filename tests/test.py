@@ -200,7 +200,7 @@ def setup_test(
     a_cache_type = CacheType.ON if use_cache is False else CacheType.ON
 
     face_factor = FaceFactor(
-        logging_level=LoggingLevel.full, config=config_object
+        logging_level=LoggingLevel.off, config=config_object
     )
 
     return face_factor, image_file_path
@@ -227,7 +227,7 @@ def setup_compare_test(
     a_cache_type = CacheType.ON if use_cache is False else CacheType.ON
 
     face_factor = FaceFactor(
-        logging_level=LoggingLevel.full, config=config_object, cache_type=a_cache_type
+        logging_level=LoggingLevel.off, config=config_object, cache_type=a_cache_type
     )
 
     return face_factor, image1_file_path, image2_file_path
@@ -425,13 +425,11 @@ if __name__ == "__main__":
     compare_handle = face_factor.compare_doc_with_face(face_path=mike_face,doc_path=mike_dl)
     print("Duration:", default_timer() - compare_start_time, "\n")
     print(
-        "Status:{}\nResult:{}\nMessage:{}\nMin:{}\nMean:{}\nMax:{}\n1VR:{}\n2VR:{}\n".format(
+        "Status:{}\nResult:{}\nMessage:{}\nDistance {}\n1VR:{}\n2VR:{}\n".format(
             compare_handle.status,
             compare_handle.result,
             compare_handle.message,
-            compare_handle.distance_min,
-            compare_handle.distance_mean,
-            compare_handle.distance_max,
+            compare_handle.distance,
             compare_handle.first_validation_result,
             compare_handle.second_validation_result,
         )

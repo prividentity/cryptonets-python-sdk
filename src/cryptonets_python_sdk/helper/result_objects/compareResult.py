@@ -14,6 +14,7 @@ class FaceCompareResult:
         second_validation_result=None,
         first_validation_result=None,
         status=CALL_STATUS_ERROR,
+        distance=None,
         message="",
     ):
         """Result handler for compare
@@ -21,6 +22,7 @@ class FaceCompareResult:
         self._status = status
         self._result = result
         self._message = message
+        self.distance=distance
         self._distance_min = distance_min
         self._distance_mean = distance_mean
         self._distance_max = distance_max

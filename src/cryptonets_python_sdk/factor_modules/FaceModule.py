@@ -166,12 +166,11 @@ class Face(metaclass=Singleton):
             face_data=face_compare_json_data_all.get("face_compare",{})
             call_status=face_compare_json_data_all.get("call_status",{}).get("return_status",-1)
             if face_data.get("result", None)==1:
-
                 return FaceCompareResult(
                     result=face_data.get("result", None),
                     distance=face_data.get("distance_min", None),
-                    first_validation_result=face_data.get("valid_flag_a", None),
-                    second_validation_result=face_data.get("valid_flag_b", None),
+                    first_validation_result=face_data.get("a_face_validation_status", None),
+                    second_validation_result=face_data.get("b_face_validation_status", None),
                     status=face_data.get("result", None),
                     message= "Same face",
                 )
@@ -179,8 +178,8 @@ class Face(metaclass=Singleton):
                  return FaceCompareResult(
                     result=face_data.get("result", None),
                     distance=face_data.get("distance_min", None),
-                    first_validation_result=face_data.get("valid_flag_a", None),
-                    second_validation_result=face_data.get("valid_flag_b", None),
+                    first_validation_result=face_data.get("a_face_validation_status", None),
+                    second_validation_result=face_data.get("b_face_validation_status", None),
                     status=call_status,
                     message= "Different face",
                 )
@@ -188,8 +187,8 @@ class Face(metaclass=Singleton):
                  return FaceCompareResult(
                     result=face_data.get("result", None),
                     distance=face_data.get("distance_min", None),
-                    first_validation_result=face_data.get("valid_flag_a", None),
-                    second_validation_result=face_data.get("valid_flag_b", None),
+                    first_validation_result=face_data.get("a_face_validation_status", None),
+                    second_validation_result=face_data.get("b_face_validation_status", None),
                     status=call_status,
                     message=self.message.EXCEPTION_ERROR_COMPARE,
                 )
