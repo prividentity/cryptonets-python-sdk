@@ -659,7 +659,7 @@ class NativeMethods(object):
             )
             p_buffer_result = c_char_p()
             p_buffer_result_length = c_int()
-            config_object_default = {"face_thresholds_rem_bad_emb_default": 0.96, "face_thresholds_med": 0.96}
+            config_object_default = {"face_thresholds_rem_bad_emb_default": 1.15, "face_thresholds_med": 1.15}
 
             config_default_str = json.dumps(config_object_default)
 
@@ -696,10 +696,9 @@ class NativeMethods(object):
                 )
             len_ = p_buffer_result_length.value
             output_json_str = p_buffer_result.value[:len_].decode()
-
             self._spl_so_face.privid_free_char_buffer(p_buffer_result)
             if output_json_str is not None and len(output_json_str) > 0:
-
+                
                 output = json.loads(output_json_str)
                 return output
             else:

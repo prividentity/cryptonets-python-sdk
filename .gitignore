@@ -4,6 +4,7 @@ build
 dist
 **.egg-info
 .venv/
+tests/example/*
 src/cryptonets_python_sdk/handler/lib/*
 src/privateid_local_storage/uuids
 tests/example/test_images/MakotoKawamura_FaceFromBadge.png
@@ -18,3 +19,5 @@ tests/example/test_images/img_cropped.jpg
 tests/example/test_images/mike_dl.jpg
 tests/example/test_images/mike_face.png
 tests/example/test_images/dl_with_glasses.png
+
+tests/*
