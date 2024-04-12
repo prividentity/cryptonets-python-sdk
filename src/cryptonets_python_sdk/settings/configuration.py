@@ -53,6 +53,7 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     COLLECTION_NAME = "collection_name"
     USER_IDENTIFIER="identifier"
     K="neighbors"
+    FACE_THRESHOLD="face_thresholds_med"
 
     # BILLING PARAMETERS
     # ISVALID_RESERVATION_CALLS = "is_valid"
@@ -99,6 +100,12 @@ class ParameterValidator:
         )
         self.__parameter[PARAMETERS.FACE_THRESHOLDS_REM_BAD_EMB] = self.Parameter(
             name=PARAMETERS.FACE_THRESHOLDS_REM_BAD_EMB,
+            _type="NUMBER",
+            min_value=0,
+            max_value=2,
+        )
+        self.__parameter[PARAMETERS.FACE_THRESHOLD] = self.Parameter(
+            name=PARAMETERS.FACE_THRESHOLD,
             _type="NUMBER",
             min_value=0,
             max_value=2,

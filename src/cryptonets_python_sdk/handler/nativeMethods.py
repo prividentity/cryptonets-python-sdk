@@ -13,6 +13,7 @@ from ..settings.loggingLevel import LoggingLevel
 import boto3
 import botocore
 import tqdm
+import subprocess
 class NativeMethods(object):
     def __init__(
         self,
@@ -30,7 +31,7 @@ class NativeMethods(object):
             self._api_key_string=api_key
             self._local_lib_path = pathlib.Path(__file__).parent.joinpath("lib")
             self._local_lib_path.mkdir(parents=True, exist_ok=True)
-            self._check_and_download_files()
+            self._check_and_download_files(platform.system())
 
             if platform.system() == "Linux":
                 self._load_linux_libraries()
@@ -44,14 +45,15 @@ class NativeMethods(object):
             print("Error ", e)
             sys.exit(1)
 
-    def _check_and_download_files(self):
-        required_files = [
-            "lib_fhe.so",
-            # "libcrypto-1_1-x64.dll",
-            # "libprivid_fhe.dylib",
-            # "libssl-1_1-x64.dll",
-            # "privid_fhe.dll"
-        ]
+    def _check_and_download_files(self, system_os):
+        required_files=[]
+        if system_os == "Linux":
+            required_files=["lib_fhe.so","libtensorflow-lite.so"]
+        elif system_os == "Windows":
+            required_files=[]
+        elif system_os == "Darwin":
+            required_files=["libprivid_fhe_universal.dylib"]
+        
        # Create an unauthenticated session
         session = boto3.Session()
         s3 = session.client('s3', config=botocore.config.Config(signature_version=botocore.UNSIGNED))
@@ -62,7 +64,9 @@ class NativeMethods(object):
             if not file_path.exists():
                 print(f"Downloading {file_name}...")
                 self._download_from_s3(s3, bucket_name, file_name, file_path)
-
+        if  system_os == "Darwin":
+            self._remove_quarantine_attribute(str(self._local_lib_path.joinpath("libprivid_fhe_universal.dylib").resolve()))
+    
     def _download_from_s3(self, s3_client, bucket, file_name, local_path):
         with open(local_path, 'wb') as f:
             response = s3_client.get_object(Bucket=bucket, Key=file_name)
@@ -86,10 +90,19 @@ class NativeMethods(object):
         ctypes.CDLL(self._library_path_3, mode=1)
         ctypes.CDLL(self._library_path_2, mode=1)
         self._spl_so_face = ctypes.CDLL(self._library_path)
-
+    
+    def _remove_quarantine_attribute(self, file_path):
+            print(f"Removing quarantine attribute from {file_path}...")
+            try:
+                subprocess.run(["xattr", "-d", "com.apple.quarantine", str(file_path)], check=True)
+                print("Quarantine attribute removed successfully.")
+            except subprocess.CalledProcessError as e:
+                print(f"Failed to remove quarantine attribute")
     def _load_macos_libraries(self):
-        self._library_path = str(self._local_lib_path.joinpath("libprivid_fhe.dylib").resolve())
+
+        self._library_path = str(self._local_lib_path.joinpath("libprivid_fhe_universal.dylib").resolve())
         self._spl_so_face = ctypes.CDLL(self._library_path)
+
 
     def _initialize_properties(self, tf_num_thread, api_key, server_url, local_storage_path, logging_level, cache_type):
         self._embedding_length = 128
@@ -661,19 +674,20 @@ class NativeMethods(object):
             p_buffer_result_length = c_int()
             config_object_default = {"face_thresholds_rem_bad_emb_default": 1.15, "face_thresholds_med": 1.15}
 
-            config_default_str = json.dumps(config_object_default)
-
-
-            if config_object and config_object.get_config_param():
+            if config_object and hasattr(config_object, 'get_config_param') and config_object.get_config_param():
                 config_param_str = config_object.get_config_param()
+                config_from_object = json.loads(config_param_str)
+                for key, value in config_object_default.items():
+                    if key not in config_from_object:
+                        config_from_object[key] = value
+                config_from_object["face_thresholds_rem_bad_emb_default"]=config_from_object["face_thresholds_med"]
+                config_param_str = json.dumps(config_from_object)
             else:
-
-                config_param_str = config_default_str
-
+                config_param_str = json.dumps(config_object_default)
+            print("config_param_str",config_param_str)
             c_config_param = c_char_p(bytes(config_param_str, "utf-8"))
             c_config_param_len = c_int(len(config_param_str))
 
-    
             success = self._spl_so_face.privid_face_compare_files(
                 self._spl_so_face.handle,
                 c_float(fudge_factor),
