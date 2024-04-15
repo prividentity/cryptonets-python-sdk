@@ -2,10 +2,40 @@ from enum import Enum, EnumMeta
 
 import numpy as np
 from PIL import Image
+import os
 
+import exifread
+
+
+def get_exif_orientation(image_path):
+    with open(image_path, 'rb') as f:
+        tags = exifread.process_file(f)
+    # Exifread uses 'Image Orientation' to store the orientation data
+    orientation_tag = 'Image Orientation'
+    if orientation_tag in tags:
+        # Convert the value to an integer
+        orientation_value = tags[orientation_tag].values[0]
+        # Return the orientation value
+        return orientation_value
+    else:
+        # No orientation tag found, return a default value
+        return 1
+def apply_rotation(image, orientation):
+    """
+    Applies rotation to the image based on the EXIF orientation.
+    """
+    if orientation == 3:
+        image = image.rotate(180, expand=True)
+    elif orientation == 6:
+        image = image.rotate(270, expand=True)
+    elif orientation == 8:
+        image = image.rotate(90, expand=True)
+
+    return image
 
 def image_path_to_array(image_path: str, input_format: str) -> np.ndarray:
     image = Image.open(image_path).convert(input_format.upper())
+    image=apply_rotation(image,get_exif_orientation(image_path))
     return np.array(image)
 
 

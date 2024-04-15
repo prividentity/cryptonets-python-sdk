@@ -36,8 +36,8 @@ DESCRIPTION = "Cryptonets SDK Library for Python"
 AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
 URL = "https://privateid.com/"
-VERSION = "1.2.1"
-REQUIRES = ["numpy >= 1.21.0", "pillow >= 9.1.0","boto3","tqdm"]
+VERSION = "1.2.2"
+REQUIRES = ["numpy >= 1.21.0", "pillow >= 9.1.0","boto3","tqdm","exifread"]
 
 LONG_DESCRIPTION = ""
 if os.path.exists("./README.md"):

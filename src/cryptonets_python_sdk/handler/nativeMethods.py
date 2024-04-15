@@ -672,7 +672,7 @@ class NativeMethods(object):
             )
             p_buffer_result = c_char_p()
             p_buffer_result_length = c_int()
-            config_object_default = {"face_thresholds_rem_bad_emb_default": 1.15, "face_thresholds_med": 1.15}
+            config_object_default = {"face_thresholds_rem_bad_emb_default": 1.275, "face_thresholds_med": 1.275,"conf_score_thr_enroll":0.2,"conf_score_thr_enroll":0.2}
 
             if config_object and hasattr(config_object, 'get_config_param') and config_object.get_config_param():
                 config_param_str = config_object.get_config_param()
@@ -710,7 +710,6 @@ class NativeMethods(object):
                 )
             len_ = p_buffer_result_length.value
             output_json_str = p_buffer_result.value[:len_].decode()
-            print("output_json_str",output_json_str)
             self._spl_so_face.privid_free_char_buffer(p_buffer_result)
             if output_json_str is not None and len(output_json_str) > 0:
                 
@@ -762,7 +761,6 @@ class NativeMethods(object):
                 # Create a new config dict with disable_enroll_mf set to True
                 config_dict = {"disable_enroll_mf": True}
                 config_json = json.dumps(config_dict)
-
             # Common logic for converting the config dict to the required C types
             c_config_param = c_char_p(bytes(config_json, "utf-8"))
             c_config_param_len = c_int(len(config_json))
