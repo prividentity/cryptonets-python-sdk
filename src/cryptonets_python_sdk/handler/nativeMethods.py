@@ -684,7 +684,7 @@ class NativeMethods(object):
                 config_param_str = json.dumps(config_from_object)
             else:
                 config_param_str = json.dumps(config_object_default)
-            print("config_param_str",config_param_str)
+            
             c_config_param = c_char_p(bytes(config_param_str, "utf-8"))
             c_config_param_len = c_int(len(config_param_str))
 
@@ -710,6 +710,7 @@ class NativeMethods(object):
                 )
             len_ = p_buffer_result_length.value
             output_json_str = p_buffer_result.value[:len_].decode()
+            print("output_json_str",output_json_str)
             self._spl_so_face.privid_free_char_buffer(p_buffer_result)
             if output_json_str is not None and len(output_json_str) > 0:
                 
@@ -928,7 +929,6 @@ class NativeMethods(object):
             if not c_result.value or not c_result_len.value:
                 raise Exception("Something went wrong. Couldn't process the image for Document.")
             output_json = json.loads(c_result.value[:c_result_len.value].decode())
-
 
             if output_json.get("doc_face",{}).get("document_data",{}).get("document_validation_status",-1)==0:
                 doc_info = output_json['doc_face']['document_data']['cropped_document_image']['info']

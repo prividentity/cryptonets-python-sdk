@@ -1,3 +1,4 @@
+# pylint: disable=line-too-long
 import pathlib
 import sys
 import os
@@ -413,9 +414,9 @@ if __name__ == "__main__":
 
 
     config_param = {
-        PARAMETERS.COLLECTION_NAME:"collection_d",
-        PARAMETERS.ALLOWED_RESULTS: [FaceValidationCode.GlassesOn.value],
-        PARAMETERS.K:100
+        # PARAMETERS.COLLECTION_NAME:"collection_d",
+        # PARAMETERS.ALLOWED_RESULTS: [FaceValidationCode.GlassesOn.value],
+        # PARAMETERS.K:100
 
 
     }
@@ -460,8 +461,8 @@ if __name__ == "__main__":
 
     test_enroll(face_factor, test_im,config=config_object)  # => no billing reservation
     
-    result_handle = test_predict(face_factor, test_im, config=config_object) # => no billing reservation
-    # test_delete(face_factor, result_handle, config=config_object)
+    # result_handle = test_predict(face_factor, test_im, config=config_object) # => no billing reservation
+    # # test_delete(face_factor, result_handle, config=config_object)
     # result_handle = test_predict(face_factor, image_path, config=config_object) #
     # result_handle = test_predict(face_factor, image_path)  # => no billing reservation
 

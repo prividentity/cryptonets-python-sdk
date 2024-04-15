@@ -2,7 +2,7 @@ import string
 import traceback
 from typing import Union, List
 import numpy as np
-
+import json
 from ..handler.nativeMethods import NativeMethods
 from ..helper.decorators import Singleton
 from ..helper.messages import Message
@@ -58,7 +58,19 @@ class Face(metaclass=Singleton):
                 # we received a json response and thus call is successful
                 call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS
 
-            api_response=json_data.get("enroll_onefa", {}).get("api_response", {});
+            c_response=json_data.get("enroll_onefa", {})
+            api_response=c_response.get("api_response", {})
+            face_validation_data=c_response.get("face_validation_data", {})
+            if face_validation_data.get("face_validation_status",0)!=0:
+                return FaceEnrollPredictResult(
+                status=face_validation_data.get("face_validation_status",0),
+                enroll_level=json_data.get("enroll_level", None),
+                puid=api_response.get("puid", None),
+                guid=api_response.get("guid", None),
+                token=api_response.get("token", None),
+                score=api_response.get("score", None),
+                message=c_response.get("message", "something went wrong"),
+                 )
             return FaceEnrollPredictResult(
                 status=call_status,
                 enroll_level=json_data.get("enroll_level", None),
@@ -66,7 +78,7 @@ class Face(metaclass=Singleton):
                 guid=api_response.get("guid", None),
                 token=api_response.get("token", None),
                 score=api_response.get("score", None),
-                message=api_response.get("message", ""),
+                message=api_response.get("message", "ok"),
             )
         except Exception as e:
             print(e, traceback.format_exc())
@@ -88,7 +100,31 @@ class Face(metaclass=Singleton):
                 # we received a json response and thus call is successful
                 call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS
 
-            api_response=json_data.get("predict_onefa", {}).get("api_response", {});
+            c_response=json_data.get("predict_onefa", {})
+            api_response=c_response.get("api_response", {})
+            face_validation_data=c_response.get("face_validation_data", {})
+            if face_validation_data.get("face_validation_status",0)!=0:
+                if config_object and json.loads(config_object.get_config_param()).get("neighbors",0)>0:
+                        return [FaceEnrollPredictResult(
+                        status=face_validation_data.get("face_validation_status",0),
+                        enroll_level=json_data.get("enroll_level", None),
+                        puid=api_response.get("puid", None),
+                        guid=api_response.get("guid", None),
+                        token=api_response.get("token", None),
+                        score=api_response.get("score", None),
+                        message=c_response.get("message", "something went wrong"),
+                        )]
+                else:
+                     return FaceEnrollPredictResult(
+                        status=face_validation_data.get("face_validation_status",0),
+                        enroll_level=json_data.get("enroll_level", None),
+                        puid=api_response.get("puid", None),
+                        guid=api_response.get("guid", None),
+                        token=api_response.get("token", None),
+                        score=api_response.get("score", None),
+                        message=c_response.get("message", "something went wrong"),
+                        )
+
             if not api_response.get("PI_list", []):
                 return FaceEnrollPredictResult(
                     status=call_status,
