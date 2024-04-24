@@ -1,5 +1,30 @@
 Changelog
 =========
+Version 1.2.3 (2024-04-24)
+--------------------------
+
+Improvements:
+
+* Removed unnecessary error logs to streamline application performance.
+* Improved validation messages to enhance user experience and error handling.
+* Added support for macOS, extending compatibility across more operating systems.
+
+Enhancements:
+
+* Integrated scoring within the `predict` call to provide immediate performance metrics.
+
+
+Version 1.2.0 (2024-04-08)
+--------------------------
+
+New Features:
+
+* Added `compare_doc_with_face` function to compare a face image against a document image, enhancing the SDK’s capabilities in verifying identities by comparing images from different sources.
+* Introduced a new `K` parameter in the `predict` function to allow customization of the number of top results returned, offering more flexibility in handling face recognition results.
+
+Improvements:
+
+* Enhanced the comparison algorithm in the existing compare functionality to improve accuracy and efficiency in face matching scenarios.
 
 Version 1.1.5 (2023-11-23)
 ---------------------------

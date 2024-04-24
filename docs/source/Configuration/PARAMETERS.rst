@@ -21,6 +21,9 @@ Configurable Parameter List and Valid values
    * - Name
      - Description
      - Valid Values
+   * - K
+     - Defines the maximum number of nearest neighbors to return for a prediction. If the number of reasonable matches is less than the requested k, only the available reasonable matches are returned. When K=1 or not specified, a single EnrollPredictResult is returned instead of a list of EnrollPredictResult object.
+     - 1 to 100 Default Value is 1
    * - INPUT_IMAGE_FORMAT
      - Input image format and byte arrangement.
      - "rgb", "rgba", "bgr"

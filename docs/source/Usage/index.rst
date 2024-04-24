@@ -259,6 +259,62 @@ See :ref:`return codes <return_codes>` for all result and status codes
     2VR:0
 
 See the :ref:`compare advanced instructions <compare_advanced>` section for more configuration options.
+compare: 1:1 verification of two valid face images
+--------------------------------------------------
+
+The compare_doc_with_face method is designed to perform 1:1 verification by comparing a frontal face image with an image on a driving license. It requires an API key and specified restrictions as inputs. The method assesses whether both images contain a valid frontal facial biometric that meets the specified restrictions. It determines if the individual in the driving license and the portrait is the same (returns 1) or different (returns -1), along with relevant error codes.
+
+| Method runs on-device and replies in 200ms without a server call
+| Head tilt (left to right): -22.5 to 22.5 degrees
+| Uncontrolled pose, but not full profile
+| Recommended minimum face: 224 x 224 pixels, smaller facial images may reduce accuracy but will not result in false positives
+| Face cropping: It is best to provide the original image to isValid without preprocessing.  If using a cropped image as input, use as much padding around the head as possible, perhaps using an ISO 19794-5/INCITS 385-2004 (S2019) Face Portrait compliant image or similar.
+
+.. code-block:: py
+
+    # Check if the image is valid
+
+    compare_doc_with_face_handle = face_factor.compare_doc_with_face(face_path="path_to_face_image",doc_path="path_to_DL_image") ## Replace with the path to the images
+
+
+Output:
+
+See :ref:`return codes <return_codes>`  for all result and status codes
+
+.. code-block:: py
+
+    compare_handle.status # Status of the operation
+    compare_handle.result # Result of the operation
+    compare_handle.message # Message of the operation
+    compare_handle.distance # Distance of compare
+    compare_handle.first_validation_result #Image 1 validation result
+    compare_handle.second_validation_result #Image 2 validation result
+
+Example:
+
+
+.. code-block:: py
+
+    #Create a Face factor class instance
+    face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)
+    compare_doc_with_face_handle = face_factor.compare_doc_with_face(face_path="path_to_face_image",doc_path="path_to_DL_image") ## Replace with the path to the images
+    print("Status:{}\nResult:{}\nMessage:{}\nDistance:{}\n1VR:{}\n2VR:{}\n".format(compare_doc_with_face.status,compare_handle.result, compare_handle.message, compare_handle.distance_min,compare_handle.distance_mean,compare_handle.distance_max, compare_handle.first_validation_result,compare_handle.second_validation_result))
+
+            
+Output:
+
+See :ref:`return codes <return_codes>` for all result and status codes
+
+.. code-block:: py
+
+    Status:0
+    Result:1
+    Message:"Same Face"
+    Min:0.46
+    1VR:0
+    2VR:0
+
+See the :ref:`compare advanced instructions <compare_advanced>` section for more configuration options.
 
 enroll: initialize subject’s face in identification system
 ----------------------------------------------------------
