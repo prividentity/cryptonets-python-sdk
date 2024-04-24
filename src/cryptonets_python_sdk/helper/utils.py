@@ -133,12 +133,9 @@ class FaceValidationCode(Enum, metaclass=FaceValidationCodeMeta):
     InvalidImage = -100  # Err = -100
     NoFace = -1  # faceNotDetected = -1
     ValidBiometric = 0  # Ok = 0
-    ImageSpoof = (
-        1  # TODO Check  deprecated or new code? this does not exist in cpp core
-    )
-    VideoSpoof = (
-        2  # TODO Check  deprecated or new code? this does not exist in cpp core
-    )
+    ImageSpoof =  1
+
+    VideoSpoof = 2 
     TooClose = 3  # faceTooClose = 3
     TooFaraway = 4  # faceTooFar = 4
     TooFarToRight = 5  # faceRight = 5
@@ -160,3 +157,5 @@ class FaceValidationCode(Enum, metaclass=FaceValidationCodeMeta):
     МouthOpened = 21  # МouthOpened = 21
     faceRotatedRight = 22
     faceRotatedLeft = 23
+
+    

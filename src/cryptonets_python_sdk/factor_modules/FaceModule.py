@@ -69,7 +69,7 @@ class Face(metaclass=Singleton):
                 guid=api_response.get("guid", None),
                 token=api_response.get("token", None),
                 score=api_response.get("score", None),
-                message=c_response.get("message", "something went wrong"),
+                message=self.message.get_message(int(face_validation_data.get("face_validation_status",0))),
                  )
             return FaceEnrollPredictResult(
                 status=call_status,
@@ -105,15 +105,25 @@ class Face(metaclass=Singleton):
             face_validation_data=c_response.get("face_validation_data", {})
             if face_validation_data.get("face_validation_status",0)!=0:
                 if config_object and json.loads(config_object.get_config_param()).get("neighbors",0)>0:
-                        return [FaceEnrollPredictResult(
-                        status=face_validation_data.get("face_validation_status",0),
-                        enroll_level=json_data.get("enroll_level", None),
-                        puid=api_response.get("puid", None),
-                        guid=api_response.get("guid", None),
-                        token=api_response.get("token", None),
-                        score=api_response.get("score", None),
-                        message=c_response.get("message", "something went wrong"),
-                        )]
+                        if api_response.get("PI_list", []):
+                            return [FaceEnrollPredictResult(
+                            status=face_validation_data.get("face_validation_status",0),
+                            enroll_level=json_data.get("enroll_level", None),
+                            puid=api_response.get("puid", None),
+                            guid=api_response.get("guid", None),
+                            token=api_response.get("token", None),
+                            score=api_response.get("score", None),
+                            message=self.message.get_message(face_validation_data.get("face_validation_status", 0))
+                            )]
+                        else:
+                            return [FaceEnrollPredictResult(
+                                    status=api_response.get("status", "Something went wrong"),
+                                    enroll_level=json_data.get("enroll_level", None),
+                                    puid= None,
+                                    guid=None,
+                                    score= None,
+                                    message=api_response.get("message", "Something went wrong"))]
+                            
                 else:
                      return FaceEnrollPredictResult(
                         status=face_validation_data.get("face_validation_status",0),
@@ -122,11 +132,31 @@ class Face(metaclass=Singleton):
                         guid=api_response.get("guid", None),
                         token=api_response.get("token", None),
                         score=api_response.get("score", None),
-                        message=c_response.get("message", "something went wrong"),
+                        message=self.message.get_message(int(face_validation_data.get("face_validation_status",0))),
                         )
+            if config_object and json.loads(config_object.get_config_param()).get("neighbors",0)>0:
+                if api_response.get("PI_list", []):
+                    return [FaceEnrollPredictResult(
+                        status=call_status,
+                        enroll_level=json_data.get("enroll_level", None),
+                        puid=person.get("puid", None),
+                        guid=person.get("guid", None),
+                        score=person.get("score", None),
+                        message=api_response.get("message", "Something went wrong"),
+                    ) for person in api_response.get("PI_list", [])]
+                else:
+                   return [FaceEnrollPredictResult(
+                        status=api_response.get("status", "Something went wrong"),
+                        enroll_level=json_data.get("enroll_level", None),
+                        puid= None,
+                        guid=None,
+                        score= None,
+                        message=api_response.get("message", "Something went wrong"))]
 
-            if not api_response.get("PI_list", []):
-                return FaceEnrollPredictResult(
+            
+               
+            else:
+                 return FaceEnrollPredictResult(
                     status=call_status,
                     enroll_level=json_data.get("enroll_level", None),
                     puid=api_response.get("puid", None),
@@ -135,15 +165,6 @@ class Face(metaclass=Singleton):
                     score=api_response.get("score", None),
                     message=api_response.get("message", ""),
                 )
-            else:
-                return [FaceEnrollPredictResult(
-                    status=call_status,
-                    enroll_level=json_data.get("enroll_level", None),
-                    puid=person.get("puid", None),
-                    guid=person.get("guid", None),
-                    score=person.get("score", None),
-                    message=api_response.get("message", "Something went wrong"),
-                ) for person in api_response.get("PI_list", [])]
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
@@ -239,26 +260,44 @@ class Face(metaclass=Singleton):
         config_object: ConfigObject = None,
     ) -> FaceCompareResult:
         try:
-            json_data = self.face_factor_processor.compare_files(
-                image_data_1, image_data_2, config_object=config_object
-            )
-            call_status = FaceCompareResult.CALL_STATUS_ERROR
-            if not json_data:
-                return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
-            else:
-                # we received a json response and thus call is successful
-                call_status = FaceCompareResult.CALL_STATUS_SUCCESS
-
-            return FaceCompareResult(
-                result=json_data.get("result", None),
-                distance_min=json_data.get("distance_min", None),
-                first_validation_result=json_data.get("valid_flag_a", None),
-                second_validation_result=json_data.get("valid_flag_b", None),
-                distance_max=json_data.get("distance_max", None),
-                distance_mean=json_data.get("distance_mean", None),
-                status=call_status,
-                message=json_data.get("message", ""),
-            )
+            
+                face_compare_json_data_all = self.face_factor_processor.compare_files(
+                       image_data_1, image_data_2, config_object=config_object
+                )
+                call_status = FaceCompareResult.CALL_STATUS_ERROR
+                if not face_compare_json_data_all:
+                    return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
+                else:
+                    call_status = FaceCompareResult.CALL_STATUS_SUCCESS
+                face_data=face_compare_json_data_all.get("face_compare",{})
+                call_status=face_compare_json_data_all.get("call_status",{}).get("return_status",-1)
+                if face_data.get("result", None)==1:
+                    return FaceCompareResult(
+                        result=face_data.get("result", None),
+                        distance=face_data.get("distance_min", None),
+                        first_validation_result=face_data.get("a_face_validation_status", None),
+                        second_validation_result=face_data.get("b_face_validation_status", None),
+                        status=face_data.get("result", None),
+                        message= "Same face",
+                    )
+                elif face_data.get("result", None)==-1:
+                    return FaceCompareResult(
+                        result=face_data.get("result", None),
+                        distance=face_data.get("distance_min", None),
+                        first_validation_result=face_data.get("a_face_validation_status", None),
+                        second_validation_result=face_data.get("b_face_validation_status", None),
+                        status=call_status,
+                        message= "Different face",
+                    )
+                else:
+                    return FaceCompareResult(
+                        result=face_data.get("result", None),
+                        distance=face_data.get("distance_min", None),
+                        first_validation_result=face_data.get("a_face_validation_status", None),
+                        second_validation_result=face_data.get("b_face_validation_status", None),
+                        status=call_status,
+                        message=self.message.EXCEPTION_ERROR_COMPARE,
+                    )
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)

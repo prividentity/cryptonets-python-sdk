@@ -655,7 +655,6 @@ class NativeMethods(object):
         try:
             left_img_data_buffer = left_image.flatten()
             right_img_data_buffer = right_image.flatten()
-            print(len(left_img_data_buffer),len(right_img_data_buffer))
             left_c_img_data_buffer = left_img_data_buffer.ctypes.data_as(
                 POINTER(c_uint8)
             )
