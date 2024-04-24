@@ -671,7 +671,7 @@ class NativeMethods(object):
             )
             p_buffer_result = c_char_p()
             p_buffer_result_length = c_int()
-            config_object_default = {"face_thresholds_rem_bad_emb_default": 1.275, "face_thresholds_med": 1.275,"conf_score_thr_enroll":0.2,"conf_score_thr_enroll":0.2}
+            config_object_default = {"face_thresholds_rem_bad_emb_default": 1.275, "face_thresholds_med": 1.275,"conf_score_thr_enroll":0.2}
 
             if config_object and hasattr(config_object, 'get_config_param') and config_object.get_config_param():
                 config_param_str = config_object.get_config_param()
@@ -755,10 +755,11 @@ class NativeMethods(object):
                 config_dict = json.loads(config_object.get_config_param())
                 # Ensure disable_enroll_mf is always added
                 config_dict["disable_enroll_mf"] = True
+                config_dict["conf_score_thr_enroll"]=0.2
                 config_json = json.dumps(config_dict)
             else:
                 # Create a new config dict with disable_enroll_mf set to True
-                config_dict = {"disable_enroll_mf": True}
+                config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}
                 config_json = json.dumps(config_dict)
             # Common logic for converting the config dict to the required C types
             c_config_param = c_char_p(bytes(config_json, "utf-8"))
@@ -806,15 +807,22 @@ class NativeMethods(object):
             c_result = c_char_p()
             result_out = np.zeros(1, dtype=np.int32)
             c_result_out = result_out.ctypes.data_as(POINTER(ctypes.c_int32))
-
+            
             if config_object and config_object.get_config_param():
-                c_config_param = c_char_p(
-                    bytes(config_object.get_config_param(), "utf-8")
-                )
-                c_config_param_len = c_int(len(config_object.get_config_param()))
+                # Load existing config from the object
+                config_dict = json.loads(config_object.get_config_param())
+                # Ensure disable_enroll_mf is always added
+                config_dict["disable_enroll_mf"] = True
+                config_dict["conf_score_thr_enroll"]=0.2
+                config_json = json.dumps(config_dict)
             else:
-                c_config_param = c_char_p(bytes("", "utf-8"))
-                c_config_param_len = c_int(0)
+                # Create a new config dict with disable_enroll_mf set to True
+                config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}
+                config_json = json.dumps(config_dict)
+          
+            c_config_param = c_char_p(bytes(config_json, "utf-8"))
+            c_config_param_len = c_int(len(config_json))
+
 
             self._spl_so_face.privid_face_predict_onefa(
                 self._spl_so_face.handle,
