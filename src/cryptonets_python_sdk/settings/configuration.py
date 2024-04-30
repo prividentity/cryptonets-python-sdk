@@ -64,6 +64,7 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     FACE_RESERVATION_CALLS = "faces"
     ESTIMATE_AGE_RESERVATION_CALLS = "estimate_age"
     FACE_ISO_RESERVATION_CALLS = "face_iso"
+    THRESHOLD_HIGH_VERTICAL="threshold_high_vertical_enroll"
 
 
 class ParameterValidator:
@@ -306,6 +307,14 @@ class ParameterValidator:
             min_value=0,
             max_value=100000000,
         )
+
+        self.__parameter[PARAMETERS.THRESHOLD_HIGH_VERTICAL] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_HIGH_VERTICAL,
+            _type="NUMBER",
+            min_value=-100,
+            max_value=100,
+        )
+        
 
         self.__parameter[PARAMETERS.COLLECTION_NAME] = self.Parameter(
             name=PARAMETERS.COLLECTION_NAME, _type="ANY")
