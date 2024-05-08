@@ -167,7 +167,9 @@ class NativeMethods(object):
                 "collection_a": named_urls("FACE3_1"),
                 "collection_b": named_urls("FACE3_2"),
                 "collection_c": named_urls("FACE3_3"),
-                "collection_d": named_urls("FACE3_4")
+                "collection_d": named_urls("FACE3_4"),
+                "collection_e": named_urls("FACE4_1"),
+                "collection_f": named_urls("FACE4_2"),
             },
             "session_token": self._api_key_string,
             "debug_level": self._logging_level.value,

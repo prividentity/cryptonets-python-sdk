@@ -1,5 +1,13 @@
 Changelog
 =========
+Version 1.3.0 (2024-05-08)
+--------------------------
+
+Improvements:
+
+* Updated models to enhance accuracy and performance.
+* Improved 'compare', 'predict' and 'enroll' functionalities for more precise predictions.
+
 Version 1.2.3 (2024-04-24)
 --------------------------
 
