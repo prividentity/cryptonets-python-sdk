@@ -92,7 +92,7 @@ Output:
 
 Example:
 
-.. image:: images/test.jpeg
+.. image:: images/johny.jpg
    :width: 400
 .. code-block:: py
 
@@ -109,17 +109,14 @@ Output:
 
 .. code-block:: py
 
-    Face#:1         // The closest (largest) face
-    Return Code:0
-    Message:ValidBiometric
-    BBox TL:Point(257.5,151.0)
-    BBox BR:Point(430.5,313.0)
 
-    Face#:2         // The next closest face
+    Face#:1
+    -------
     Return Code:0
     Message:ValidBiometric
-    BBox TL:Point(130.0,45.5)
-    BBox BR:Point(290.0,212.5)
+    Age:None
+    BBox TL:Point(187.0,153.0)
+    BBox BR:Point(382.0,334.0)
 
 See the :ref:`is_valid advanced instructions <isvalid_advanced>` section for more configuration options.
 
@@ -160,7 +157,7 @@ See :ref:`return codes <return_codes>` for all result and status codes
     
 Example:
 
-.. image:: images/test.jpeg
+.. image:: images/estimate_age.jpeg
    :width: 400
 .. code-block:: py
 
@@ -177,19 +174,23 @@ See :ref:`return codes <return_codes>` for all result and status codes
 
 .. code-block:: py
 
-    Face#:1                     //The closest (largest) face
+    Face#:1
+    -------
     Return Code:0
     Message:ValidBiometric
-    Age:29.490659713745117
-    BBox TL:Point(257.5,151.0)
-    BBox BR:Point(430.5,313.0)
+    Age:21.465137481689453
+    BBox TL:Point(859.0,189.0)
+    BBox BR:Point(1296.0,759.0)
 
-    Face#:2                     //The next closest face
+    Face#:2
+    -------
     Return Code:0
     Message:ValidBiometric
-    Age:20.64322280883789
-    BBox TL:Point(130.0,45.5)
-    BBox BR:Point(290.0,212.5)
+    Age:18.190135955810547
+    BBox TL:Point(134.0,356.0)
+    BBox BR:Point(580.0,908.0)
+
+
 
 See the :ref:`estimate_age advanced instructions <age_advanced>` section for more configuration options.
 
@@ -248,14 +249,70 @@ See :ref:`return codes <return_codes>` for all result and status codes
 
 .. code-block:: py
 
-  Status:1
-  Result:1
-  Message: OK
-  Min:0.9422853589057922
-  Mean:0.9422853589057922
-  Max:0.9422853589057922
-  1VR:0
-  2VR:0
+    Status:0
+    Result:1
+    Message:
+    Min:0.4671628773212433
+    Mean:0.4671628773212433
+    Max:0.4671628773212433
+    1VR:0
+    2VR:0
+
+See the :ref:`compare advanced instructions <compare_advanced>` section for more configuration options.
+compare: 1:1 verification of two valid face images
+--------------------------------------------------
+
+The compare_doc_with_face method is designed to perform 1:1 verification by comparing a frontal face image with an image on a driving license. It requires an API key and specified restrictions as inputs. The method assesses whether both images contain a valid frontal facial biometric that meets the specified restrictions. It determines if the individual in the driving license and the portrait is the same (returns 1) or different (returns -1), along with relevant error codes.
+
+| Method runs on-device and replies in 200ms without a server call
+| Head tilt (left to right): -22.5 to 22.5 degrees
+| Uncontrolled pose, but not full profile
+| Recommended minimum face: 224 x 224 pixels, smaller facial images may reduce accuracy but will not result in false positives
+| Face cropping: It is best to provide the original image to isValid without preprocessing.  If using a cropped image as input, use as much padding around the head as possible, perhaps using an ISO 19794-5/INCITS 385-2004 (S2019) Face Portrait compliant image or similar.
+
+.. code-block:: py
+
+    # Check if the image is valid
+
+    compare_doc_with_face_handle = face_factor.compare_doc_with_face(face_path="path_to_face_image",doc_path="path_to_DL_image") ## Replace with the path to the images
+
+
+Output:
+
+See :ref:`return codes <return_codes>`  for all result and status codes
+
+.. code-block:: py
+
+    compare_handle.status # Status of the operation
+    compare_handle.result # Result of the operation
+    compare_handle.message # Message of the operation
+    compare_handle.distance # Distance of compare
+    compare_handle.first_validation_result #Image 1 validation result
+    compare_handle.second_validation_result #Image 2 validation result
+
+Example:
+
+
+.. code-block:: py
+
+    #Create a Face factor class instance
+    face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)
+    compare_doc_with_face_handle = face_factor.compare_doc_with_face(face_path="path_to_face_image",doc_path="path_to_DL_image") ## Replace with the path to the images
+    print("Status:{}\nResult:{}\nMessage:{}\nDistance:{}\n1VR:{}\n2VR:{}\n".format(compare_doc_with_face.status,compare_handle.result, compare_handle.message, compare_handle.distance_min,compare_handle.distance_mean,compare_handle.distance_max, compare_handle.first_validation_result,compare_handle.second_validation_result))
+
+            
+Output:
+
+See :ref:`return codes <return_codes>` for all result and status codes
+
+.. code-block:: py
+
+    Status:0
+    Result:1
+    Message:"Same Face"
+    Min:0.46
+    1VR:0
+    2VR:0
 
 See the :ref:`compare advanced instructions <compare_advanced>` section for more configuration options.
 
@@ -267,8 +324,8 @@ checks the image to determine if a valid facial biometric that conforms to the s
 [if valid] augments and transforms the plaintext facial biometric(s) into 50 into a fifty fully homomorphic encryption (FHE) ciphertexts,
 deletes the original plaintext biometric, transmits the ciphertext to the backend, and
 
-returns (0) plus the resulting new UUID and GUID to the user;
-if the user is already enrolled, it returns (0) and the existing UUID and GUID to the user;
+returns (0) plus the resulting new PUID and GUID to the user;
+if the user is already enrolled, it returns (0) and the existing PUID and GUID to the user;
 if the facial biometric image is invalid, it returns (-1) and useful error code(s).
 
 | Method replies in 1400ms, including server call
@@ -291,7 +348,7 @@ Output:
     enroll_handle.status # Status of the operation
     enroll_handle.message # Message of the operation
     enroll_handle.enroll_level
-    enroll_handle.uuid
+    enroll_handle.puid
     enroll_handle.guid
     enroll_handle.token
 
@@ -304,7 +361,7 @@ Example:
     #Create a Face factor class instance
     face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)	
     enroll_handle = face_factor.enroll(image_path=img_path)
-    print("Status:{}\nMessage:{}\nEnroll Level:{}\nUUID:{}\nGUID:{}\nToken:{}\n".format(enroll_handle.status,enroll_handle.message,enroll_handle.enroll_level,enroll_handle.uuid,enroll_handle.guid,enroll_handle.token))
+    print("Status:{}\nMessage:{}\nEnroll Level:{}\nPUID:{}\nGUID:{}\nToken:{}\n".format(enroll_handle.status,enroll_handle.message,enroll_handle.enroll_level,enroll_handle.puid,enroll_handle.guid,enroll_handle.token))
             
 Output:
 
@@ -313,7 +370,7 @@ Output:
   Status:0          # enroll successful
   Message: Ok.
   Enroll Level:1
-  UUID:2o4747qo77op7140747o
+  PUID:2o4747qo77op7140747o
   GUID:rq0rqpo647s317n30145
   Token:None
 
@@ -327,7 +384,7 @@ checks the image to determine if a valid facial biometric that conforms to the s
 [if valid] transforms the plaintext facial biometric(s) into fully homomorphic encryption (FHE) ciphertexts,
 deletes the original plaintext image, transmits the ciphertext to the backend, and
 
-returns (0) plus the resulting UUID and GUID to the user;
+returns (0) plus the resulting PUID and GUID to the user;
 if the image does not contain any valid enrolled face(s), it returns (-1) and useful error code(s).
 
 | Method replies in 200ms, including the server call
@@ -350,7 +407,7 @@ Output:
     predict_handle.status # Status of the operation
     predict_handle.message # Message of the operation
     predict_handle.enroll_level
-    predict_handle.uuid
+    predict_handle.puid
     predict_handle.guid
     predict_handle.token
 
@@ -363,7 +420,7 @@ Example:
     #Create a Face factor class instance
     face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)	
     predict_handle = face_factor.predict(image_path=img_path)
-    print("Status:{}\nMessage:{}\nEnroll Level:{}\nUUID:{}\nGUID:{}\nToken:{}\n".format(predict_handle.status,predict_handle.message,predict_handle.enroll_level,predict_handle.uuid,predict_handle.guid,predict_handle.token))      
+    print("Status:{}\nMessage:{}\nEnroll Level:{}\nPUID:{}\nGUID:{}\nToken:{}\n".format(predict_handle.status,predict_handle.message,predict_handle.enroll_level,predict_handle.puid,predict_handle.guid,predict_handle.token))      
 
 Output:
 
@@ -372,24 +429,24 @@ Output:
   Status:0      # Predict successful
   Message: Ok.
   Enroll Level:1
-  UUID:2o4747qo77op7140747o
+  PUID:2o4747qo77op7140747o
   GUID:rq0rqpo647s317n30145
   Token:None
 
 See the :ref:`predict advanced instructions <predict_advanced>` section for more configuration options.
 
-remove user’s uuid from the server, and remove full enrollment if no other uuid’s remain
+remove user’s puid from the server, and remove full enrollment if no other puid’s remain
 ----------------------------------------------------------------------------------------
 
-Accepts a UUID and apiKey as input, if more than one UUIDs exist for the user then deletes the specified UUID from the identification system and
-returns (0); if only one UUID exists, then delete all enrollment data;
-if the specified UUID does not exist returns (-1).
+Accepts a PUID and apiKey as input, if more than one PUIDs exist for the user then deletes the specified PUID from the identification system and
+returns (0); if only one PUID exists, then delete all enrollment data;
+if the specified PUID does not exist returns (-1).
 
 .. code-block:: py
 
     # Delete the enrollment
 
-    delete_handle = face_factor.delete(uuid="uuid") ## Replace with the UUID
+    delete_handle = face_factor.delete(puid="puid") ## Replace with the PUID
 
 Output:
 
@@ -404,7 +461,7 @@ Example:
 
     #Create a Face factor class instance
     face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)	
-    delete_handle = face_factor.delete(uuid)
+    delete_handle = face_factor.delete(puid)
     print("Status:{}\nMessage:{}".format(delete_handle.status, delete_handle.message))
 
 Output:

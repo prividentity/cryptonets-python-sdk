@@ -1,6 +1,14 @@
 class ISOFaceResult:
-    def __init__(self, iso_image_width=None, iso_image_height=None, iso_image_channels=None, confidence=None,
-                 image=None, status=-1, message=""):
+    def __init__(
+        self,
+        iso_image_width=None,
+        iso_image_height=None,
+        iso_image_channels=None,
+        confidence=None,
+        image=None,
+        status=-1,
+        message="",
+    ):
         self._iso_image_width = iso_image_width
         self._iso_image_height = iso_image_height
         self._iso_image_channels = iso_image_channels

@@ -5,14 +5,24 @@ class FaceCompareResult:
     CALL_STATUS_SUCCESS = 0
     CALL_STATUS_ERROR = -1
 
-    def __init__(self, result=None, distance_min=None, distance_mean=None, distance_max=None,
-                 second_validation_result=None,
-                 first_validation_result=None, status=CALL_STATUS_ERROR, message=""):
+    def __init__(
+        self,
+        result=None,
+        distance_min=None,
+        distance_mean=None,
+        distance_max=None,
+        second_validation_result=None,
+        first_validation_result=None,
+        status=CALL_STATUS_ERROR,
+        distance=None,
+        message="",
+    ):
         """Result handler for compare
         """
         self._status = status
         self._result = result
         self._message = message
+        self.distance=distance
         self._distance_min = distance_min
         self._distance_mean = distance_mean
         self._distance_max = distance_max
