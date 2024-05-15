@@ -14,6 +14,7 @@ import boto3
 import botocore
 import tqdm
 import subprocess
+import platform
 class NativeMethods(object):
     def __init__(
         self,
@@ -48,7 +49,10 @@ class NativeMethods(object):
     def _check_and_download_files(self, system_os):
         required_files=[]
         if system_os == "Linux":
-            required_files=["lib_fhe.so","libtensorflow-lite.so"]
+            if platform.machine() in ["aarch64","arm"]:
+                required_files=["lib_fhe_arm64.so","libtensorflow-lite-arm64.so"]
+            else:
+                required_files=["lib_fhe.so","libtensorflow-lite.so"]
         elif system_os == "Windows":
             required_files=[]
         elif system_os == "Darwin":
@@ -78,10 +82,16 @@ class NativeMethods(object):
                     bar.update(len(chunk))
 
     def _load_linux_libraries(self):
-        self._library_path = str(self._local_lib_path.joinpath("lib_fhe.so").resolve())
-        self._library_path_2 = str(self._local_lib_path.joinpath("libtensorflow-lite.so").resolve())
-        ctypes.CDLL(self._library_path_2, mode=1)
-        self._spl_so_face = ctypes.CDLL(self._library_path)
+        if platform.machine() in ["aarch64","arm"]:
+                self._library_path = str(self._local_lib_path.joinpath("lib_fhe_arm64.so").resolve())
+                self._library_path_2 = str(self._local_lib_path.joinpath("libtensorflow-lite-arm64.so").resolve())
+                ctypes.CDLL(self._library_path_2, mode=1)
+                self._spl_so_face = ctypes.CDLL(self._library_path)
+        else:
+                self._library_path = str(self._local_lib_path.joinpath("lib_fhe.so").resolve())
+                self._library_path_2 = str(self._local_lib_path.joinpath("libtensorflow-lite.so").resolve())
+                ctypes.CDLL(self._library_path_2, mode=1)
+                self._spl_so_face = ctypes.CDLL(self._library_path)
 
     def _load_windows_libraries(self):
         self._library_path = str(self._local_lib_path.joinpath("privid_fhe.dll").resolve())
