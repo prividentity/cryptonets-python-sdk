@@ -6,6 +6,7 @@ Version 1.3.1 (2024-05-15)
 New Features:
 
 * ARM-64 Processor Support
+* Added DOCUMENT_AUTO_ROTATION parameter for document image rotation
 
 Version 1.3.0 (2024-05-08)
 --------------------------

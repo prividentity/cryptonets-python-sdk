@@ -65,6 +65,8 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     ESTIMATE_AGE_RESERVATION_CALLS = "estimate_age"
     FACE_ISO_RESERVATION_CALLS = "face_iso"
     THRESHOLD_HIGH_VERTICAL="threshold_high_vertical_enroll"
+    DOCUMENT_AUTO_ROTATION = "document_auto_rotation"
+    
 
 
 class ParameterValidator:
@@ -321,6 +323,9 @@ class ParameterValidator:
 
         self.__parameter[PARAMETERS.K] = self.Parameter(
             name=PARAMETERS.K,_type="NUMBER", min_value=1, max_value=100)
+
+        self.__parameter[PARAMETERS.DOCUMENT_AUTO_ROTATION] = self.Parameter(
+            name=PARAMETERS.DOCUMENT_AUTO_ROTATION,_type="BOOL")
 
     def validate(self, key, value):
         return self.__parameter[key].validate(value)
