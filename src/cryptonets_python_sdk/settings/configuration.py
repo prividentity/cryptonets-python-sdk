@@ -54,6 +54,7 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     USER_IDENTIFIER="identifier"
     K="neighbors"
     FACE_THRESHOLD="face_thresholds_med"
+    DOC_SCAN_FACE_DOC_VALIDATIONS_OFF="doc_scan_face_doc_validations_off"
 
     # BILLING PARAMETERS
     # ISVALID_RESERVATION_CALLS = "is_valid"
@@ -262,6 +263,9 @@ class ParameterValidator:
             name=PARAMETERS.USER_IDENTIFIER, _type="ANY"
         )
 
+        self.__parameter[PARAMETERS.DOC_SCAN_FACE_DOC_VALIDATIONS_OFF] = self.Parameter(
+            name=PARAMETERS.DOC_SCAN_FACE_DOC_VALIDATIONS_OFF, _type="BOOL")
+        
         # BILLING PARAMETERS
         # self.__parameter[PARAMETERS.ISVALID_RESERVATION_CALLS] = self.Parameter(
         #     name=PARAMETERS.ISVALID_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
