@@ -1,5 +1,18 @@
 Changelog
 =========
+Version 1.3.3 (2024-05-29)
+--------------------------
+
+New Features:
+
+* Added anti-spoofing check support to enhance security and verify the authenticity of user-provided facial images.
+
+Updates:
+
+* Updated document models to improve accuracy and performance in document processing tasks.
+
+
+=========
 Version 1.3.1 (2024-05-15)
 --------------------------
 

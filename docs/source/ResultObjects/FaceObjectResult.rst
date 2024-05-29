@@ -28,8 +28,19 @@ Return Codes for is valid and Error Messages
 
    * - Return Code
      - Return Message /  Error Description
+  
    * - -100
      - InvalidImage
+   * - -6
+     - Antispoofing detection was not performed and was skipped.
+   * - -5
+     - A grayscale image has been detected, which may indicate a spoof attempt
+   * - -4
+     - Invalid face detected, unable to apply antispoofing procedures.
+   * - -3
+     - Face too close to the edge; please center your face in the image.
+   * - -2
+     - Mobile phone detected in the vicinity, which may indicate a spoof attempt.
    * - -1
      - NoFace
    * - 0

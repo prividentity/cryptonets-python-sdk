@@ -7,6 +7,7 @@ class Message:
         self.EXCEPTION_ERROR_PREDICT = "Something went wrong while doing predict."
         self.EXCEPTION_ERROR_DELETE = "Something went wrong while doing delete."
         self.EXCEPTION_ERROR_COMPARE = "Something went wrong while doing compare."
+        self.EXCEPTION_ERROR_ANTISPOOF_CHECK = "Something went wrong while doing antispoof."
         self.ENROLL_PROCESSED = (
             "Enroll request successfully processed, Waiting for server response."
         )
@@ -15,7 +16,13 @@ class Message:
         )
 
         self.APP_MESSAGES = {
-             -1: "Invalid image.",
+            -100:"	Error occurred during the antispoofing.",
+             -6: "Antispoofing detection was not performed and was skipped.",
+            -5: "A grayscale image has been detected, which may indicate a spoof attempt.",
+            -4: "Invalid face detected, unable to apply antispoofing procedures.",
+            -3: "Face too close to the edge; please center your face in the image.",
+            -2: "Mobile phone detected in the vicinity, which may indicate a spoof attempt.",
+             -1: "Invalid image, No face detected in the image.",
             0: "Valid face.",
             1: "Error Description: Image spoof detected. Please provide a live facial image.",
             2: "Error Description: Video spoof detected. Please provide a live facial image.",

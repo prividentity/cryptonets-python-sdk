@@ -194,13 +194,13 @@ class NativeMethods(object):
             c_config_param, c_config_param_len,
             byref(self._spl_so_face.handle))
 
-        # self._spl_so_face.privid_get_version.argtypes = []
-        # self._spl_so_face.privid_get_version.restype = c_char_p
+        self._spl_so_face.privid_get_version.argtypes = []
+        self._spl_so_face.privid_get_version.restype = c_char_p
 
-        # # Call the function and decode the byte string to print
-        # version_bytes = self._spl_so_face.privid_get_version()
-        # version_str = version_bytes.decode('utf-8')  # Decoding to string
-        # print(version_str)
+        # Call the function and decode the byte string to print
+        version_bytes = self._spl_so_face.privid_get_version()
+        version_str = version_bytes.decode('utf-8')  # Decoding to string
+        print(version_str)
 
         if not return_type:
             raise Exception("Wrong API_KEY or Server URL.")
@@ -859,27 +859,29 @@ class NativeMethods(object):
             print("Error :", e)
             return False
 
-    def antispoofing(
+    def antispoof_check(
         self, image_data: np.array, config_object: ConfigObject = None
     ) -> Any:
         try:
-            img = image_data
-            im_width = img.shape[1]
-            im_height = img.shape[0]
+            img_data = image_data
+            im_height, im_width, im_channel = img_data.shape
 
-            p_buffer_images_in = img.flatten()
+            p_buffer_images_in = img_data
             c_p_buffer_images_in = p_buffer_images_in.ctypes.data_as(POINTER(c_uint8))
+            im_size = im_height * im_width * im_channel
 
             c_result = c_char_p()
             c_result_len = c_int()
+            
             if config_object and config_object.get_config_param():
                 c_config_param = c_char_p(
                     bytes(config_object.get_config_param(), "utf-8")
                 )
                 c_config_param_len = c_int(len(config_object.get_config_param()))
             else:
-                c_config_param = c_char_p(bytes("", "utf-8"))
-                c_config_param_len = c_int(0)
+                c_config_param = c_char_p(bytes(json.dumps({}), "utf-8"))
+                c_config_param_len = c_int(2)
+
             self._spl_so_face.privid_anti_spoofing(
                 self._spl_so_face.handle,
                 c_p_buffer_images_in,
@@ -897,11 +899,9 @@ class NativeMethods(object):
                 )
             output_json = c_result.value[: c_result_len.value].decode()
             self._spl_so_face.privid_free_char_buffer(c_result)
-
             output = json.loads(output_json)
             return output
         except Exception as e:
-            print(e)
             return False
     
     def doc_scan_face(self, image_data: np.array, config_object: ConfigObject = None) -> Any:
