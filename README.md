@@ -21,7 +21,7 @@ please contact CentralAMS.
 ## Installation
 
 Installation of the CryptoNets Python SDK and its dependencies is provided by `pip`.
-If pip is not installed, see the [pip user guide](https://pip.pypa.io/en/stable/installing/ "pip User Guide") to install
+If pip is not installed, see the [Python Package](https://pypi.org/project/cryptonets-python-sdk/), and the [pip user guide](https://pip.pypa.io/en/stable/installing/ "pip User Guide") to install
 pip.
 
 To ensure smooth installation, it’s recommended to use:
