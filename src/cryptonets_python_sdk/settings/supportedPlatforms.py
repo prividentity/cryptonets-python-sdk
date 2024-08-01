@@ -3,5 +3,5 @@ from enum import Enum
 
 class SupportedPlatforms(Enum):
     # supportedOS
-    supportedOS = ["Linux", "Darwin"]
+    supportedOS = ["Linux", "Darwin","Windows"]
 

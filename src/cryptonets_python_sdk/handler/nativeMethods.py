@@ -54,7 +54,7 @@ class NativeMethods(object):
             else:
                 required_files=["lib_fhe.so","libtensorflow-lite.so"]
         elif system_os == "Windows":
-            required_files=[]
+            required_files=["privid_fhe.dll"]
         elif system_os == "Darwin":
             required_files=["libprivid_fhe_universal.dylib"]
         
@@ -95,10 +95,6 @@ class NativeMethods(object):
 
     def _load_windows_libraries(self):
         self._library_path = str(self._local_lib_path.joinpath("privid_fhe.dll").resolve())
-        self._library_path_2 = str(self._local_lib_path.joinpath("libssl-1_1-x64.dll").resolve())
-        self._library_path_3 = str(self._local_lib_path.joinpath("libcrypto-1_1-x64.dll").resolve())
-        ctypes.CDLL(self._library_path_3, mode=1)
-        ctypes.CDLL(self._library_path_2, mode=1)
         self._spl_so_face = ctypes.CDLL(self._library_path)
     
     def _remove_quarantine_attribute(self, file_path):
