@@ -1,5 +1,13 @@
 Changelog
 =========
+Version 1.3.5 (2024-09-16)
+--------------------------
+
+Bug Fixes:
+
+* Resolved issues in the isValid function, which now correctly returns all detected faces along with their bounding boxes.
+
+
 Version 1.3.3 (2024-05-29)
 --------------------------
 

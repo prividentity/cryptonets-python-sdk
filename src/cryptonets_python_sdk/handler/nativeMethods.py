@@ -458,7 +458,7 @@ class NativeMethods(object):
 
     def is_valid_without_age(
         self, image_data: np.array, config_object: ConfigObject = None
-    ) -> Any:
+    ) -> dict:
         try:
             img = image_data
             im_width = img.shape[1]
@@ -470,13 +470,21 @@ class NativeMethods(object):
             c_result = c_char_p()
             c_result_len = c_int()
             if config_object and config_object.get_config_param():
-                c_config_param = c_char_p(
-                    bytes(config_object.get_config_param(), "utf-8")
-                )
-                c_config_param_len = c_int(len(config_object.get_config_param()))
+                # Load existing config from the object
+                config_dict = json.loads(config_object.get_config_param())
+                # Ensure disable_enroll_mf is always added
+                config_dict["disable_enroll_mf"] = True
+                config_dict["conf_score_thr_enroll"]=0.2
+                config_json = json.dumps(config_dict)
             else:
-                c_config_param = c_char_p(bytes("", "utf-8"))
-                c_config_param_len = c_int(0)
+                # Create a new config dict with disable_enroll_mf set to True
+                config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}
+                config_json = json.dumps(config_dict)
+          
+            c_config_param = c_char_p(bytes(config_json, "utf-8"))
+            c_config_param_len = c_int(len(config_json))
+            
+            # Call to external face validation function
             self._spl_so_face.privid_validate(
                 self._spl_so_face.handle,
                 c_p_buffer_images_in,
@@ -489,62 +497,42 @@ class NativeMethods(object):
             )
 
             if not c_result.value or not c_result_len.value:
-                raise Exception(
-                    "Something went wrong. Couldn't process the image for is_valid API. "
-                )
+                raise Exception("Something went wrong. Couldn't process the image for is_valid API.")
+
+            # Decode and load the output JSON
             output_json = c_result.value[: c_result_len.value].decode()
             self._spl_so_face.privid_free_char_buffer(c_result)
 
             output = json.loads(output_json)
-            return output
-        except Exception as e:
-            print(e)
-            return False
 
-    def estimate_age(
-        self, image_data: np.array, config_object: ConfigObject = None
-    ) -> Any:
-        try:
-            img = image_data
-            im_width = img.shape[1]
-            im_height = img.shape[0]
+            # Check if 'faces' key exists and contains at least one face
+            if "faces" in output and output["faces"].get("faces"):
+                processed_faces = []
 
-            p_buffer_images_in = img.flatten()
-            c_p_buffer_images_in = p_buffer_images_in.ctypes.data_as(POINTER(c_uint8))
+                for face in output["faces"]["faces"]:
+                    face_data = {
+                        "status": face.get("face_validation_status", -100),
+                        "box": {
+                            "top_left": face.get("bounding_box", {}).get("top_left", None),
+                            "bottom_right": face.get("bounding_box", {}).get("bottom_right", None),
+                        },
+                        "confidence_score": face.get("face_confidence_score", None),
+                        "antispoofing_status": face.get("antispoofing_status", None)
+                    }
+                    processed_faces.append(face_data)
 
-            c_result = c_char_p()
-            c_result_len = c_int()
-            if config_object and config_object.get_config_param():
-                c_config_param = c_char_p(
-                    bytes(config_object.get_config_param(), "utf-8")
-                )
-                c_config_param_len = c_int(len(config_object.get_config_param()))
+                # Return the final structured JSON
+                return {
+                    "error": output.get("call_status", {}).get("return_status", -100),
+                    "faces": processed_faces,
+                }
             else:
-                c_config_param = c_char_p(bytes("", "utf-8"))
-                c_config_param_len = c_int(0)
-            self._spl_so_face.privid_estimate_age(
-                self._spl_so_face.handle,
-                c_p_buffer_images_in,
-                c_int(im_width),
-                c_int(im_height),
-                c_config_param,
-                c_config_param_len,
-                byref(c_result),
-                byref(c_result_len),
-            )
+                raise Exception("No face data found in the output JSON.")
 
-            if not c_result.value or not c_result_len.value:
-                raise Exception(
-                    "Something went wrong. Couldn't process the image for estimate_age API. "
-                )
-            output_json = c_result.value[: c_result_len.value].decode()
-            self._spl_so_face.privid_free_char_buffer(c_result)
-
-            output = json.loads(output_json)
-            return output
         except Exception as e:
             print(e)
             return False
+
 
     def get_iso_face(
         self, image_data: np.array, config_object: ConfigObject = None
@@ -680,7 +668,7 @@ class NativeMethods(object):
             p_buffer_result = c_char_p()
             p_buffer_result_length = c_int()
             config_object_default = {"face_thresholds_rem_bad_emb_default": 1.24, "face_thresholds_med": 1.24,"conf_score_thr_enroll":0.2}
-
+            print("config_object_default",config_object_default)
             if config_object and hasattr(config_object, 'get_config_param') and config_object.get_config_param():
                 config_param_str = config_object.get_config_param()
                 config_from_object = json.loads(config_param_str)
@@ -717,6 +705,7 @@ class NativeMethods(object):
                 )
             len_ = p_buffer_result_length.value
             output_json_str = p_buffer_result.value[:len_].decode()
+
             self._spl_so_face.privid_free_char_buffer(p_buffer_result)
             if output_json_str is not None and len(output_json_str) > 0:
                 
