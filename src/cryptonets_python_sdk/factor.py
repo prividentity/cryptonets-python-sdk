@@ -223,6 +223,13 @@ class FaceFactor(metaclass=Singleton):
                 img_data = image_path_to_array(image_path, input_format=input_format)
             if img_data is None:
                 return FaceValidationResult(message=self.message.IS_VALID_ERROR)
+
+            # Check image dimensions
+            if img_data.shape[0] <= 224 or img_data.shape[1] <= 224:
+                return FaceValidationResult(
+                    message="Image dimensions should be greater than 224x224."
+                )
+
             return self.face_factor.is_valid(image_data=img_data, config_object=config)
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
@@ -292,6 +299,13 @@ class FaceFactor(metaclass=Singleton):
                 img_data = image_path_to_array(image_path, input_format=input_format)
             if img_data is None:
                 return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
+
+            # Check image dimensions
+            if img_data.shape[0] <= 224 or img_data.shape[1] <= 224:
+                return FaceValidationResult(
+                    message="Image dimensions should be greater than 224x224."
+                )
+
             return self.face_factor.estimate_age(
                 image_data=img_data, config_object=config
             )
@@ -373,6 +387,13 @@ class FaceFactor(metaclass=Singleton):
                 return FaceEnrollPredictResult(
                     message=self.message.EXCEPTION_ERROR_ENROLL
                 )
+
+            # Check image dimensions
+            if img_data.shape[0] <= 224 or img_data.shape[1] <= 224:
+                return FaceEnrollPredictResult(
+                    message="Image dimensions should be greater than 224x224."
+                )
+
             return self.face_factor.enroll(image_data=img_data, config_object=config)
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
@@ -448,6 +469,13 @@ class FaceFactor(metaclass=Singleton):
                 img_data = image_path_to_array(image_path, input_format=input_format)
             if img_data is None:
                 return ISOFaceResult(message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)
+
+            # Check image dimensions
+            if img_data.shape[0] <= 224 or img_data.shape[1] <= 224:
+                return ISOFaceResult(
+                    message="Image dimensions should be greater than 224x224."
+                )
+
             return self.face_factor.get_iso_face(
                 image_data=img_data, config_object=config
             )
@@ -529,6 +557,13 @@ class FaceFactor(metaclass=Singleton):
                 return FaceEnrollPredictResult(
                     message=self.message.EXCEPTION_ERROR_PREDICT
                 )
+
+            # Check image dimensions
+            if img_data.shape[0] <= 224 or img_data.shape[1] <= 224:
+                return FaceEnrollPredictResult(
+                    message="Image dimensions should be greater than 224x224."
+                )
+
             return self.face_factor.predict(image_data=img_data, config_object=config)
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
@@ -536,75 +571,6 @@ class FaceFactor(metaclass=Singleton):
                 "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
             )
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_PREDICT)
-    def _doc_scan_face(
-        self,
-        image_path: str = None,
-        image_data: np.array = None,
-        config: ConfigObject = None,
-    ) :
-        try:
-            if (
-                config is not None
-                and PARAMETERS.INPUT_IMAGE_FORMAT in config.config_param
-            ):
-                input_format = config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
-            elif (
-                self.config is not None
-                and PARAMETERS.INPUT_IMAGE_FORMAT in self.config.config_param
-            ):
-                input_format = self.config.config_param[PARAMETERS.INPUT_IMAGE_FORMAT]
-            else:
-                input_format = "rgb"
-            if (image_path is not None and image_data is not None) or (
-                image_path is None and image_data is None
-            ):
-                return "Specify either image_path or image_data"
-                
-            img_data = None
-            if image_data is not None:
-                if not isinstance(image_data, np.ndarray):
-                    return "Required numpy array in RGB/RGBA/BGR format"
-                
-                img_data = image_data
-            if image_path is not None and len(image_path) > 0:
-                if not os.path.exists(image_path):
-                    return self.message.get_message(101)
-            img_data = image_path_to_array(image_path, input_format)
-            if img_data is None:
-                return self.message.EXCEPTION_ERROR_PREDICT
-            return self.face_factor._doc_scan_face(image_data=img_data, config_object=config)
-        except Exception as e:
-            print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
-            print(
-                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
-            )
-            return self.message.EXCEPTION_ERROR_PREDICT
-
-    def delete(self, puid: str,config: ConfigObject = None)-> FaceDeleteResult:
-        """Deletes the enrollment from the face recognition server
-
-        Parameters
-        ----------
-        puid
-            PUID of the enrolled image
-
-        Returns
-        -------
-        FaceDeleteResult
-            status: int [0 if successful -1 if unsuccessful]
-
-            message: str [Message from the operation]
-        """
-        try:
-            if puid is None:
-                return FaceDeleteResult(message="Missing PUID")
-            return self.face_factor.delete(puid,config)
-        except Exception as e:
-            print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
-            print(
-                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
-            )
-            return FaceDeleteResult(message=self.message.EXCEPTION_ERROR_DELETE)
 
     def compare_doc_with_face(
         self,
@@ -618,25 +584,25 @@ class FaceFactor(metaclass=Singleton):
 
         Parameters
         ----------
-        image_path_1
-            Directory path to the first image file
+        face_path
+            Directory path to the face image file
 
-        image_path_2
-            Directory path to the second image file
+        doc_path
+            Directory path to the document image file
 
         config (Optional)
             Additional configuration parameters for the operation
 
-        image_data_1 (Optional)
-            First Image data in numpy RGB format
+        face_data (Optional)
+            Face Image data in numpy RGB format
 
-        image_data_2 (Optional)
-            Second Image data in numpy RGB format
+        doc_data (Optional)
+            Document Image data in numpy RGB format
 
         Returns
         -------
         FaceCompareResult
-            status: int 
+            status: int
 
             message: str [Message from the operation]
 
@@ -702,6 +668,17 @@ class FaceFactor(metaclass=Singleton):
                     return FaceCompareResult(
                         message=self.message.EXCEPTION_ERROR_COMPARE
                     )
+
+            # Check image dimensions for both images
+            if img_data_1.shape[0] <= 224 or img_data_1.shape[1] <= 224:
+                return FaceCompareResult(
+                    message="Image dimensions should be greater than 224x224."
+                )
+            if img_data_2.shape[0] <= 224 or img_data_2.shape[1] <= 224:
+                return FaceCompareResult(
+                    message="Image dimensions should be greater than 224x224."
+                )
+
             return self.face_factor.compare_doc_with_face(
                 face_data=img_data_1, doc_data=img_data_2, config_object=config
             )
@@ -711,7 +688,6 @@ class FaceFactor(metaclass=Singleton):
                 "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
             )
             return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
-
 
     def compare(
         self,
@@ -813,6 +789,17 @@ class FaceFactor(metaclass=Singleton):
                     return FaceCompareResult(
                         message=self.message.EXCEPTION_ERROR_COMPARE
                     )
+
+            # Check image dimensions for both images
+            if img_data_1.shape[0] <= 224 or img_data_1.shape[1] <= 224:
+                return FaceCompareResult(
+                    message="Image dimensions should be greater than 224x224."
+                )
+            if img_data_2.shape[0] <= 224 or img_data_2.shape[1] <= 224:
+                return FaceCompareResult(
+                    message="Image dimensions should be greater than 224x224."
+                )
+
             return self.face_factor.compare(
                 image_data_1=img_data_1, image_data_2=img_data_2, config_object=config
             )
@@ -884,6 +871,13 @@ class FaceFactor(metaclass=Singleton):
                 img_data = image_path_to_array(image_path, input_format=input_format)
             if img_data is None:
                 return AntispoofCheckResult(message=self.message.ANTISPOOF_CHECK_ERROR)
+
+            # Check image dimensions
+            if img_data.shape[0] <= 224 or img_data.shape[1] <= 224:
+                return AntispoofCheckResult(
+                    message="Image dimensions should be greater than 224x224."
+                )
+
             return self.face_factor.antispoof_check(
                 image_data=img_data, config_object=config
             )

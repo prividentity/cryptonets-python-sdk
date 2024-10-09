@@ -1,5 +1,13 @@
 Changelog
 =========
+Version 1.3.6 (2024-10-09)
+--------------------------
+
+Bug Fixes:
+
+* Added image dimension checks to ensure that all images processed are greater than 224x224 pixels. 
+
+
 Version 1.3.5 (2024-09-16)
 --------------------------
 
