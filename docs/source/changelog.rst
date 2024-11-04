@@ -1,5 +1,49 @@
 Changelog
 =========
+Version 1.3.7 (2024-10-29)
+--------------------------
+
+Bug Fixes:
+
+* Resolved bugs in the estimate_age function.
+
+Version 1.3.6 (2024-10-09)
+--------------------------
+
+Bug Fixes:
+
+* Added image dimension checks to ensure that all images processed are greater than 224x224 pixels. 
+
+
+Version 1.3.5 (2024-09-16)
+--------------------------
+
+Bug Fixes:
+
+* Resolved issues in the isValid function, which now correctly returns all detected faces along with their bounding boxes.
+
+
+Version 1.3.3 (2024-05-29)
+--------------------------
+
+New Features:
+
+* Added anti-spoofing check support to enhance security and verify the authenticity of user-provided facial images.
+
+Updates:
+
+* Updated document models to improve accuracy and performance in document processing tasks.
+
+
+=========
+Version 1.3.1 (2024-05-15)
+--------------------------
+
+New Features:
+
+* ARM-64 Processor Support
+* Added DOCUMENT_AUTO_ROTATION parameter for document image rotation
+
 Version 1.3.0 (2024-05-08)
 --------------------------
 

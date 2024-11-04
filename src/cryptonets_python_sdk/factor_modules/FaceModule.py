@@ -1,6 +1,7 @@
 import string
 import traceback
-from typing import Union, List
+
+from typing import Union, List, Optional
 import numpy as np
 import json
 from ..handler.nativeMethods import NativeMethods
@@ -11,6 +12,7 @@ from ..helper.result_objects.deleteResult import FaceDeleteResult
 from ..helper.result_objects.enrollPredictResult import FaceEnrollPredictResult
 from ..helper.result_objects.faceValidationResult import FaceValidationResult
 from ..helper.result_objects.isoFaceResult import ISOFaceResult
+from ..helper.result_objects.antispoofCheckResult import AntispoofCheckResult
 from ..helper.utils import FaceValidationCode
 from ..settings.cacheType import CacheType
 from ..settings.configuration import ConfigObject
@@ -203,10 +205,13 @@ class Face(metaclass=Singleton):
         try:
             processed_document=self._doc_scan_face(image_data=doc_data)
             if processed_document.get("doc_face",{}).get("document_data",{}).get("document_validation_status",-1)!=0:
-                 return FaceCompareResult(message= processed_document.get("doc_face",{}).get("document_data",{}).get("status_message","Something went wrong while processing document image"))
+                 if processed_document.get("doc_face",{}).get("document_data",{}).get("status_message","Unable to detect face in the document.").strip()=="":
+                        return FaceCompareResult(message="Unable to detect face in the document.")
+                 return FaceCompareResult(message= processed_document.get("doc_face",{}).get("document_data",{}).get("status_message","Unable to detect face in the document."))
         
             cropped_face_array = processed_document.get("doc_face",{}).get("cropped_face")
-            
+            if cropped_face_array is None:
+                 return FaceCompareResult(message= "Unable to detect face in the document.")
             if cropped_face_array is not None:
             
                 face_compare_json_data_all = self.face_factor_processor.compare_files(
@@ -349,37 +354,48 @@ class Face(metaclass=Singleton):
             if not json_data:
                 return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
 
-            if json_data.get("error", -1) != 0:
+            # Check if call_status indicates success
+            call_status = json_data.get('call_status', {})
+            if call_status.get('return_status', -1) != 0:
                 return FaceValidationResult(
-                    error=json_data.get("error", -1),
+                    error=call_status.get('return_status', -1),
                     message=self.message.AGE_ESTIMATE_ERROR,
                 )
 
             face_age_result_object = FaceValidationResult(
-                error=json_data.get("error", -1), message="OK"
+                error=call_status.get('return_status', -1), message="OK"
             )
-            for face in json_data.get("faces"):
 
-                _return_code = face.get("status", -1)
-                _age = face.get("age", -1.0)
+            # Get the list of faces from the 'ages' key
+            ages_list = json_data.get('ages', {}).get('ages', [])
+            for face_data in ages_list:
+                # Get face validation data
+                face_validation = face_data.get('face_validation', {})
+                _return_code = face_validation.get('face_validation_status', -1)
+                _bounding_box = face_validation.get('bounding_box', {})
+                _top_left = _bounding_box.get('top_left', None)
+                _bottom_right = _bounding_box.get('bottom_right', None)
+                _age = face_data.get('estimated_age', -1.0)
+                _age_confidence_score = face_data.get('age_confidence_score', 0.0)
+
                 if _return_code in FaceValidationCode:
                     _message = FaceValidationCode(_return_code).name
                 else:
-                    raise Exception("Status code out of bounds.")
-                if _return_code == -1:
-                    _age = -1
+                    _message = "Unknown status code"
+
                 face_age_result_object.append_face_objects(
                     return_code=_return_code,
                     age=_age,
                     message=_message,
-                    top_left_coordinate=face["box"].get("top_left", None),
-                    bottom_right_coordinate=face["box"].get("bottom_right", None),
+                    top_left_coordinate=_top_left,
+                    bottom_right_coordinate=_bottom_right,
                 )
 
             return face_age_result_object
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
+
 
     def get_iso_face(
         self, image_data: np.array, config_object: ConfigObject = None
@@ -410,3 +426,27 @@ class Face(metaclass=Singleton):
         except Exception as e:
             print(e, traceback.format_exc())
             return ISOFaceResult(message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)
+   
+    def antispoof_check(self, image_data: np.array, config_object: Optional[ConfigObject] = None) -> AntispoofCheckResult:
+            try:
+                # Call the processor to check for antispoofing
+                json_data = self.face_factor_processor.antispoof_check(image_data, config_object=config_object)
+
+                # Validate response
+                if json_data is None:
+                    return AntispoofCheckResult(status=-100, message="No response from antispoofing processor.", is_antispoof=False)
+
+                # Check if there is an error in processing
+                if json_data.get("call_status", {}).get("return_status",0) != 0:
+                    error_message = json_data.get("call_status", {}).get("return_message", "Error during antispoofing check.")
+                    return AntispoofCheckResult(status=json_data.get("call_status", {}).get("return_status"), message=error_message, is_antispoof=False)
+                
+                if json_data.get("antispoofing", 0) in [-1,-2,-3,-4,-5,-6,-100]:
+                    return AntispoofCheckResult(status=json_data.get("antispoofing", 0), message=self.message.APP_MESSAGES.get(json_data.get("antispoofing", 0), "Error during antispoofing check."), is_antispoof=False)
+                # Check antispoofing result
+                is_spoof_detected = json_data.get("antispoofing", 0) == 1
+                return AntispoofCheckResult(status=0, message="No spoofing detected." if not is_spoof_detected else "Spoofing detected.", is_antispoof=is_spoof_detected)
+
+            except Exception as e:
+                print("Exception occurred:", e, traceback.format_exc())
+                return AntispoofCheckResult(status=-100, message="Exception occurred during antispoofing check.", is_antispoof=False)

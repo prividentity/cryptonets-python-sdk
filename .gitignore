@@ -21,3 +21,8 @@ tests/example/test_images/mike_face.png
 tests/example/test_images/dl_with_glasses.png
 
 tests/*
+.DS_Store
+docs/.DS_Store
+src/cryptonets_python_sdk/.DS_Store
+src/cryptonets_python_sdk/handler/.DS_Store
+.DS_Store

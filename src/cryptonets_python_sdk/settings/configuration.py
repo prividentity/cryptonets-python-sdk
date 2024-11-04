@@ -54,6 +54,7 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     USER_IDENTIFIER="identifier"
     K="neighbors"
     FACE_THRESHOLD="face_thresholds_med"
+    DOC_SCAN_FACE_DOC_VALIDATIONS_OFF="doc_scan_face_doc_validations_off"
 
     # BILLING PARAMETERS
     # ISVALID_RESERVATION_CALLS = "is_valid"
@@ -65,6 +66,8 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     ESTIMATE_AGE_RESERVATION_CALLS = "estimate_age"
     FACE_ISO_RESERVATION_CALLS = "face_iso"
     THRESHOLD_HIGH_VERTICAL="threshold_high_vertical_enroll"
+    DOCUMENT_AUTO_ROTATION = "document_auto_rotation"
+    
 
 
 class ParameterValidator:
@@ -260,6 +263,9 @@ class ParameterValidator:
             name=PARAMETERS.USER_IDENTIFIER, _type="ANY"
         )
 
+        self.__parameter[PARAMETERS.DOC_SCAN_FACE_DOC_VALIDATIONS_OFF] = self.Parameter(
+            name=PARAMETERS.DOC_SCAN_FACE_DOC_VALIDATIONS_OFF, _type="BOOL")
+        
         # BILLING PARAMETERS
         # self.__parameter[PARAMETERS.ISVALID_RESERVATION_CALLS] = self.Parameter(
         #     name=PARAMETERS.ISVALID_RESERVATION_CALLS, _type="NUMBER", min_value=0, max_value=100000000)
@@ -321,6 +327,9 @@ class ParameterValidator:
 
         self.__parameter[PARAMETERS.K] = self.Parameter(
             name=PARAMETERS.K,_type="NUMBER", min_value=1, max_value=100)
+
+        self.__parameter[PARAMETERS.DOCUMENT_AUTO_ROTATION] = self.Parameter(
+            name=PARAMETERS.DOCUMENT_AUTO_ROTATION,_type="BOOL")
 
     def validate(self, key, value):
         return self.__parameter[key].validate(value)

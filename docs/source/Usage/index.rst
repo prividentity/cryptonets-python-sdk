@@ -316,6 +316,74 @@ See :ref:`return codes <return_codes>` for all result and status codes
 
 See the :ref:`compare advanced instructions <compare_advanced>` section for more configuration options.
 
+antispoof_check: Detection of Spoofing in Facial Recognition
+------------------------------------------------------------
+
+The ``antispoof_check`` method processes a single facial image to determine if the image is an authentic live capture or a spoof attempt. This method enhances the security of facial recognition systems by preventing fraud.
+
+Functionality
+~~~~~~~~~~~~~
+- **Input**: Accepts a single frontal face image.
+- **Operation**: Analyzes the image for indicators of spoofing, such as texture irregularities or digital manipulations.
+- **Output**: Returns an ``AntispoofCheckResult`` object containing the status, message, and a boolean indicating if spoofing was detected.
+
+Features
+~~~~~~~~
+- **On-device processing**: Executes locally, typically within 100ms, without requiring server communication.
+- **Image Requirements**: High-resolution images (minimum 224 x 224 pixels) are ideal. Lower resolutions are supported but may affect detection capabilities.
+- **Head Pose**: Effective within a frontal view from -15 to +15 degrees for both yaw and pitch.
+- **Recommendations**: Best results are achieved with unprocessed images. If cropping is necessary, include ample background.
+
+AntispoofCheckResult Object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The result of the antispoof check is encapsulated in an ``AntispoofCheckResult`` object with the following attributes:
+
+- **status**: Integer indicating the status of the operation.
+- **message**: String providing details about the operation's outcome.
+- **is_antispoof**: Boolean indicating whether a spoofing attempt was detected.
+
+Example Usage
+~~~~~~~~~~~~~
+.. code-block:: python
+
+    # Example to initiate an antispoof check
+    antispoof_result = face_factor.antispoof_check(image_path="path_to_the_image")  # Replace with the path to the image
+
+    # Accessing the results
+    print("Status: {}\nMessage: {}\nSpoof Detected: {}".format(
+        antispoof_result.status, antispoof_result.message, antispoof_result.is_antispoof))
+
+Output Description
+~~~~~~~~~~~~~~~~~~
+Refer to :ref:`return_codes <return_codes>` for explanations of result and status codes.
+
+.. code-block:: python
+
+    antispoof_result.status  # Status of the antispoofing operation
+    antispoof_result.message # Message explaining the detection outcome
+    antispoof_result.is_antispoof # Boolean indicating if spoofing was detected
+
+Example
+~~~~~~~
+.. code-block:: python
+
+    # Creating an instance of FaceFactor with necessary configurations
+    face_factor = FaceFactor(server_url=SERVER_ADDRESS, api_key=API_KEY)
+    antispoof_result = face_factor.antispoof_check(image_path="path_to_face_image")
+    print("Status: {}\nMessage: {}\nSpoof Detected: {}".format(
+        antispoof_result.status, antispoof_result.message, antispoof_result.is_antispoof))
+
+Output
+~~~~~~
+Refer to :ref:`return_codes <return_codes>` for detailed result and status codes.
+
+.. code-block:: python
+
+    Status: 0
+    Message: 'No spoofing detected.'
+    Spoof Detected: False
+
+
 enroll: initialize subject’s face in identification system
 ----------------------------------------------------------
 
