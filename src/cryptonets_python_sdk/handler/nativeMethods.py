@@ -948,3 +948,54 @@ class NativeMethods(object):
         except Exception as e:
             print("Error",e)
             return False
+    def estimate_age(self, image_data: np.array, config_object: ConfigObject = None) -> Any:
+            try:
+                img = image_data
+                im_width = img.shape[1]
+                im_height = img.shape[0]
+
+                p_buffer_images_in = img.flatten()
+                c_p_buffer_images_in = p_buffer_images_in.ctypes.data_as(POINTER(c_uint8))
+
+                c_result = c_char_p()
+                c_result_len = c_int()
+                if config_object and config_object.get_config_param():
+                    # Load existing config from the object
+                    config_dict = json.loads(config_object.get_config_param())
+                    # Ensure disable_enroll_mf is always added
+                    config_dict["disable_enroll_mf"] = True
+                    config_dict["conf_score_thr_enroll"]=0.2
+                    config_json = json.dumps(config_dict)
+                else:
+                    # Create a new config dict with disable_enroll_mf set to True
+                    config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}
+                    config_json = json.dumps(config_dict)
+                c_config_param = c_char_p(bytes(config_json, "utf-8"))
+                c_config_param_len = c_int(len(config_json))
+                success = self._spl_so_face.privid_estimate_age(
+                    self._spl_so_face.handle,
+                    c_p_buffer_images_in,
+                    c_int(im_width),
+                    c_int(im_height),
+                    c_config_param,
+                    c_config_param_len,
+                    byref(c_result),
+                    byref(c_result_len),
+                )
+
+                if not success:
+                    raise Exception("privid_estimate_age call failed")
+
+                if not c_result.value or not c_result_len.value:
+                    raise Exception(
+                        "Something went wrong. Couldn't process the image for estimate_age API."
+                    )
+
+                output_json = c_result.value[: c_result_len.value].decode()
+                self._spl_so_face.privid_free_char_buffer(c_result)
+
+                output = json.loads(output_json)
+                return output
+            except Exception as e:
+                print(e)
+                return False

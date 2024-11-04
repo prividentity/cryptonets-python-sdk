@@ -1,5 +1,12 @@
 Changelog
 =========
+Version 1.3.7 (2024-10-29)
+--------------------------
+
+Bug Fixes:
+
+* Resolved bugs in the estimate_age function.
+
 Version 1.3.6 (2024-10-09)
 --------------------------
 

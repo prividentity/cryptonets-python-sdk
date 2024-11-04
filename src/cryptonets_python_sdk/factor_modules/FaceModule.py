@@ -354,37 +354,48 @@ class Face(metaclass=Singleton):
             if not json_data:
                 return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
 
-            if json_data.get("error", -1) != 0:
+            # Check if call_status indicates success
+            call_status = json_data.get('call_status', {})
+            if call_status.get('return_status', -1) != 0:
                 return FaceValidationResult(
-                    error=json_data.get("error", -1),
+                    error=call_status.get('return_status', -1),
                     message=self.message.AGE_ESTIMATE_ERROR,
                 )
 
             face_age_result_object = FaceValidationResult(
-                error=json_data.get("error", -1), message="OK"
+                error=call_status.get('return_status', -1), message="OK"
             )
-            for face in json_data.get("faces"):
 
-                _return_code = face.get("status", -1)
-                _age = face.get("age", -1.0)
+            # Get the list of faces from the 'ages' key
+            ages_list = json_data.get('ages', {}).get('ages', [])
+            for face_data in ages_list:
+                # Get face validation data
+                face_validation = face_data.get('face_validation', {})
+                _return_code = face_validation.get('face_validation_status', -1)
+                _bounding_box = face_validation.get('bounding_box', {})
+                _top_left = _bounding_box.get('top_left', None)
+                _bottom_right = _bounding_box.get('bottom_right', None)
+                _age = face_data.get('estimated_age', -1.0)
+                _age_confidence_score = face_data.get('age_confidence_score', 0.0)
+
                 if _return_code in FaceValidationCode:
                     _message = FaceValidationCode(_return_code).name
                 else:
-                    raise Exception("Status code out of bounds.")
-                if _return_code == -1:
-                    _age = -1
+                    _message = "Unknown status code"
+
                 face_age_result_object.append_face_objects(
                     return_code=_return_code,
                     age=_age,
                     message=_message,
-                    top_left_coordinate=face["box"].get("top_left", None),
-                    bottom_right_coordinate=face["box"].get("bottom_right", None),
+                    top_left_coordinate=_top_left,
+                    bottom_right_coordinate=_bottom_right,
                 )
 
             return face_age_result_object
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
+
 
     def get_iso_face(
         self, image_data: np.array, config_object: ConfigObject = None
