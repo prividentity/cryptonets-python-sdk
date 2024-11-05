@@ -2,7 +2,7 @@
 
 ## Project description
 
-This package provides an interface to CryptoNets™ 1:N fully homomorphically encrypted (FHE) face recognition, Ultrapass™
+This package provides an interface to CryptoNets™ 1:N homomorphic token (HT) face recognition, Ultrapass™
 ID and human age estimation.
 
 ## Getting Started
@@ -15,8 +15,7 @@ Sign up on the waitlist on https://private.id to obtain your apiKey.
 
 ## Notices
 
-Licensing Restriction: This SDK is not licensed for use in regulated gaming. To license CryptoNets in this market,
-please contact CentralAMS.
+Licensing Restriction: This SDK is not licensed for use without the consent of the Private Identity.
 
 ## Installation
 

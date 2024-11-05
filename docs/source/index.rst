@@ -7,7 +7,9 @@ Welcome to the CryptoNets™ Python SDK documentation
 ======================================================
 © 2023 by Private Identity® LLC All Rights Reserved
 
-Cryptonets-SDK is a Python library for generating and verifying private IDs using Face Recognition.
+CryptoNets™ SDK is a Python library for generating and verifying private IDs using Face Recognition.
+CryptoNets™ SDK allows developers to integrate face recognition technology for secure and private ID verification.
+This documentation provides detailed guidance on installation, configuration, and usage.
 
 Read :doc:`installation` for how to :ref:`install <installation>` the project.
 

@@ -1,54 +1,37 @@
-Installation
-============
+Installation Guide
+==================
 
-The Python SDK supports fault tolerant and multi-threaded programming support.
+The CryptoNets™ Python SDK is designed to support fault-tolerant, multi-threaded programming, as well as containerized environments.
+It is compatible with Docker and Kubernetes, enabling elastic scaling and load balancing for optimal performance.
 
-It also supports docker and K8s elastic, load balancing too.
+Supported Python Versions
+-------------------------
 
-Python Version
---------------
-
-We recommend using the latest version of Python. This SDK supports
-Python 3.6 and newer.
-
+We recommend using the latest version of Python. This SDK supports Python 3.6 and newer.
 
 Dependencies
 ------------
+CryptoNets™ SDK relies on a few key libraries for image processing, which will be installed automatically.
+If these libraries are already present, the SDK will detect and use them:
 
-Cryptonets-SDK has dependencies on numpy, scipy and Pillow for image processing.
-These distributions will be installed automatically. PrivateID will
-detect and use them if already installed.
-
-* `Numpy`_ provides functions for array wise image manipulation.
-* `Pillow`_ provides functionalities for reading the Image and converting to required formats.
+* `Numpy`_ Provides essential functions for array-based image manipulation.
+* `Pillow`_ Offers functionalities for reading and converting images to required formats.
 
 .. _Numpy: https://pypi.org/project/numpy/
 .. _Pillow: https://pypi.org/project/Pillow/
 
-Virtual environments
---------------------
+Using Virtual Environments
+--------------------------
 
-We recommend you use a virtual environment to manage the dependencies for your project,
-both in development and in production.
+We recommend using a virtual environment to manage dependencies for your project, both in development and production.
+Virtual environments help you avoid conflicts between different project dependencies, as each environment isolates the required libraries and Python versions.
 
-What problem does a virtual environment solve? The more Python
-projects you have, the more likely it is that you need to work with
-different versions of Python libraries, or even Python itself. Newer
-versions of libraries for one project can break compatibility in
-another project.
+Python includes the built-in :mod:`venv` module, which allows you to create virtual environments easily.
 
-Virtual environments are independent groups of Python libraries, one for
-each project. Packages installed for one project will not affect other
-projects or the operating system's packages.
+Creating a Virtual Environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Python comes bundled with the :mod:`venv` module to create virtual
-environments.
-
-
-Create an environment
-~~~~~~~~~~~~~~~~~~~~~
-
-Create a project folder and a :file:`venv` folder within:
+Create a project folder and a :file:`venv` folder within it:
 
 .. code-block:: sh
 
@@ -63,10 +46,10 @@ On Windows:
     py -3 -m venv venv
 
 
-Activate the environment
-~~~~~~~~~~~~~~~~~~~~~~~~
+Activating the Environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Before you work on your project, activate the corresponding environment:
+Before working on your project, activate the virtual environment:
 
 .. code-block:: sh
 
@@ -78,25 +61,26 @@ On Windows:
 
     venv\Scripts\activate
 
-Your shell prompt will change to show the name of the activated
-environment.
+Your shell prompt will change to indicate that the environment is activated.
 
 .. _installation:
 
-Install Cryptonets SDK
-----------------------
+Installing CryptoNets™ SDK
+--------------------------
 
-Within the activated environment, use the following command to install:
+Once the environment is activated, install the SDK with the following command:
 
 .. code-block:: sh
 
     pip3 install cryptonets_python_sdk
 
-Upgrade Cryptonets SDK
-----------------------
+Upgrading CryptoNets™ SDK
+-------------------------
 
-To upgrade the cryptonets SDK version, use the following command:
+To upgrade to the latest version of the CryptoNets™ SDK, use:
 
 .. code-block:: sh
 
     pip3 install --upgrade --no-cache cryptonets_python_sdk
+
+By following these steps, you'll ensure a seamless setup for developing with the CryptoNets™ Python SDK.

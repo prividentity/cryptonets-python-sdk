@@ -1,5 +1,10 @@
 Changelog
 =========
+Version 1.3.8 (2024-11-05)
+--------------------------
+
+Documentation and content update
+
 Version 1.3.7 (2024-10-29)
 --------------------------
 

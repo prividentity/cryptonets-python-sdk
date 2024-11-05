@@ -1,16 +1,18 @@
-Usage
-=====
+Usage Guide
+===========
 
 
-Python Version
---------------
+Supported Python Versions
+-------------------------
 
-We recommend using the latest version of Python. Cryptonets-SDK supports
-Python 3.6 and newer.
+We recommend using the latest version of Python for compatibility and performance.
+CryptoNets™ SDK supports Python 3.6 and newer.
 
 
-Install Cryptonets SDK
-----------------------
+Installation
+------------
+
+To install the CryptoNets™ SDK, run the following command:
 
 .. code-block:: sh
 
@@ -20,90 +22,102 @@ Install Cryptonets SDK
 Setup
 -----
 
-Server URL and API Key are prerequisites for accessing factor server
+To access the factor server, you need to configure the server URL and API key.
+These values should be stored in environment variables for secure and streamlined access.
 
-To set it up in environment variables, use the following commands
+Set the environment variables with the following commands:
 
 .. code-block:: sh
 
     export PI_SERVER_URL = "SERVER_URL"
     export PI_API_KEY = "YOUR_API_KEY"
 
-Once you have setup environment variables, you can use the face factor object directly
+Using the Face Factor Object
+----------------------------
+
+After setting up the environment variables, you can start using the SDK's FaceFactor object directly.
 
 .. code-block:: py
 
-    # Import the cryptonets sdk class
+    # Import the FaceFactor class from the CryptoNets SDK
     from cryptonets_python_sdk.factor import FaceFactor
 
-    # Create a Face factor class instance
+    # Create an instance of the FaceFactor class
     face_factor = FaceFactor()
+
+With this setup, you're ready to use the CryptoNets™ SDK to generate and verify private IDs.
+Refer to the full documentation for advanced configuration options and detailed examples.
 
 Import and Usage
 ----------------
-
-You can setup server url and api key using the face factor instance too.
+In addition to setting the server URL and API key as environment variables, you can also configure these directly when initializing the FaceFactor instance.
 
 .. code-block:: py
 
-    # Import the cryptonets sdk class
+    # Import the FaceFactor class from the CryptoNets SDK
     from cryptonets_python_sdk.factor import FaceFactor
 
-    # Replace with the provided server URL
-    server_url = "https://sample.url.domain"
+    # Define the server URL and API key
+    server_url = "https://sample.url.domain"  # Replace with your server URL
+    api_key = "your-api-key"  # Replace with your API key
 
-    # Replace with your API key
-    api_key = "your-api-key"
+    # Initialize the FaceFactor instance with the server URL and API key
+    face_factor = FaceFactor(server_url=server_url, api_key=api_key)
 
-    # Create a Face factor class instance
-    face_factor = FaceFactor(server_url = server_url, api_key = api_key)
+This method provides flexibility, allowing you to set the server URL and API key dynamically within your code rather than through environment variables.
 
 is_valid: Find, Validate and return facial biometric
 ----------------------------------------------------
 
-The is_valid method accepts an image, apiKey and specified restrictions as input,
-checks the image to determine if a valid facial biometric that conforms to the specified restriction(s) are present in the image,
-and returns the valid, perfectly cropped and aligned facial biometric or useful error code(s).
+The ``is_valid`` method checks an image for the presence of a valid facial biometric that meets specified restrictions.
+This function processes the image, validates the facial biometric, and returns either a perfectly cropped and aligned facial biometric or relevant error codes.
 
-Use isValid during live capture to find the valid biometric or return user instruction (remove eyeglasses, remove mask, chin too far right, look at camera, etc.).
+This method is ideal for live capture scenarios, as it can guide users to make necessary adjustments (e.g., "remove eyeglasses," "remove mask," "look at camera") to ensure a valid facial image is captured.
 
-| Method runs on-device and replies in 50ms without a server call
-| Head tilt (left to right): -22.5 to 22.5 degrees
-| Uncontrolled pose, but not full profile
-| Recommended minimum face: 224 x 224 pixels, smaller facial images may reduce accuracy but will not result in false positives
-| Face cropping: It is best to provide the original image to isValid without preprocessing.  If using a cropped image as input, use as much padding around the head as possible, perhaps using an ISO 19794-5/INCITS 385-2004 (S2019) Face Portrait compliant image.
+Key Features of ``is_valid``:
 
+* Runs on-device, responding within 50ms without requiring a server call
+* Supports head tilt from -22.5 to 22.5 degrees (left to right)
+* Allows uncontrolled poses (though not full profile)
+* Minimum recommended face size is 224 x 224 pixels for optimal accuracy
+* For best results, use an unprocessed image with as much padding around the face as possible, compliant with ISO 19794-5/INCITS 385-2004 (S2019) standards.
 
 .. image:: images/isvalid_example.png
    :width: 600
-.. code-block:: py
 
-    # Check if the image is valid
-
-    is_valid_handle = face_factor.is_valid(image_path = "path_to_the_image") ## Replace with the path to the image
-
-Output:
+Sample Usage:
 
 .. code-block:: py
 
-    is_valid_handle.error # Error code of the operation
-    is_valid_handle.message # Message of the operation
-    is_valid_handle.face_objects # List of Face objects with results
+    # Import the FaceFactor class from the CryptoNets SDK
+    from cryptonets_python_sdk.factor import FaceFactor
 
-Example:
+    # Initialize FaceFactor with the server URL and API key
+    face_factor = FaceFactor(server_url=SERVER_URL, api_key=API_KEY)
+
+    # Validate the image
+    is_valid_handle = face_factor.is_valid(image_path="path_to_the_image")  # Replace with the actual image path
+
+    # Accessing results
+    error_code = is_valid_handle.error        # Error code, if any
+    message = is_valid_handle.message         # Operation message
+    face_objects = is_valid_handle.face_objects  # List of detected Face objects
+
+
+Example Output:
 
 .. image:: images/johny.jpg
    :width: 400
 .. code-block:: py
 
-    #Create a Face factor class instance
-    face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)
-
-    is_valid_handle = face_factor.is_valid(image_path=img_path)
+    # Loop through detected faces
     for index, face in enumerate(is_valid_handle.face_objects):
-            print("Face#:{}\nReturn Code:{}\nMessage:{}\nBBox TL:{}\nBBox BR:{}\n".format(index + 1,face.return_code,face.message,face.bounding_box.top_left_coordinate.__str__(), face.bounding_box.bottom_right_coordinate.__str__()))
+        print(f"Face #:{index + 1}")
+        print(f"Return Code: {face.return_code}")
+        print(f"Message: {face.message}")
+        print(f"BBox Top Left: {face.bounding_box.top_left_coordinate}")
+        print(f"BBox Bottom Right: {face.bounding_box.bottom_right_coordinate}\n")
 
-See :ref:`return codes <return_codes>` for all result and status codes
 
 Output:
 
@@ -118,59 +132,63 @@ Output:
     BBox TL:Point(187.0,153.0)
     BBox BR:Point(382.0,334.0)
 
-See the :ref:`is_valid advanced instructions <isvalid_advanced>` section for more configuration options.
+For a complete list of return and status codes, see :ref:`return codes <return_codes>`.
+Additional configurations can be found in the :ref:`is_valid advanced instructions <isvalid_advanced>` section.
 
 estimate_age: Estimate user's age
 ---------------------------------
 
-The estimate_age method accepts a frontal facial image, apiKey and specified restrictions as input,
-checks the image to determine if a valid facial biometric that conforms to the specified restriction(s) are present in the image,
-and returns the age estimate [0-100] plus bounding box, or useful error code(s).
+The ``estimate_age`` method analyzes a frontal facial image to determine if a valid biometric match is present
+based on specified restrictions, and it returns an estimated age (range: 0-100) along with the bounding box or relevant error codes.
 
-Use estimate_age during live capture to continually estimate a user’s age.
+This method is particularly useful for live capture applications where continuous age estimation is required.
 
-| Method runs on-device and replies in 50ms without a server call
-| Head tilt (left to right): -22.5 to 22.5 degrees
-| Uncontrolled pose, but not full profile
-| Recommended minimum face: 224 x 224 pixels, smaller facial images may reduce accuracy but will not result in false positives
-| Face cropping: It is best to provide the original image to isValid without preprocessing.  If using a cropped image as input, use as much padding around the head as possible, perhaps using an ISO 19794-5/INCITS 385-2004 (S2019) Face Portrait compliant image or similar.
+Key Features of ``estimate_age``:
 
+* Runs on-device with a 50ms response time, eliminating the need for server calls
+* Supports head tilt between -22.5 to 22.5 degrees (left to right)
+* Allows uncontrolled poses (excluding full profiles)
+* Recommended minimum face size is 224 x 224 pixels for optimal accuracy
+* For best results, provide the original image without cropping. If a cropped image is used, include as much padding around the head as possible, following standards like ISO 19794-5/INCITS 385-2004 (S2019).
 
 .. image:: images/age_example.png
    :width: 600
-   
-.. code-block:: py
 
-    # Estimate user's age
-
-    age_handle = face_factor.estimate_age(image_path = "path_to_the_image") ## Replace with the path to the image
-
-Output:
-
-See :ref:`return codes <return_codes>` for all result and status codes
+Sample Usage:
 
 .. code-block:: py
 
-    age_handle.error # Error code of the operation
-    age_handle.message # Message of the operation
-    age_handle.face_objects # List of Face objects with results
+    # Import the FaceFactor class from the CryptoNets SDK
+    from cryptonets_python_sdk.factor import FaceFactor
+
+    # Initialize FaceFactor with the server URL and API key
+    face_factor = FaceFactor(server_url=SERVER_URL, api_key=API_KEY)
+
+    # Estimate age
+    age_handle = face_factor.estimate_age(image_path="path_to_the_image")  # Replace with the actual image path
+
+    # Accessing results
+    error_code = age_handle.error         # Error code, if any
+    message = age_handle.message          # Operation message
+    face_objects = age_handle.face_objects  # List of detected Face objects
+
     
-Example:
+Example Output:
 
 .. image:: images/estimate_age.jpeg
    :width: 400
 .. code-block:: py
 
-    #Create a Face factor class instance
-    face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)
-
-    age_handle = face_factor.estimate_age(image_path=img_path)
+    # Loop through detected faces and print the results
     for index, face in enumerate(age_handle.face_objects):
-            print("Face#:{}\nReturn Code:{}\nMessage:{}\nAge:{}\nBBox TL:{}\nBBox BR:{}\n".format(index + 1,face.return_code,face.message,face.age,face.bounding_box.top_left_coordinate.__str__(),face.bounding_box.bottom_right_coordinate.__str__()))
-        
-Output:
+        print(f"Face: {index + 1}")
+        print(f"Return Code: {face.return_code}")
+        print(f"Message: {face.message}")
+        print(f"Age: {face.age}")
+        print(f"BBox Top Left: {face.bounding_box.top_left_coordinate}")
+        print(f"BBox Bottom Right: {face.bounding_box.bottom_right_coordinate}\n")
 
-See :ref:`return codes <return_codes>` for all result and status codes
+Output:
 
 .. code-block:: py
 
@@ -178,7 +196,7 @@ See :ref:`return codes <return_codes>` for all result and status codes
     -------
     Return Code:0
     Message:ValidBiometric
-    Age:21.465137481689453
+    Age:21.47
     BBox TL:Point(859.0,189.0)
     BBox BR:Point(1296.0,759.0)
 
@@ -186,49 +204,52 @@ See :ref:`return codes <return_codes>` for all result and status codes
     -------
     Return Code:0
     Message:ValidBiometric
-    Age:18.190135955810547
+    Age:18.19
     BBox TL:Point(134.0,356.0)
     BBox BR:Point(580.0,908.0)
 
 
-
-See the :ref:`estimate_age advanced instructions <age_advanced>` section for more configuration options.
+For a complete list of return and status codes, see :ref:`return codes <return_codes>`.
+Additional configurations can be found in the :ref:`estimate_age advanced instructions <age_advanced>` section.
 
 compare: 1:1 verification of two valid face images
 --------------------------------------------------
 
-The compare method accepts two frontal facial images, apiKey and specified restriction(s) as input,
-checks the images to determine if both contain a valid frontal facial biometric that conforms to the specified restriction(s),
-and returns if the subjects are the same person (0) or different subjects (-1) with useful error code(s).
+The ``compare`` method performs a 1:1 verification of two frontal facial images, analyzing them to determine if both images contain valid frontal facial biometrics that meet specified restrictions.
+It then returns whether the subjects in the images are the same person (Result: 1) or different subjects (Result: -1), along with additional information and error codes if applicable.
 
-| Method runs on-device and replies in 50ms without a server call
-| Head tilt (left to right): -22.5 to 22.5 degrees
-| Uncontrolled pose, but not full profile
-| Recommended minimum face: 224 x 224 pixels, smaller facial images may reduce accuracy but will not result in false positives
-| Face cropping: It is best to provide the original image to isValid without preprocessing.  If using a cropped image as input, use as much padding around the head as possible, perhaps using an ISO 19794-5/INCITS 385-2004 (S2019) Face Portrait compliant image or similar.
+Key Features of ``compare``:
 
-.. code-block:: py
+* Runs on-device with a 50ms response time, without requiring a server call
+* Supports head tilt between -22.5 to 22.5 degrees (left to right)
+* Allows uncontrolled poses (excluding full profiles)
+* Recommended minimum face size is 224 x 224 pixels for optimal accuracy
+* For best results, provide the original image without cropping. If a cropped image is used, include as much padding around the head as possible, following standards like ISO 19794-5/INCITS 385-2004 (S2019).
 
-    # Check if the image is valid
-
-    compare_handle = face_factor.compare(image_path_1 = "path_to_the_image1", image_path_2 = "path_to_the_image2") ## Replace with the path to the image
-
-Output:
-
-See :ref:`return codes <return_codes>` for all result and status codes
+Sample Usage:
 
 .. code-block:: py
 
-    compare_handle.status # Status of the operation
-    compare_handle.result # Result of the operation
-    compare_handle.message # Message of the operation
-    compare_handle.distance_min # Min distance of compare
-    compare_handle.distance_mean # Mean distance of compare
-    compare_handle.distance_max # Max distance of compare
-    compare_handle.first_validation_result #Image 1 validation result
-    compare_handle.second_validation_result #Image 2 validation result
+    # Import the FaceFactor class from the CryptoNets SDK
+    from cryptonets_python_sdk.factor import FaceFactor
 
-Example:
+    # Initialize FaceFactor with the server URL and API key
+    face_factor = FaceFactor(server_url=SERVER_URL, api_key=API_KEY)
+
+    # Compare two images
+    compare_handle = face_factor.compare(image_path_1="path_to_image1", image_path_2="path_to_image2")  # Replace with actual paths
+
+    # Accessing results
+    status = compare_handle.status                  # Status of the operation
+    result = compare_handle.result                  # Result: 1 (same person), -1 (different person)
+    message = compare_handle.message                # Operation message
+    distance_min = compare_handle.distance_min      # Minimum comparison distance
+    distance_mean = compare_handle.distance_mean    # Mean comparison distance
+    distance_max = compare_handle.distance_max      # Maximum comparison distance
+    first_validation = compare_handle.first_validation_result   # Validation result for the first image
+    second_validation = compare_handle.second_validation_result  # Validation result for the second image
+
+Example Output:
 
 .. image:: images/tom_hanks.png
    :width: 190
@@ -238,14 +259,18 @@ Example:
 
 .. code-block:: py
 
-    #Create a Face factor class instance
-    face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)	
-    compare_handle = face_factor.compare(image_path=img_path, image_path_2=img_path2)
-    print("Status:{}\nResult:{}\nMessage:{}\nMin:{}\nMean:{}\nMax:{}\n1VR:{}\n2VR:{}\n".format(compare_handle.status,compare_handle.result, compare_handle.message, compare_handle.distance_min,compare_handle.distance_mean,compare_handle.distance_max, compare_handle.first_validation_result,compare_handle.second_validation_result))
+    # Display comparison results
+    print(f"Status: {compare_handle.status}")
+    print(f"Result: {compare_handle.result}")
+    print(f"Message: {compare_handle.message}")
+    print(f"Min Distance: {compare_handle.distance_min}")
+    print(f"Mean Distance: {compare_handle.distance_mean}")
+    print(f"Max Distance: {compare_handle.distance_max}")
+    print(f"Image 1 Validation Result: {compare_handle.first_validation_result}")
+    print(f"Image 2 Validation Result: {compare_handle.second_validation_result}")
+
             
 Output:
-
-See :ref:`return codes <return_codes>` for all result and status codes
 
 .. code-block:: py
 
@@ -258,52 +283,61 @@ See :ref:`return codes <return_codes>` for all result and status codes
     1VR:0
     2VR:0
 
-See the :ref:`compare advanced instructions <compare_advanced>` section for more configuration options.
-compare: 1:1 verification of two valid face images
---------------------------------------------------
+For a complete list of return and status codes, see :ref:`return codes <return_codes>`.
+Additional configurations can be found in the :ref:`compare advanced instructions <compare_advanced>` section.
 
-The compare_doc_with_face method is designed to perform 1:1 verification by comparing a frontal face image with an image on a driving license. It requires an API key and specified restrictions as inputs. The method assesses whether both images contain a valid frontal facial biometric that meets the specified restrictions. It determines if the individual in the driving license and the portrait is the same (returns 1) or different (returns -1), along with relevant error codes.
+compare_doc_with_face: 1:1 Verification of a Face Image and Document Image
+--------------------------------------------------------------------------
 
-| Method runs on-device and replies in 200ms without a server call
-| Head tilt (left to right): -22.5 to 22.5 degrees
-| Uncontrolled pose, but not full profile
-| Recommended minimum face: 224 x 224 pixels, smaller facial images may reduce accuracy but will not result in false positives
-| Face cropping: It is best to provide the original image to isValid without preprocessing.  If using a cropped image as input, use as much padding around the head as possible, perhaps using an ISO 19794-5/INCITS 385-2004 (S2019) Face Portrait compliant image or similar.
+The ``compare_doc_with_face`` method enables 1:1 verification by comparing a frontal facial image with a facial image on a driver’s license or similar document. It takes a facial image and a document image as input, along with the API key and specified restrictions, and assesses whether the facial biometrics match.
+The method returns 1 if the images are from the same individual and -1 if they are not, along with any relevant error codes.
 
-.. code-block:: py
+Key Features of ``compare_doc_with_face``:
 
-    # Check if the image is valid
+* Runs on-device with a 200ms response time, without requiring a server call
+* Supports head tilt between -22.5 to 22.5 degrees (left to right)
+* Allows uncontrolled poses (excluding full profiles)
+* Recommended minimum face size is 224 x 224 pixels for optimal accuracy
+* For best results, use the original image without cropping. If using a cropped image, include as much padding around the head as possible, in line with ISO 19794-5/INCITS 385-2004 (S2019) standards.
 
-    compare_doc_with_face_handle = face_factor.compare_doc_with_face(face_path="path_to_face_image",doc_path="path_to_DL_image") ## Replace with the path to the images
-
-
-Output:
-
-See :ref:`return codes <return_codes>`  for all result and status codes
+Sample Usage:
 
 .. code-block:: py
 
-    compare_handle.status # Status of the operation
-    compare_handle.result # Result of the operation
-    compare_handle.message # Message of the operation
-    compare_handle.distance # Distance of compare
-    compare_handle.first_validation_result #Image 1 validation result
-    compare_handle.second_validation_result #Image 2 validation result
+    # Import the FaceFactor class from the CryptoNets SDK
+    from cryptonets_python_sdk.factor import FaceFactor
 
-Example:
+    # Initialize FaceFactor with the server URL and API key
+    face_factor = FaceFactor(server_url=SERVER_URL, api_key=API_KEY)
+
+    # Perform 1:1 verification between a face image and a document image
+    compare_doc_with_face_handle = face_factor.compare_doc_with_face(
+        face_path="path_to_face_image",   # Path to the portrait image
+        doc_path="path_to_DL_image"       # Path to the document (e.g., driver's license) image
+    )
+
+    # Accessing results
+    status = compare_doc_with_face_handle.status                  # Status of the operation
+    result = compare_doc_with_face_handle.result                  # Result: 1 (same person), -1 (different subjects)
+    message = compare_doc_with_face_handle.message                # Operation message
+    distance = compare_doc_with_face_handle.distance              # Distance of comparison
+    first_validation = compare_doc_with_face_handle.first_validation_result  # Validation result for the face image
+    second_validation = compare_doc_with_face_handle.second_validation_result # Validation result for the document image
+
+Example Output:
 
 
 .. code-block:: py
 
-    #Create a Face factor class instance
-    face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)
-    compare_doc_with_face_handle = face_factor.compare_doc_with_face(face_path="path_to_face_image",doc_path="path_to_DL_image") ## Replace with the path to the images
-    print("Status:{}\nResult:{}\nMessage:{}\nDistance:{}\n1VR:{}\n2VR:{}\n".format(compare_doc_with_face.status,compare_handle.result, compare_handle.message, compare_handle.distance_min,compare_handle.distance_mean,compare_handle.distance_max, compare_handle.first_validation_result,compare_handle.second_validation_result))
+    # Display comparison results
+    print(f"Status: {compare_doc_with_face_handle.status}")
+    print(f"Result: {compare_doc_with_face_handle.result}")
+    print(f"Message: {compare_doc_with_face_handle.message}")
+    print(f"Distance: {compare_doc_with_face_handle.distance}")
+    print(f"Face Image Validation Result: {compare_doc_with_face_handle.first_validation_result}")
+    print(f"Document Image Validation Result: {compare_doc_with_face_handle.second_validation_result}")
 
-            
-Output:
-
-See :ref:`return codes <return_codes>` for all result and status codes
+Sample Output:
 
 .. code-block:: py
 
@@ -311,71 +345,59 @@ See :ref:`return codes <return_codes>` for all result and status codes
     Result:1
     Message:"Same Face"
     Min:0.46
-    1VR:0
-    2VR:0
+    Face Image Validation Result:0
+    Document Image Validation Result:0
 
-See the :ref:`compare advanced instructions <compare_advanced>` section for more configuration options.
+For a complete list of return and status codes, see :ref:`return codes <return_codes>`.
+Additional configurations can be found in the :ref:`compare advanced instructions <compare_advanced>` section.
 
-antispoof_check: Detection of Spoofing in Facial Recognition
-------------------------------------------------------------
+antispoof_check: Spoof Detection in Facial Recognition
+------------------------------------------------------
 
-The ``antispoof_check`` method processes a single facial image to determine if the image is an authentic live capture or a spoof attempt. This method enhances the security of facial recognition systems by preventing fraud.
+The ``antispoof_check`` method is designed to enhance the security of facial recognition systems by distinguishing authentic live captures from potential spoof attempts.
+By analyzing specific characteristics within the image, this method helps prevent fraudulent access.
 
 Functionality
 ~~~~~~~~~~~~~
 - **Input**: Accepts a single frontal face image.
-- **Operation**: Analyzes the image for indicators of spoofing, such as texture irregularities or digital manipulations.
-- **Output**: Returns an ``AntispoofCheckResult`` object containing the status, message, and a boolean indicating if spoofing was detected.
+- **Operation**: Analyzes the image for signs of spoofing, such as texture irregularities or digital alterations.
+- **Output**: Returns an ``AntispoofCheckResult`` object, which includes the status, message, and a boolean indicating if spoofing was detected.
 
 Features
 ~~~~~~~~
-- **On-device processing**: Executes locally, typically within 100ms, without requiring server communication.
-- **Image Requirements**: High-resolution images (minimum 224 x 224 pixels) are ideal. Lower resolutions are supported but may affect detection capabilities.
-- **Head Pose**: Effective within a frontal view from -15 to +15 degrees for both yaw and pitch.
-- **Recommendations**: Best results are achieved with unprocessed images. If cropping is necessary, include ample background.
+- **On-device processing**: The check runs locally, with a typical response time of 100ms, requiring no server communication.
+- **Image Requirements**: High-resolution images (224 x 224 pixels minimum) are recommended. Lower resolutions are supported, though detection accuracy may vary.
+- **Head Pose**:  Effective for frontal views, within a range of -15 to +15 degrees for both yaw and pitch.
+- **Best Practices**: Use unprocessed images for optimal results. If cropping is needed, include sufficient background around the face.
 
 AntispoofCheckResult Object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The result of the antispoof check is encapsulated in an ``AntispoofCheckResult`` object with the following attributes:
+The ``AntispoofCheckResult`` encapsulates the output of the antispoof check, with these attributes:
 
-- **status**: Integer indicating the status of the operation.
-- **message**: String providing details about the operation's outcome.
-- **is_antispoof**: Boolean indicating whether a spoofing attempt was detected.
+- **status**: Integer that indicates the status of the operation.
+- **message**: A descriptive message about the operation’s outcome.
+- **is_antispoof**: Boolean that indicates whether a spoofing attempt was detected (``True`` if spoofing detected, ``False`` otherwise).
 
 Example Usage
 ~~~~~~~~~~~~~
 .. code-block:: python
 
-    # Example to initiate an antispoof check
-    antispoof_result = face_factor.antispoof_check(image_path="path_to_the_image")  # Replace with the path to the image
+   # Import the FaceFactor class from the CryptoNets SDK
+    from cryptonets_python_sdk.factor import FaceFactor
 
-    # Accessing the results
-    print("Status: {}\nMessage: {}\nSpoof Detected: {}".format(
-        antispoof_result.status, antispoof_result.message, antispoof_result.is_antispoof))
-
-Output Description
-~~~~~~~~~~~~~~~~~~
-Refer to :ref:`return_codes <return_codes>` for explanations of result and status codes.
-
-.. code-block:: python
-
-    antispoof_result.status  # Status of the antispoofing operation
-    antispoof_result.message # Message explaining the detection outcome
-    antispoof_result.is_antispoof # Boolean indicating if spoofing was detected
-
-Example
-~~~~~~~
-.. code-block:: python
-
-    # Creating an instance of FaceFactor with necessary configurations
+    # Initialize FaceFactor with server URL and API key
     face_factor = FaceFactor(server_url=SERVER_ADDRESS, api_key=API_KEY)
-    antispoof_result = face_factor.antispoof_check(image_path="path_to_face_image")
+
+    # Perform antispoof check
+    antispoof_result = face_factor.antispoof_check(image_path="path_to_face_image")  # Replace with the actual image path
+
+    # Accessing results
     print("Status: {}\nMessage: {}\nSpoof Detected: {}".format(
         antispoof_result.status, antispoof_result.message, antispoof_result.is_antispoof))
+
 
 Output
 ~~~~~~
-Refer to :ref:`return_codes <return_codes>` for detailed result and status codes.
 
 .. code-block:: python
 
@@ -383,54 +405,69 @@ Refer to :ref:`return_codes <return_codes>` for detailed result and status codes
     Message: 'No spoofing detected.'
     Spoof Detected: False
 
+Refer to :ref:`return_codes <return_codes>` for a comprehensive list of possible result and status codes.
 
-enroll: initialize subject’s face in identification system
-----------------------------------------------------------
+enroll: Initialize Subject’s Face in the Identification System
+--------------------------------------------------------------
 
-The enroll method accepts a frontal facial image, apiKey and specified restrictions as input,
-checks the image to determine if a valid facial biometric that conforms to the specified restriction(s) are present in the image,
-[if valid] augments and transforms the plaintext facial biometric(s) into 50 into a fifty fully homomorphic encryption (FHE) ciphertexts,
-deletes the original plaintext biometric, transmits the ciphertext to the backend, and
+The ``enroll`` method is used to register a subject’s facial biometric in the identification system.
+It accepts a frontal facial image, along with an API key and specified restrictions.
+This method verifies if the image contains a valid facial biometric that meets the specified criteria.
+If valid, it transforms the biometric data into homomorphic token ciphertexts, deletes the original plaintext biometric, and securely transmits the ciphertext to the backend.
 
-returns (0) plus the resulting new PUID and GUID to the user;
-if the user is already enrolled, it returns (0) and the existing PUID and GUID to the user;
-if the facial biometric image is invalid, it returns (-1) and useful error code(s).
+Process Flow:
 
-| Method replies in 1400ms, including server call
-| Head tilt (left to right): -22.5 to 22.5 degrees
-| Recommend controlled pose with no eyeglasses or facemask, user facing forward toward camera for maximum accuracy;
-| Recommended minimum face: 224 x 224 pixels, smaller facial images may reduce accuracy but will not result in false positives
-| Face cropping: It is best to provide the original image to isValid without preprocessing.  If using a cropped image as input, use as much padding around the head as possible, perhaps using an ISO 19794-5/INCITS 385-2004 (S2019) Face Portrait compliant image or similar.
+* If enrollment is successful and the user is new, the method returns 0 along with a new PUID and GUID.
+* If the user is already enrolled, it returns 0 and the existing PUID and GUID.
+* If the image is invalid, it returns -1 along with relevant error codes.
 
+Key features of ``enroll``:
 
-.. code-block:: py
+* The operation completes within 200ms, including server processing time.
+* Supports head tilt from -22.5 to 22.5 degrees (left to right).
+* Recommended for controlled poses with no eyeglasses or facemasks, facing forward for highest accuracy.
+* Minimum recommended face size is 224 x 224 pixels.
+* For best results, provide the original image without cropping. If cropped, ensure there is adequate padding around the head, ideally following ISO 19794-5/INCITS 385-2004 (S2019) standards.
 
-    # Enroll operation
-
-    enroll_handle = face_factor.enroll(image_path = "path_to_the_image") ## Replace with the path to the image
-
-Output:
+Sample Usage:
 
 .. code-block:: py
 
-    enroll_handle.status # Status of the operation
-    enroll_handle.message # Message of the operation
-    enroll_handle.enroll_level
-    enroll_handle.puid
-    enroll_handle.guid
-    enroll_handle.token
+    # Import the FaceFactor class from the CryptoNets SDK
+    from cryptonets_python_sdk.factor import FaceFactor
 
-Example:
+    # Initialize FaceFactor with server URL and API key
+    face_factor = FaceFactor(server_url=SERVER_URL, api_key=API_KEY)
+
+    # Enroll a subject's face
+    enroll_handle = face_factor.enroll(image_path="path_to_the_image")  # Replace with the actual image path
+
+    # Accessing results
+    print("Status: {}\nMessage: {}\nEnroll Level: {}\nPUID: {}\nGUID: {}\nToken: {}".format(
+        enroll_handle.status,
+        enroll_handle.message,
+        enroll_handle.enroll_level,
+        enroll_handle.puid,
+        enroll_handle.guid,
+        enroll_handle.token
+    ))
+
+Output Description:
+
+Each enroll operation returns an EnrollHandle object with the following attributes:
+
+- **status**: Indicates the status of the operation (0 for success, -1 for failure).
+- **message**: Provides a message detailing the result of the operation.
+- **enroll_level**: Represents the enrollment level of the user.
+- **puid**: The unique PUID assigned to the enrolled user.
+- **guid**: The unique GUID for the enrolled user.
+- **token**: A token, if applicable, for additional security measures.
+
+Example Output:
 
 .. image:: images/tom_hanks.png
    :width: 400
-.. code-block:: py
 
-    #Create a Face factor class instance
-    face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)	
-    enroll_handle = face_factor.enroll(image_path=img_path)
-    print("Status:{}\nMessage:{}\nEnroll Level:{}\nPUID:{}\nGUID:{}\nToken:{}\n".format(enroll_handle.status,enroll_handle.message,enroll_handle.enroll_level,enroll_handle.puid,enroll_handle.guid,enroll_handle.token))
-            
 Output:
 
 .. code-block:: py
@@ -442,53 +479,65 @@ Output:
   GUID:rq0rqpo647s317n30145
   Token:None
 
-See the :ref:`enroll advanced instructions <enroll_advanced>` section for more configuration options.
+For additional configuration options and advanced settings, see the :ref:`enroll advanced instructions <enroll_advanced>` section.
 
-predict: 1:N match of a probe image to the enrolled gallery
------------------------------------------------------------
+predict: 1:N Matching of a Probe Image to the Enrolled Gallery
+--------------------------------------------------------------
 
-The predict method accepts one frontal facial probe image containing one or more face(s), apiKey and specified restrictions as input
-checks the image to determine if a valid facial biometric that conforms to the specified restriction(s) are present in the image,
-[if valid] transforms the plaintext facial biometric(s) into fully homomorphic encryption (FHE) ciphertexts,
-deletes the original plaintext image, transmits the ciphertext to the backend, and
+The ``predict`` method performs a 1:n match, comparing a single probe image containing one or more faces against a gallery of enrolled faces.
+This method verifies if the probe image meets specified restrictions, transforms valid facial biometrics into homomorphic token ciphertexts, deletes the original plaintext data, and securely transmits the ciphertext to the backend.
 
-returns (0) plus the resulting PUID and GUID to the user;
-if the image does not contain any valid enrolled face(s), it returns (-1) and useful error code(s).
+Process Flow:
 
-| Method replies in 200ms, including the server call
-| Head tilt (left to right): -22.5 to 22.5 degrees
-| Uncontrolled pose, but not full profile
-| Recommended minimum face: 224 x 224 pixels, smaller facial images may reduce accuracy but will not result in false positives
-| Face cropping: It is best to provide the original image to isValid without preprocessing.  If using a cropped image as input, use as much padding around the head as possible, perhaps using an ISO 19794-5/INCITS 385-2004 (S2019) Face Portrait compliant image or similar.
+* If a match is found with an enrolled face, the method returns 0 along with the matched PUID and GUID.
+* If no valid enrolled face is found, it returns -1 with appropriate error codes.
 
+Key Features of ``predict``:
 
-.. code-block:: py
+* The operation completes within 200ms, including server processing.
+* Supports head tilt from -22.5 to 22.5 degrees (left to right).
+* Allows uncontrolled poses, though not full profiles.
+* Minimum recommended face size is 224 x 224 pixels.
+* For best results, provide the original image without cropping. If using a cropped image, include ample padding around the head, ideally following ISO 19794-5/INCITS 385-2004 (S2019) standards.
 
-    # Predict the image
-
-    predict_handle = face_factor.predict(image_path = "path_to_the_image") ## Replace with the path to the image
-
-Output:
+Sample Usage:
 
 .. code-block:: py
 
-    predict_handle.status # Status of the operation
-    predict_handle.message # Message of the operation
-    predict_handle.enroll_level
-    predict_handle.puid
-    predict_handle.guid
-    predict_handle.token
+    # Import the FaceFactor class from the CryptoNets SDK
+    from cryptonets_python_sdk.factor import FaceFactor
+
+    # Initialize FaceFactor with server URL and API key
+    face_factor = FaceFactor(server_url=SERVER_URL, api_key=API_KEY)
+
+    # Perform a 1:N match with the probe image
+    predict_handle = face_factor.predict(image_path="path_to_the_image")  # Replace with the actual image path
+
+    # Accessing results
+    print("Status: {}\nMessage: {}\nEnroll Level: {}\nPUID: {}\nGUID: {}\nToken: {}".format(
+        predict_handle.status,
+        predict_handle.message,
+        predict_handle.enroll_level,
+        predict_handle.puid,
+        predict_handle.guid,
+        predict_handle.token
+    ))
+
+Output Description:
+
+The predict method returns a PredictHandle object containing the following attributes:
+
+- **status**: Indicates the status of the operation (0 for success, -1 for failure).
+- **message**: Provides a message detailing the result of the operation.
+- **enroll_level**: Specifies the enrollment level of the user.
+- **puid**: The unique PUID associated with the matched user.
+- **guid**: The unique GUID associated with the matched user.
+- **token**: A token, if applicable, for additional security.
 
 Example:
 
-.. image:: images/tom_hanks.png
+.. image:: images/tom_hanks_2.jpg
    :width: 400
-.. code-block:: py
-
-    #Create a Face factor class instance
-    face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)	
-    predict_handle = face_factor.predict(image_path=img_path)
-    print("Status:{}\nMessage:{}\nEnroll Level:{}\nPUID:{}\nGUID:{}\nToken:{}\n".format(predict_handle.status,predict_handle.message,predict_handle.enroll_level,predict_handle.puid,predict_handle.guid,predict_handle.token))      
 
 Output:
 
@@ -501,36 +550,40 @@ Output:
   GUID:rq0rqpo647s317n30145
   Token:None
 
-See the :ref:`predict advanced instructions <predict_advanced>` section for more configuration options.
+For advanced settings and configuration options, see the :ref:`predict advanced instructions <predict_advanced>` section.
 
-remove user’s puid from the server, and remove full enrollment if no other puid’s remain
-----------------------------------------------------------------------------------------
+delete: Remove a User’s PUID from the Server
+--------------------------------------------
 
-Accepts a PUID and apiKey as input, if more than one PUIDs exist for the user then deletes the specified PUID from the identification system and
-returns (0); if only one PUID exists, then delete all enrollment data;
-if the specified PUID does not exist returns (-1).
+The ``delete`` method is used to remove a user’s PUID (Personal Unique Identifier) from the identification system.
+This method accepts a PUID and an API key as input and performs the following actions:
 
-.. code-block:: py
+| If multiple PUIDs are associated with the user, it deletes only the specified PUID and returns 0.
+| If only one PUID is associated with the user, it deletes all enrollment data for that user.
+| If the specified PUID does not exist, it returns -1 with an appropriate error code.
 
-    # Delete the enrollment
-
-    delete_handle = face_factor.delete(puid="puid") ## Replace with the PUID
-
-Output:
+Sample Usage:
 
 .. code-block:: py
 
-    delete_handle.status # Status of the operation
-    delete_handle.message # Message of the operation
+    # Import the FaceFactor class from the CryptoNets SDK
+    from cryptonets_python_sdk.factor import FaceFactor
 
-Example:
+    # Initialize FaceFactor with server URL and API key
+    face_factor = FaceFactor(server_url=SERVER_URL, api_key=API_KEY)
 
-.. code-block:: py
+    # Delete the specified PUID
+    delete_handle = face_factor.delete(puid="puid")  # Replace with the actual PUID
 
-    #Create a Face factor class instance
-    face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)	
-    delete_handle = face_factor.delete(puid)
-    print("Status:{}\nMessage:{}".format(delete_handle.status, delete_handle.message))
+    # Accessing results
+    print("Status: {}\nMessage: {}".format(delete_handle.status, delete_handle.message))
+
+Output Description:
+
+The delete method returns a DeleteHandle object with the following attributes:
+
+- **status**: Indicates the status of the operation (0 for successful deletion, -1 for failure).
+- **message**: Provides a message detailing the result of the operation.
 
 Output:
 
@@ -541,56 +594,58 @@ Output:
 
 get_iso_face: Extract ISO Spec Face Image
 -----------------------------------------
+The ``get_iso_face`` method captures an ISO-compliant facial image, adhering to specified restrictions.
+This method accepts a frontal facial image along with an API key, verifies if the image meets the required restrictions, and returns the ISO face image or relevant error codes if validation fails.
 
-The get_iso_face method accepts a frontal facial image, apiKey and specified restrictions as input,
-checks the image to determine if a valid facial biometric that conforms to the specified restriction(s) are present in the image,
-and returns the iso face image, or useful error code(s).
+This function is ideal for live capture scenarios to continually acquire ISO-compliant images.
 
-Use get_iso_face during live capture to continually acquire iso image.
+Key Features of ``get_iso_face``:
 
-| Method runs on-device and replies in 50ms without a server call
-| Head tilt (left to right): -22.5 to 22.5 degrees
-| Uncontrolled pose, but not full profile
-| Recommended minimum face: 224 x 224 pixels, smaller facial images may reduce accuracy but will not result in false positives
-| Face cropping: It is best to provide the original image to isValid without preprocessing.  If using a cropped image as input, use as much padding around the head as possible
+* Runs on-device with a response time of 50ms, without requiring a server call.
+* Supports head tilt from -22.5 to 22.5 degrees (left to right).
+* Allows uncontrolled poses but excludes full profiles.
+* Minimum recommended face size is 224 x 224 pixels.
+* For best results, provide the original image without cropping. If cropped, ensure there is sufficient padding around the head.
 
+Sample Usage:
+
+.. code-block:: py
+
+    # Import the FaceFactor class from the CryptoNets SDK
+    from cryptonets_python_sdk.factor import FaceFactor
+
+    # Initialize FaceFactor with server URL and API key
+    face_factor = FaceFactor(server_url=SERVER_URL, api_key=API_KEY)
+
+    # Extract an ISO-compliant face image
+    iso_face_handle = face_factor.get_iso_face(image_path="path_to_the_image")  # Replace with the actual image path
+
+    # Accessing results
+    print("Status: {}\nMessage: {}\nISO Image Width: {}\nISO Image Height: {}\nISO Image Channels: {}\nConfidence: {}".format(
+        iso_face_handle.status,
+        iso_face_handle.message,
+        iso_face_handle.iso_image_width,
+        iso_face_handle.iso_image_height,
+        iso_face_handle.iso_image_channels,
+        iso_face_handle.confidence
+    ))
+
+Output Description:
+
+The get_iso_face method returns an IsoFaceHandle object with the following attributes:
+
+- **status**: Indicates the status of the operation (0 for success, error code for failure).
+- **message**: Provides a message detailing the result of the operation.
+- **image**: The ISO-compliant image as a PIL Image object.
+- **confidence**: Confidence score for the image's validity.
+- **iso_image_width**: Width of the ISO image.
+- **iso_image_height**: Height of the ISO image.
+- **iso_image_channels**: Number of color channels in the image.
+
+Example Output:
 
 .. image:: images/iso_face_example.jpg
    :width: 407
-
-.. code-block:: py
-
-    # Get ISO Face image
-
-    iso_face_handle = face_factor.get_iso_face(image_path = "path_to_the_image") ## Replace with the path to the image
-
-Output:
-
-.. code-block:: py
-
-    iso_face_handle.status # Status of the operation
-    iso_face_handle.message # Message of the operation
-    iso_face_handle.image # PIL Image object
-    iso_face_handle.confidence # Confidence Score for the image
-    iso_face_handle._iso_image_width # Width of the image
-    iso_face_handle._iso_image_height # Height of the image
-    iso_face_handle.iso_image_channels # Number of image channels
-
-Example:
-
-.. image:: images/johny.jpg
-   :width: 407
-.. code-block:: py
-
-    #Create a Face factor class instance
-    face_factor = FaceFactor(server_url=SERVER_URL, api_key=api_key)
-
-    get_iso_face_handle = face_factor.get_iso_face(image_path=img_path)
-    print(
-        "Status:{}\nMessage:{}\nISO_image_width:{}\nISO_image_height: {}\nISO_image_channels:{}\nConfidence:{} ".format(
-            get_iso_face_handle.status, get_iso_face_handle.message, get_iso_face_handle.iso_image_width,
-            get_iso_face_handle.iso_image_height, get_iso_face_handle.iso_image_channels,
-            get_iso_face_handle.confidence))
 
 Output:
 
@@ -603,7 +658,7 @@ Output:
     ISO_image_channels:4
     Confidence:0.999437153339386
 
-See the :ref:`get_iso_face advanced instructions <iso_face_advanced>` section for more configuration options.
+For advanced configuration options, refer to the :ref:`get_iso_face advanced instructions <iso_face_advanced>` section.
 
 .. toctree::
    :maxdepth: 2
