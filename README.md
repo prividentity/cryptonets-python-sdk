@@ -1,9 +1,9 @@
-## CryptoNets Python SDK
+## CryptoNets Python SDK (v2)
 
 ## Project description
 
 This package provides an interface to CryptoNets™ 1:N fully homomorphically encrypted (FHE) face recognition, Ultrapass™
-ID and human age estimation.
+ID and human age estimation.  This is version 2 which is compatible with our newest back-end server.
 
 ## Getting Started
 
