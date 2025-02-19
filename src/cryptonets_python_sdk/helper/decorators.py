@@ -19,15 +19,27 @@
 
 import functools
 import warnings
+import weakref
 
 
 class Singleton(type):
-    _instances = {}
-
+    _instances = weakref.WeakValueDictionary()
+    
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+            instance = super().__call__(*args, **kwargs)
+            # Store the instance in the WeakValueDictionary
+            cls._instances[cls] = instance
+            # Create a finalizer that will be called when the instance is garbage collected
+            weakref.finalize(instance, cls._remove_instance, cls)
         return cls._instances[cls]
+    
+    @classmethod
+    def _remove_instance(cls, class_ref):
+        """Remove the instance from the registry when it's garbage collected"""
+        if class_ref in cls._instances:
+            # print(f"Removing {class_ref.__name__} from singleton registry")
+            del cls._instances[class_ref]
 
 
 def deprecated(func):

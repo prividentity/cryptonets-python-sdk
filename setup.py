@@ -36,7 +36,7 @@ DESCRIPTION = "Cryptonets SDK Library for Python"
 AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
 URL = "https://privateid.com/"
-VERSION = "1.3.7"
+VERSION = "2.0.0"
 REQUIRES = ["numpy >= 1.21.0", "pillow >= 9.1.0","boto3","tqdm","exifread"]
 
 LONG_DESCRIPTION = ""
@@ -58,6 +58,12 @@ setup(
     include_package_data=True,
     platforms="any",
     install_requires=REQUIRES,
+    extras_require={
+        "dev": [
+            "pytest",
+            "memory-profiler"
+        ]
+    },
     python_requires=">=3.6",
     package_dir={"": "src"},
     project_urls={

@@ -887,6 +887,42 @@ class FaceFactor(metaclass=Singleton):
                 "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
             )
             return AntispoofCheckResult(message=self.message.ANTISPOOF_CHECK_ERROR)
+    def delete(
+        self,
+        puid: str = None,
+        config: ConfigObject = None,
+    ) -> Union[FaceDeleteResult, List[FaceDeleteResult]]:
+        """Deletes the user by PUID in the face recognition server
+
+        Parameters
+        ----------
+        puid
+            Unique identifier of the user to be deleted from face recognition server,
+            e.g. koSvk2Sr-smi9-e10o-UE4P-RJs6ykkyIYNy
+
+        config (Optional)
+            Additional configuration parameters for the operation
+
+
+        Returns
+        -------
+        FaceDeleteResult
+            status: int [0 if successful -1 if unsuccessful]
+
+            message: str [Message from the operation]
+
+        """
+        try:
+            return self.face_factor.delete(puid=puid, config_object=config)
+        except Exception as e:
+            print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
+            print(
+                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
+            )
+            return FaceDeleteResult(message=self.message.EXCEPTION_ERROR_DELETE)
+        
+    def __del__(self):
+        del self.face_factor
 
     @property
     def api_key(self) -> str:

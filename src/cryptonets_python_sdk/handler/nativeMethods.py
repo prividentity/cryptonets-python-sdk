@@ -607,9 +607,9 @@ class NativeMethods(object):
             print(e)
             return False
 
-    def delete(self, puid: str,config_object) -> Any:
-        puid = bytes(puid, "utf-8")
-        p_buffer_result = c_char_p()
+    def delete(self, puid: str, config_object: ConfigObject = None) -> Any:
+        puid = puid.encode("utf-8")
+        p_buffer_result = c_char_p(None)
         p_buffer_result_length = c_int()
         if config_object and config_object.get_config_param():
                 c_config_param = c_char_p(
@@ -617,8 +617,10 @@ class NativeMethods(object):
                 )
                 c_config_param_len = c_int(len(config_object.get_config_param()))
         else:
-                c_config_param = c_char_p(bytes("", "utf-8"))
-                c_config_param_len = c_int(0)
+            default_config = "{}"
+            c_config_param = c_char_p(default_config.encode("utf-8"))
+            c_config_param_len = c_int(len(default_config.encode("utf-8")))
+
         self._spl_so_face.privid_user_delete(
             self._spl_so_face.handle,
             c_config_param,
