@@ -1,3 +1,4 @@
+import gc
 import string
 import traceback
 
@@ -17,7 +18,6 @@ from ..helper.utils import FaceValidationCode
 from ..settings.cacheType import CacheType
 from ..settings.configuration import ConfigObject
 from ..settings.loggingLevel import LoggingLevel
-
 
 class Face(metaclass=Singleton):
     def __init__(
@@ -307,6 +307,7 @@ class Face(metaclass=Singleton):
             print(e, traceback.format_exc())
             return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
 
+
     def is_valid(
         self, image_data: np.array, config_object: ConfigObject = None
     ) -> FaceValidationResult:
@@ -314,6 +315,7 @@ class Face(metaclass=Singleton):
             json_data = self.face_factor_processor.is_valid_without_age(
                 image_data, config_object=config_object
             )
+
             if not json_data:
                 return FaceValidationResult(message=self.message.IS_VALID_ERROR)
 
@@ -343,6 +345,8 @@ class Face(metaclass=Singleton):
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceValidationResult(message=self.message.IS_VALID_ERROR)
+        finally:
+            gc.collect()
 
     def estimate_age(
         self, image_data: np.array, config_object: ConfigObject = None
@@ -450,3 +454,8 @@ class Face(metaclass=Singleton):
             except Exception as e:
                 print("Exception occurred:", e, traceback.format_exc())
                 return AntispoofCheckResult(status=-100, message="Exception occurred during antispoofing check.", is_antispoof=False)
+            
+    def __del__(self):
+        if hasattr(self, "face_factor_processor"):
+            del self.face_factor_processor
+            gc.collect()

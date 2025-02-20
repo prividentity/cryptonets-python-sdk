@@ -1,5 +1,6 @@
 """Factor implements the functionalities of each factors to generate and verify Private IDs .
 """
+import gc
 import os
 import pathlib
 import platform
@@ -22,7 +23,6 @@ from .settings.cacheType import CacheType
 from .settings.configuration import ConfigObject, PARAMETERS
 from .settings.loggingLevel import LoggingLevel
 from .settings.supportedPlatforms import SupportedPlatforms
-
 
 class FaceFactor(metaclass=Singleton):
     """The FaceFactor class implements the methods for enrolling and predicting the Face module as part of the
@@ -229,8 +229,12 @@ class FaceFactor(metaclass=Singleton):
                 return FaceValidationResult(
                     message="Image dimensions should be greater than 224x224."
                 )
+            
+            result = self.face_factor.is_valid(image_data=img_data, config_object=config)
 
-            return self.face_factor.is_valid(image_data=img_data, config_object=config)
+            del img_data
+
+            return result
         except Exception as e:
             print("Oops: {}\nTrace: {}".format(e, traceback.format_exc()))
             print(
@@ -923,6 +927,7 @@ class FaceFactor(metaclass=Singleton):
         
     def __del__(self):
         del self.face_factor
+        gc.collect()
 
     @property
     def api_key(self) -> str:

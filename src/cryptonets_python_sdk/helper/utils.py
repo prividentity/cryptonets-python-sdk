@@ -6,6 +6,8 @@ import os
 
 import exifread
 
+import gc
+
 
 def get_exif_orientation(image_path):
     with open(image_path, 'rb') as f:
@@ -34,10 +36,18 @@ def apply_rotation(image, orientation):
     return image
 
 def image_path_to_array(image_path: str, input_format: str) -> np.ndarray:
-    image = Image.open(image_path).convert(input_format.upper())
-    image=apply_rotation(image,get_exif_orientation(image_path))
-    return np.array(image)
-
+    try:
+        result = None
+        converted_img = None
+        with Image.open(image_path) as img:
+            converted_img = img.convert(input_format.upper())
+        rotated_img = apply_rotation(converted_img, get_exif_orientation(image_path))
+        result = np.array(rotated_img, copy=True)
+        del converted_img
+        del rotated_img
+        return result
+    finally:
+        gc.collect()
 
 class Point(object):
     """Creates a point on a coordinate plane with values x and y.

@@ -1,4 +1,5 @@
 import ctypes
+import gc
 import json
 import pathlib
 import sys
@@ -7,6 +8,9 @@ from typing import Any
 import numpy as np
 from PIL import Image
 import platform
+
+from ..helper.decorators import Singleton
+
 from ..settings.cacheType import CacheType
 from ..settings.configuration import ConfigObject
 from ..settings.loggingLevel import LoggingLevel
@@ -15,7 +19,8 @@ import botocore
 import tqdm
 import subprocess
 import platform
-class NativeMethods(object):
+
+class NativeMethods(metaclass=Singleton):
     def __init__(
         self,
         api_key: str,
@@ -34,6 +39,8 @@ class NativeMethods(object):
             self._local_lib_path.mkdir(parents=True, exist_ok=True)
             self._check_and_download_files(platform.system())
 
+            self._library_handles = []
+
             if platform.system() == "Linux":
                 self._load_linux_libraries()
             elif platform.system() == "Windows":
@@ -47,28 +54,39 @@ class NativeMethods(object):
             sys.exit(1)
 
     def _check_and_download_files(self, system_os):
-        required_files=[]
+        # Determine required files based on system
+        required_files = []
         if system_os == "Linux":
-            if platform.machine() in ["aarch64","arm"]:
-                required_files=["lib_fhe_arm64.so","libtensorflow-lite-arm64.so"]
+            if platform.machine() in ["aarch64", "arm"]:
+                required_files = ["lib_fhe_arm64.so", "libtensorflow-lite-arm64.so"]
             else:
-                required_files=["lib_fhe.so","libtensorflow-lite.so"]
+                required_files = ["lib_fhe.so", "libtensorflow-lite.so"]
         elif system_os == "Windows":
-            required_files=["privid_fhe.dll"]
+            required_files = ["privid_fhe.dll"]
         elif system_os == "Darwin":
-            required_files=["libprivid_fhe_universal.dylib"]
-        
-       # Create an unauthenticated session
-        session = boto3.Session()
-        s3 = session.client('s3', config=botocore.config.Config(signature_version=botocore.UNSIGNED))
-        bucket_name = "cryptonets-python-sdk"
+            required_files = ["libprivid_fhe_universal.dylib"]
 
+        # Check if any files are missing
+        missing_files = []
         for file_name in required_files:
             file_path = self._local_lib_path.joinpath(file_name)
             if not file_path.exists():
+                missing_files.append((file_name, file_path))
+
+        # Only create S3 client if there are missing files
+        if missing_files:
+            # Create an unauthenticated session
+            session = boto3.Session()
+            s3 = session.client('s3', config=botocore.config.Config(signature_version=botocore.UNSIGNED))
+            bucket_name = "cryptonets-python-sdk"
+
+            # Download missing files
+            for file_name, file_path in missing_files:
                 print(f"Downloading {file_name}...")
                 self._download_from_s3(s3, bucket_name, file_name, file_path)
-        if  system_os == "Darwin":
+
+        # Handle quarantine attribute for Darwin
+        if system_os == "Darwin":
             self._remove_quarantine_attribute(str(self._local_lib_path.joinpath("libprivid_fhe_universal.dylib").resolve()))
     
     def _download_from_s3(self, s3_client, bucket, file_name, local_path):
@@ -85,13 +103,17 @@ class NativeMethods(object):
         if platform.machine() in ["aarch64","arm"]:
                 self._library_path = str(self._local_lib_path.joinpath("lib_fhe_arm64.so").resolve())
                 self._library_path_2 = str(self._local_lib_path.joinpath("libtensorflow-lite-arm64.so").resolve())
-                ctypes.CDLL(self._library_path_2, mode=1)
+                tf_lib = ctypes.CDLL(self._library_path_2, mode=1)
                 self._spl_so_face = ctypes.CDLL(self._library_path)
+                self.library_handles.append(tf_lib._handle)
+                self.library_handles.append(self._spl_so_face._handle)
         else:
                 self._library_path = str(self._local_lib_path.joinpath("lib_fhe.so").resolve())
                 self._library_path_2 = str(self._local_lib_path.joinpath("libtensorflow-lite.so").resolve())
-                ctypes.CDLL(self._library_path_2, mode=1)
+                tf_lib = ctypes.CDLL(self._library_path_2, mode=1)
                 self._spl_so_face = ctypes.CDLL(self._library_path)
+                self.library_handles.append(tf_lib._handle)
+                self.library_handles.append(self._spl_so_face._handle)
 
     def _load_windows_libraries(self):
         self._library_path = str(self._local_lib_path.joinpath("privid_fhe.dll").resolve())
@@ -460,11 +482,10 @@ class NativeMethods(object):
         self, image_data: np.array, config_object: ConfigObject = None
     ) -> dict:
         try:
-            img = image_data
-            im_width = img.shape[1]
-            im_height = img.shape[0]
+            im_width = image_data.shape[1]
+            im_height = image_data.shape[0]
 
-            p_buffer_images_in = img.flatten()
+            p_buffer_images_in = image_data.ravel()
             c_p_buffer_images_in = p_buffer_images_in.ctypes.data_as(POINTER(c_uint8))
 
             c_result = c_char_p()
@@ -505,6 +526,8 @@ class NativeMethods(object):
 
             output = json.loads(output_json)
 
+            del image_data, p_buffer_images_in, c_p_buffer_images_in
+
             # Check if 'faces' key exists and contains at least one face
             if "faces" in output and output["faces"].get("faces"):
                 processed_faces = []
@@ -532,6 +555,8 @@ class NativeMethods(object):
         except Exception as e:
             print(e)
             return False
+        finally:
+            gc.collect()
 
 
     def get_iso_face(
@@ -1001,3 +1026,14 @@ class NativeMethods(object):
             except Exception as e:
                 print(e)
                 return False
+
+    def __del__(self):
+        try:
+            libc = ctypes.CDLL(None)
+            # Set the argument types for dlclose (works for both macOS and Linux)
+            libc.dlclose.argtypes = [ctypes.c_void_p]
+            for handle in self._library_handles:
+                libc.dlclose(handle)
+            self._library_handles.clear()
+        except Exception as e:
+            print(f"Exception during cleanup in NativeMethods: {e}")
