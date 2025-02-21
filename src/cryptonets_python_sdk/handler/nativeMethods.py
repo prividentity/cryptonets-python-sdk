@@ -105,15 +105,15 @@ class NativeMethods(metaclass=Singleton):
                 self._library_path_2 = str(self._local_lib_path.joinpath("libtensorflow-lite-arm64.so").resolve())
                 tf_lib = ctypes.CDLL(self._library_path_2, mode=1)
                 self._spl_so_face = ctypes.CDLL(self._library_path)
-                self.library_handles.append(tf_lib._handle)
-                self.library_handles.append(self._spl_so_face._handle)
+                self._library_handles.append(tf_lib._handle)
+                self._library_handles.append(self._spl_so_face._handle)
         else:
                 self._library_path = str(self._local_lib_path.joinpath("lib_fhe.so").resolve())
                 self._library_path_2 = str(self._local_lib_path.joinpath("libtensorflow-lite.so").resolve())
                 tf_lib = ctypes.CDLL(self._library_path_2, mode=1)
                 self._spl_so_face = ctypes.CDLL(self._library_path)
-                self.library_handles.append(tf_lib._handle)
-                self.library_handles.append(self._spl_so_face._handle)
+                self._library_handles.append(tf_lib._handle)
+                self._library_handles.append(self._spl_so_face._handle)
 
     def _load_windows_libraries(self):
         self._library_path = str(self._local_lib_path.joinpath("privid_fhe.dll").resolve())
