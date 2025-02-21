@@ -926,7 +926,8 @@ class FaceFactor(metaclass=Singleton):
             return FaceDeleteResult(message=self.message.EXCEPTION_ERROR_DELETE)
         
     def __del__(self):
-        del self.face_factor
+        if hasattr(self, "face_factor"):
+            del self.face_factor
         gc.collect()
 
     @property
