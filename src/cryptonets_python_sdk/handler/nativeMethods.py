@@ -20,7 +20,6 @@ import tqdm
 import subprocess
 import platform
 
-from memory_profiler import profile
 
 class NativeMethods(metaclass=Singleton):
     
@@ -482,7 +481,6 @@ class NativeMethods(metaclass=Singleton):
             POINTER(c_char_p), POINTER(c_int)]
         self._spl_so_face.privid_doc_scan_barcode.restype = c_int
 
-    @profile
     def is_valid_without_age(
         self, image_data: np.array, config_object: ConfigObject = None
     ) -> dict:

@@ -24,8 +24,6 @@ from .settings.configuration import ConfigObject, PARAMETERS
 from .settings.loggingLevel import LoggingLevel
 from .settings.supportedPlatforms import SupportedPlatforms
 
-from memory_profiler import profile
-
 class FaceFactor(metaclass=Singleton):
     """The FaceFactor class implements the methods for enrolling and predicting the Face module as part of the
         Biometric Authentication.
@@ -77,7 +75,6 @@ class FaceFactor(metaclass=Singleton):
         delete
         get_iso_face
     """
-    @profile
     def __init__(
         self,
         api_key: str = None,
