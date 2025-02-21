@@ -20,7 +20,10 @@ import tqdm
 import subprocess
 import platform
 
+from memory_profiler import profile
+
 class NativeMethods(metaclass=Singleton):
+    
     def __init__(
         self,
         api_key: str,
@@ -98,6 +101,7 @@ class NativeMethods(metaclass=Singleton):
                 for chunk in response['Body'].iter_chunks(chunk_size=1024):
                     f.write(chunk)
                     bar.update(len(chunk))
+
 
     def _load_linux_libraries(self):
         if platform.machine() in ["aarch64","arm"]:
@@ -478,6 +482,7 @@ class NativeMethods(metaclass=Singleton):
             POINTER(c_char_p), POINTER(c_int)]
         self._spl_so_face.privid_doc_scan_barcode.restype = c_int
 
+    @profile
     def is_valid_without_age(
         self, image_data: np.array, config_object: ConfigObject = None
     ) -> dict:
@@ -526,7 +531,7 @@ class NativeMethods(metaclass=Singleton):
 
             output = json.loads(output_json)
 
-            del image_data, p_buffer_images_in, c_p_buffer_images_in
+            # del image_data, p_buffer_images_in, c_p_buffer_images_in
 
             # Check if 'faces' key exists and contains at least one face
             if "faces" in output and output["faces"].get("faces"):

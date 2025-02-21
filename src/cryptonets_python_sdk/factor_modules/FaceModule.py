@@ -19,7 +19,10 @@ from ..settings.cacheType import CacheType
 from ..settings.configuration import ConfigObject
 from ..settings.loggingLevel import LoggingLevel
 
+from memory_profiler import profile
+
 class Face(metaclass=Singleton):
+    @profile
     def __init__(
         self,
         api_key: str,
@@ -307,7 +310,7 @@ class Face(metaclass=Singleton):
             print(e, traceback.format_exc())
             return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
 
-
+    @profile
     def is_valid(
         self, image_data: np.array, config_object: ConfigObject = None
     ) -> FaceValidationResult:
