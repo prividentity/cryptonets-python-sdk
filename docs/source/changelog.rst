@@ -1,5 +1,18 @@
 Changelog
 =========
+
+Version 1.3.8 (2025-02-25)
+--------------------------
+
+Updates:
+
+* Add new configuration parameter `ESTIMATE_AGE_FACE_VALIDATIONS_OFF` hat affect teh age prediction method.
+  The parameter have the value `False` by default.
+  If `ESTIMATE_AGE_FACE_VALIDATIONS_OFF` set to `True`, it will disable the face validation step in the age
+  estimation method and the method will return an age estimation unless no face is detected.
+* Documentation and content update.
+
+
 Version 1.3.8 (2024-11-05)
 --------------------------
 
