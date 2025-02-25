@@ -16,12 +16,7 @@ from tqdm import tqdm
 SERVER_URL = "https://api.cryptonets.ai/node"
 API_KEY = "accsb18b5f17d924db88"
 
-DEV_SERVER_URL = "https://api.develv2.cryptonets.ai/node"
-DEV_API_KEY = "00000000000000001962"
-
-
-
-
+# Get a list of images from a directory
 def list_images(base_path):
     # loop over the directory structure
     image_types = (".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff")
@@ -49,22 +44,32 @@ def parse_age(age_str):
 
 if __name__ == "__main__":
 
-    # Create FaceFactor object
+    # Create FaceFactor config 
     config_param = {
         PARAMETERS.INPUT_IMAGE_FORMAT: "rgb",
         PARAMETERS.CONTEXT_STRING: "predict",
-        # Relax the face validation settings to allow for more faces to be detected
-        PARAMETERS.ESTIMATE_AGE_FACE_VALIDATIONS_OFF: True,
+        # Relax the face validation settings to allow all faces to be predicted
+        PARAMETERS.ESTIMATE_AGE_FACE_VALIDATIONS_OFF: True
     }
 
     config_object = ConfigObject(config_param)
 
+    # Create FaceFactor object
     face_factor = FaceFactor(server_url=SERVER_URL, 
                             api_key=API_KEY,
-                            config=config_object,
-                            logging_level=LoggingLevel.full)
+                            config=config_object)
+    
 
-    image_folder_path = path.join(path.dirname(__file__),"30-images") # sys.argv[1]
+    if len(sys.argv) < 2:
+        print("Usage: python private_id_age_estimator.py <relative_image_folder_path>")
+        sys.exit(1)
+
+    relative_image_folder_path = sys.argv[1]
+    image_folder_path = path.join(path.dirname(__file__), relative_image_folder_path)
+
+    if not os.path.exists(image_folder_path):
+        print(f"Error: The folder {image_folder_path} does not exist.")
+        sys.exit(1)    
     
    # Read CSV data
     csv_path = path.join(image_folder_path, "result.csv")
@@ -93,8 +98,6 @@ if __name__ == "__main__":
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for image_path in tqdm(image_path_list):
-            # if not ("9876" in image_path  or "10069" in image_path):
-            #     continue
             age_handle = face_factor.estimate_age(image_path=image_path)
             age_result = {"image_path": image_path.replace(image_folder_path, ""), "error": age_handle.error,
                           "message": age_handle.message}

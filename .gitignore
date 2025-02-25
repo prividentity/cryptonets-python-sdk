@@ -14,5 +14,5 @@ docs/.DS_Store
 src/cryptonets_python_sdk/.DS_Store
 src/cryptonets_python_sdk/handler/.DS_Store
 .DS_Store
-**/acc/30-images
+**/acc/30-images/*.jpg
 **/acc/samples
