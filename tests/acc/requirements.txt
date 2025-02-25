@@ -3,4 +3,5 @@ Pillow
 termcolor
 tqdm
 pandas
-matplotlib 
+matplotlib
+cryptonets_python_sdk>=1.3.9

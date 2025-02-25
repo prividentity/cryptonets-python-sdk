@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
- PRIVATE IDENTITY LLC - PROPRIETARY AND CONFIDENTIAL (c) COPYRIGHT 2018 - 2020 PRIVATE IDENTITY LLC
+ PRIVATE IDENTITY LLC - PROPRIETARY AND CONFIDENTIAL (c) COPYRIGHT 2018 - 2025 PRIVATE IDENTITY LLC
  All Rights Reserved.
  NOTICE:  All information contained herein is, and remains the
  property of PRIVATE IDENTITY LLC and its suppliers, if any.  The intellectual and technical concepts contained
@@ -27,7 +27,7 @@ from setuptools import setup, find_packages
 """
 Setup module for cryptonets python sdk.
 
-Created on 22/11/2022
+Created on Feb 25th - 2025
 
 @author: Private Identity
 """
@@ -36,7 +36,7 @@ DESCRIPTION = "Cryptonets SDK Library for Python"
 AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
 URL = "https://privateid.com/"
-VERSION = "1.3.8"
+VERSION = "1.3.9"
 REQUIRES = ["numpy >= 1.21.0", "pillow >= 9.1.0","boto3","tqdm","exifread"]
 
 LONG_DESCRIPTION = ""
