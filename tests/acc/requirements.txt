@@ -1,0 +1,6 @@
+numpy
+Pillow
+termcolor
+tqdm
+pandas
+matplotlib 
