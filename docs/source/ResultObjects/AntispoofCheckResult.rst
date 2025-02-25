@@ -1,6 +1,6 @@
-=================
+====================
 AntispoofCheckResult
-=================
+====================
 
 .. module:: cryptonets_python_sdk.helper.result_objects.antispoofCheckResult
     :noindex:

@@ -67,6 +67,7 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     FACE_ISO_RESERVATION_CALLS = "face_iso"
     THRESHOLD_HIGH_VERTICAL="threshold_high_vertical_enroll"
     DOCUMENT_AUTO_ROTATION = "document_auto_rotation"
+    ESTIMATE_AGE_FACE_VALIDATIONS_OFF = "estimate_age_face_validations_off"
     
 
 
@@ -265,6 +266,9 @@ class ParameterValidator:
 
         self.__parameter[PARAMETERS.DOC_SCAN_FACE_DOC_VALIDATIONS_OFF] = self.Parameter(
             name=PARAMETERS.DOC_SCAN_FACE_DOC_VALIDATIONS_OFF, _type="BOOL")
+        
+        self.__parameter[PARAMETERS.ESTIMATE_AGE_FACE_VALIDATIONS_OFF] = self.Parameter(
+            name=PARAMETERS.ESTIMATE_AGE_FACE_VALIDATIONS_OFF, _type="BOOL")
         
         # BILLING PARAMETERS
         # self.__parameter[PARAMETERS.ISVALID_RESERVATION_CALLS] = self.Parameter(
