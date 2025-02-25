@@ -120,3 +120,7 @@ Configurable Parameter List and Valid values
    * - FACE_ISO_RESERVATION_CALLS
      - Number of calls to be set for face ISO in billing reservation.
      - 0 to 100000000
+   * - ESTIMATE_AGE_FACE_VALIDATIONS_OFF
+     - False by default, If set true, disables the face validation in the age estimation method, the method will return an age estimation unless no face is detected.
+     - True, False
+     
