@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Version 1.3.10 (2025-02-27)
+--------------------------
+
+Updates:
+
+* Fix a memory leak in enroll method.
+
 Version 1.3.9 (2025-02-25)
 --------------------------
 
