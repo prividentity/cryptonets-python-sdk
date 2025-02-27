@@ -143,7 +143,7 @@ class NativeMethods(object):
         ##############################################################################################
 
         self._spl_so_face.privid_initialize_session.argtypes = [
-            c_char_p,  # const char* api_key
+            c_char_p,
             c_int,
             POINTER(c_void_p),
         ]  # void** session_ptr_out
@@ -199,17 +199,9 @@ class NativeMethods(object):
         print(version_str)
 
         if not return_type:
-            raise Exception("Wrong API_KEY or Server URL.")
-        ##############################################################################################
-
-        ##############################################################################################
-        # (ok) PRIVID_API_ATTRIB bool privid_set_configuration(void *session_ptr, const char *user_config,
-        # const int user_config_length);
+            raise Exception("Wrong API_KEY or Server URL.") 
         ##############################################################################################
        
-        # c_config_param, c_config_param_len = configure_url("predict", self._spl_so_face)
-        # c_config_param_enroll, c_config_param_enroll_len = configure_url("enroll", self._spl_so_face)
-        # c_config_param_delete, c_config_param_delete_len = configure_url("deleteUser", self._spl_so_face)
 
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_set_configuration(void *session_ptr, const char *user_config,
@@ -235,7 +227,6 @@ class NativeMethods(object):
             config_dict = json.loads(self._config_object.get_config_param())
             config_dict["cache_type"] = self._cache_type.value
             config_dict["local_storage_path"] = self._local_storage_path
-
             config_dict["skip_antispoof"] = True
             config_dict = json.dumps(config_dict)
             c_config_param = c_char_p(bytes(config_dict, "utf-8"))
@@ -246,12 +237,12 @@ class NativeMethods(object):
         ###############################################################################################
 
         ##############################################################################################
-        # (ok) PRIVID_API_ATTRIB int privid_enroll_onefa(
-        #         void *session_ptr, const char *user_config, const int user_config_length,
-        #         const uint8_t *input_images, const int image_count, const int image_size,
-        #         const int image_width, const int image_height,
-        #         uint8_t** best_input_out, int *best_input_length,
-        #         char **result_out, int *result_out_length);
+        # PRIVID_API_ATTRIB int32_t privid_enroll_onefa(
+        # void *session_ptr, const char *user_config, const int user_config_length,
+        # const uint8_t * image_bytes, const int image_count, const int image_size,
+        # const int image_width, const int image_height,
+        # uint8_t** best_input_out, int *best_input_length,
+        # char **result_out, int *result_out_length);
         ##############################################################################################
         self._spl_so_face.privid_enroll_onefa.argtypes = [
             c_void_p,  # void *session_ptr
@@ -262,20 +253,20 @@ class NativeMethods(object):
             c_int,  # const int image_size
             c_int,  # const int image_width,
             c_int,  # const int image_height
-            POINTER(c_uint8),  # uint8_t** best_input_out
+            POINTER(POINTER(c_uint8)),  # uint8_t** best_input_out
             POINTER(c_int),  # int *best_input_length
             POINTER(c_char_p),  # char **result_out
             POINTER(c_int),
         ]  # int *result_out_length
-        self._spl_so_face.privid_enroll_onefa.restype = c_int
+        self._spl_so_face.privid_enroll_onefa.restype = c_int32
         ##############################################################################################
 
         ##############################################################################################
-        # (ok) PRIVID_API_ATTRIB int privid_face_predict_onefa(
-        #           void *session_ptr, const char *user_config, const int user_config_length,
-        #           const uint8_t *input_images, const int image_count, const int image_size,
-        #           const int image_width, const int image_height,
-        #           char **result_out, int *result_out_length);
+        # PRIVID_API_ATTRIB int32_t privid_face_predict_onefa(
+        # void *session_ptr, const char *user_config, const int user_config_length,
+        # const uint8_t *input_images, const int image_count, const int image_size,
+        # const int image_width, const int image_height,
+        # char **result_out, int *result_out_length);
         ##############################################################################################
         self._spl_so_face.privid_face_predict_onefa.argtypes = [
             c_void_p,  # void *session_ptr
@@ -289,14 +280,14 @@ class NativeMethods(object):
             POINTER(c_char_p),  # char **result_out,
             POINTER(c_int),
         ]  # int *result_out_length
-        self._spl_so_face.privid_face_predict_onefa.restype = c_int
+        self._spl_so_face.privid_face_predict_onefa.restype = c_int32
         ##############################################################################################
 
         ##############################################################################################
-        # (ok) PRIVID_API_ATTRIB int privid_user_delete(
-        #         void *session_ptr, const char *user_conf, const int conf_len,
-        #         const char *puid, const int puid_length,
-        #         char **operation_result_out, int *operation_result_out_len);
+        # PRIVID_API_ATTRIB int32_t privid_user_delete(
+        # void *session_ptr, const char *user_conf, const int conf_len,
+        # const char *puid, const int puid_length,
+        # char **operation_result_out, int *operation_result_out_len);
         ##############################################################################################
         self._spl_so_face.privid_user_delete.argtypes = [
             c_void_p,  # void *session_ptr
@@ -307,22 +298,22 @@ class NativeMethods(object):
             POINTER(c_char_p),  # char **operation_result_out
             POINTER(c_int),
         ]  # int *operation_result_out_len
-        self._spl_so_face.privid_user_delete.restype = c_int
+        self._spl_so_face.privid_user_delete.restype = c_int32        
         ##############################################################################################
 
         ##############################################################################################
         # (ok) PRIVID_API void privid_free_char_buffer(char **buffer);
         ##############################################################################################
-        self._spl_so_face.privid_free_char_buffer.argtypes = [c_char_p]  # char **buffer
+        self._spl_so_face.privid_free_char_buffer.argtypes = [c_char_p]  # char **buffer        
         ##############################################################################################
 
         ##############################################################################################
-        # (ok) PRIVID_API_ATTRIB bool privid_face_compare_files(
-        #         void* session_ptr, float fudge_factor,
-        #         const char* user_config, int user_config_length,
-        #         const uint8_t* p_buffer_files_A, int im_size_A, int im_width_A, int im_height_A,
-        #         const uint8_t* p_buffer_files_B, int im_size_B, int im_width_B, int im_height_B,
-        #         char** result_out, int* result_out_length);
+        # int32_t privid_face_compare_files(
+        # void* session_ptr, float fudge_factor,
+        # const char* user_config, int user_config_length,
+        # const uint8_t* p_buffer_files_A, int im_size_A, int im_width_A, int im_height_A,
+        # const uint8_t* p_buffer_files_B, int im_size_B, int im_width_B, int im_height_B,
+        # char** result_out, int* result_out_length);
         ##############################################################################################
         self._spl_so_face.privid_face_compare_files.argtypes = [
             c_void_p,  # void* session_ptr
@@ -340,14 +331,14 @@ class NativeMethods(object):
             POINTER(c_char_p),  # char** result_out
             POINTER(c_int),
         ]  # int* result_out_length
-        self._spl_so_face.privid_face_compare_files.restype = c_int
+        self._spl_so_face.privid_face_compare_files.restype = c_int32
         ##############################################################################################
 
         ##############################################################################################
-        # (ok) PRIVID_API_ATTRIB bool privid_validate(
-        #         void *session_ptr, const uint8_t* image_bytes, const int image_width,
-        #         const int image_height,const char *user_config, const int user_config_length,
-        #         char **result_out, int *result_out_length);
+        # PRIVID_API_ATTRIB int32_t privid_validate(
+        # void *session_ptr, const uint8_t* image_bytes, const int image_width,
+        # const int image_height,const char *user_config, const int user_config_length,
+        # char **result_out, int *result_out_length); 
         ##############################################################################################
         self._spl_so_face.privid_validate.argtypes = [
             c_void_p,  # void *session_ptr
@@ -359,14 +350,14 @@ class NativeMethods(object):
             POINTER(c_char_p),  # char **result_out
             POINTER(c_int),
         ]  # int *result_out_length
-        self._spl_so_face.privid_validate.restype = c_bool
+        self._spl_so_face.privid_validate.restype = c_int32
         ##############################################################################################
 
         ##############################################################################################
-        # (ok) PRIVID_API_ATTRIB bool privid_estimate_age(
-        #         void *session_ptr, const uint8_t* image_bytes, const int image_width,
-        #         const int image_height,const char *user_config, const int user_config_length,
-        #         char **result_out, int *result_out_length);
+        # PRIVID_API_ATTRIB int32_t privid_estimate_age(
+        # void *session_ptr, const uint8_t* image_bytes, const int image_width,
+        # const int image_height,const char *user_config, const int user_config_length,
+        # char **result_out, int *result_out_length);
         ##############################################################################################
         self._spl_so_face.privid_estimate_age.argtypes = [
             c_void_p,  # void *session_ptr
@@ -378,13 +369,13 @@ class NativeMethods(object):
             POINTER(c_char_p),  # char **result_out
             POINTER(c_int),
         ]  # int *result_out_length
-        self._spl_so_face.privid_estimate_age.restype = c_bool
+        self._spl_so_face.privid_estimate_age.restype = c_int32
 
         ##############################################################################################
-        # (ok) PRIVID_API_ATTRIB bool privid_face_iso(
-        #         void *session_ptr, const uint8_t *image_bytes, const int image_width, const int image_height,
-        #         const char *user_config, const int user_config_length, char **result_out, int *result_out_length,
-        #         uint8_t** output_iso_image_bytes, int* output_iso_image_bytes_length);
+        # PRIVID_API_ATTRIB int32_t privid_face_iso(
+        # void *session_ptr, const uint8_t *image_bytes, const int image_width, const int image_height,
+        # const char *user_config, const int user_config_length, char **result_out, int *result_out_length,
+        # uint8_t** output_iso_image_bytes, int* output_iso_image_bytes_length);
         ##############################################################################################
         self._spl_so_face.privid_face_iso.argtypes = [
             c_void_p,  # void *session_ptr
@@ -398,7 +389,7 @@ class NativeMethods(object):
             POINTER(POINTER(c_ubyte)),  # uint8_t** output_iso_image_bytes
             POINTER(c_int),
         ]  # int* output_iso_image_bytes_length
-        self._spl_so_face.privid_face_iso.restype = c_bool  # fixed a bug here
+        self._spl_so_face.privid_face_iso.restype = c_int32 
 
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_set_billing_record_threshold(
@@ -414,10 +405,10 @@ class NativeMethods(object):
         ##############################################################################################
 
         ##############################################################################################
-        #   D_API_ATTRIB bool privid_anti_spoofing(
-        #   void* session_ptr, const uint8_t* image_bytes, const int image_width,
-        #   const int image_height, const char* user_config, const int user_config_length,
-        #   char** result_out, int* result_out_length);
+        # PRIVID_API_ATTRIB int32_t privid_anti_spoofing(
+        # void* session_ptr, const uint8_t* image_bytes, const int image_width,
+        # const int image_height, const char* user_config, const int user_config_length,
+        # char** result_out, int* result_out_length);
         ##############################################################################################
         self._spl_so_face.privid_anti_spoofing.argtypes = [
             c_void_p,  # void *session_ptr
@@ -429,7 +420,7 @@ class NativeMethods(object):
             POINTER(c_char_p),  # char **result_out
             POINTER(c_int),
         ]  # int *result_out_length
-        self._spl_so_face.privid_anti_spoofing.restype = c_bool
+        self._spl_so_face.privid_anti_spoofing.restype = c_int32
         ##############################################################################################
 
         if self._config_object and self._config_object.get_config_billing_param():
@@ -442,19 +433,47 @@ class NativeMethods(object):
             self._spl_so_face.privid_set_billing_record_threshold(
                 self._spl_so_face.handle, c_config_param, c_config_param_len
             )
-        # privid_doc_scan_face
-        self._spl_so_face.privid_doc_scan_face.argtypes = [
-            c_void_p, c_char_p, c_int, POINTER(c_uint8), c_int, c_int,
-            POINTER(POINTER(c_uint8)), POINTER(c_int), POINTER(POINTER(c_uint8)), POINTER(c_int), 
-            POINTER(c_char_p), POINTER(c_int)]
-        self._spl_so_face.privid_doc_scan_face.restype = c_int
+        ##############################################################################################
 
-        # privid_doc_scan_barcode
-        self._spl_so_face.privid_doc_scan_barcode.argtypes = [
-            c_void_p, c_char_p, c_int, POINTER(c_uint8), c_int, c_int,
-            POINTER(POINTER(c_uint8)), POINTER(c_int), POINTER(POINTER(c_uint8)), POINTER(c_int), 
+        ##############################################################################################
+        # PRIVID_API_ATTRIB int32_t privid_doc_scan_face(
+        # void *session_ptr, const char *user_config, const int user_config_length,
+        # const uint8_t* p_buffer_image_in, const int image_width, const int image_height,
+        # uint8_t** cropped_doc_out, int *cropped_doc_length, 
+        # uint8_t **cropped_face_out, int *cropped_face_length,
+        # char** result_out, int* result_out_length);
+        ##############################################################################################
+        self._spl_so_face.privid_doc_scan_face.argtypes = [
+            c_void_p, 
+            c_char_p, 
+            c_int, 
+            POINTER(c_uint8), 
+            c_int, 
+            c_int,
+            POINTER(POINTER(c_uint8)), POINTER(c_int), 
+            POINTER(POINTER(c_uint8)), POINTER(c_int), 
             POINTER(c_char_p), POINTER(c_int)]
-        self._spl_so_face.privid_doc_scan_barcode.restype = c_int
+        self._spl_so_face.privid_doc_scan_face.restype = c_int32
+        ##############################################################################################
+
+        # ##############################################################################################
+        # # PRIVID_API_ATTRIB int32_t privid_doc_scan_barcode(
+        # # void *session_ptr, const char *user_config, const int user_config_length,
+        # # const uint8_t* p_buffer_image_in, const int image_width, const int image_height,
+        # # uint8_t** cropped_doc_out, int *cropped_doc_length, 
+        # # uint8_t** cropped_barcode_out, int *cropped_barcode_length,
+        # # char** result_out, int* result_out_length);
+        # ##############################################################################################        
+        # self._spl_so_face.privid_doc_scan_barcode.argtypes = [
+        #     c_void_p, 
+        #     c_char_p, 
+        #     c_int, 
+        #     POINTER(c_uint8), c_int, c_int,
+        #     POINTER(POINTER(c_uint8)), POINTER(c_int), 
+        #     POINTER(POINTER(c_uint8)), POINTER(c_int), 
+        #     POINTER(c_char_p), POINTER(c_int)]
+        # self._spl_so_face.privid_doc_scan_barcode.restype = c_int32
+        # ##############################################################################################
 
     def is_valid_without_age(
         self, image_data: np.array, config_object: ConfigObject = None
@@ -722,31 +741,12 @@ class NativeMethods(object):
         try:
             img_data = image_data
             im_height, im_width, im_channel = img_data.shape
-
             p_buffer_images_in = img_data
             c_p_buffer_images_in = p_buffer_images_in.ctypes.data_as(POINTER(c_uint8))
             im_size = im_height * im_width * im_channel
-            p_buffer_embeddings_out = np.zeros(
-                4 * self._embedding_length * self._num_embeddings, dtype=np.float32
-            )
-            c_p_buffer_embeddings_out = p_buffer_embeddings_out.ctypes.data_as(
-                POINTER(c_float)
-            )
-
-            augmented_images = np.zeros(self._aug_size, dtype=np.int8)
-            c_augmented_images = augmented_images.ctypes.data_as(POINTER(c_uint8))
-
-            result_out = np.zeros(1, dtype=np.int32)
-            c_result_out = result_out.ctypes.data_as(POINTER(ctypes.c_int32))
+            c_result_out = c_int()  
             c_result = c_char_p()
-            emb_out_length = np.zeros(1, dtype=np.int32)
-            c_emb_out_length = emb_out_length.ctypes.data_as(POINTER(ctypes.c_int32))
-
-            augmented_images_length = np.zeros(1, dtype=np.int32)
-            c_augmented_images_length = augmented_images_length.ctypes.data_as(
-                POINTER(ctypes.c_int32)
-            )
-
+            
             if config_object and config_object.get_config_param():
                 # Load existing config from the object
                 config_dict = json.loads(config_object.get_config_param())
@@ -758,12 +758,12 @@ class NativeMethods(object):
                 # Create a new config dict with disable_enroll_mf set to True
                 config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}
                 config_json = json.dumps(config_dict)
+
             # Common logic for converting the config dict to the required C types
             c_config_param = c_char_p(bytes(config_json, "utf-8"))
             c_config_param_len = c_int(len(config_json))
-
-
-            best_input_out = c_uint8()  # uint8_t** best_input_out
+    
+            best_input_out = pointer(c_uint8()) # uint8_t** best_input_out
             best_input_length = c_int()  # int *best_input_length
             self._spl_so_face.privid_enroll_onefa(
                 self._spl_so_face.handle,
@@ -777,12 +777,16 @@ class NativeMethods(object):
                 byref(best_input_out),
                 byref(best_input_length),
                 byref(c_result),
-                c_result_out,
+                byref(c_result_out),
             )
+            # reelase the memory of the unused image returned by the API
+            ptr = cast(best_input_out, c_char_p)
+            self._spl_so_face.privid_free_char_buffer(ptr)
 
-            len_ = np.fromiter(c_result_out[:1], dtype=np.uint32, count=-1)[0]
-            output_json_str = c_result.value[:len_].decode()
+            len_ = c_result_out.value
+            output_json_str = c_result.value[:len_].decode()           
             self._spl_so_face.privid_free_char_buffer(c_result)
+
             if output_json_str is not None and len(output_json_str) > 0:
                 output = json.loads(output_json_str)
                 return output
