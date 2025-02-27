@@ -28,11 +28,11 @@ sys.path.insert(0, os.path.abspath("../.."))
 # -- Project information -----------------------------------------------------
 
 project = "Cryptonets Python SDK"
-copyright = "2023, Private Identity LLC"
+copyright = "2025, Private Identity LLC"
 author = "Private Identity"
 
 # The full version, including alpha/beta/rc tags
-release = "1.3.9"
+release = "1.3.10"
 
 # -- General configuration ---------------------------------------------------
 
