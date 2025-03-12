@@ -24,7 +24,7 @@ class NativeMethods(object):
         logging_level: LoggingLevel,
         tf_num_thread: int,
         cache_type: CacheType,
-        config_object: ConfigObject = None,
+        config_object: ConfigObject = None,        
     ):
         try:
             self._config_object = config_object
@@ -32,6 +32,8 @@ class NativeMethods(object):
             self._api_key_string=api_key
             self._local_lib_path = pathlib.Path(__file__).parent.joinpath("lib")
             self._local_lib_path.mkdir(parents=True, exist_ok=True)
+            # set local lib path as models download directory
+            self._local_lib_path_str = str(self._local_lib_path.resolve())        
             self._check_and_download_files(platform.system())
 
             if platform.system() == "Linux":
@@ -47,6 +49,8 @@ class NativeMethods(object):
             sys.exit(1)
 
     def _check_and_download_files(self, system_os):
+        
+
         required_files=[]
         if system_os == "Linux":
             if platform.machine() in ["aarch64","arm"]:
@@ -73,7 +77,7 @@ class NativeMethods(object):
     
     def _download_from_s3(self, s3_client, bucket, file_name, local_path):
         with open(local_path, 'wb') as f:
-            response = s3_client.get_object(Bucket=bucket, Key=file_name)
+            response = s3_client.get_object(Bucket=bucket, Key="1.3.11b1/"+file_name)
             file_size = response['ContentLength']
 
             with tqdm.tqdm(total=file_size, unit='B', unit_scale=True, desc=file_name) as bar:
@@ -111,9 +115,6 @@ class NativeMethods(object):
 
 
     def _initialize_properties(self, tf_num_thread, api_key, server_url, local_storage_path, logging_level, cache_type):
-        self._embedding_length = 128
-        self._num_embeddings = 80
-        self._aug_size = 224 * 224 * 4 * self._num_embeddings
         self._tf_num_thread = tf_num_thread
         self._api_key = bytes(api_key, "utf-8")
         self._server_url = bytes(server_url, "utf-8")
@@ -132,10 +133,9 @@ class NativeMethods(object):
                 self._spl_so_face.handle, c_config_param, c_config_param_len
             )
 
-    def _face_setup(self):
+    def _face_setup(self):       
 
         # set the API ctypes wrapped methods and perform session initialization steps
-
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_initialize_session(
         #         const char* settings_buffer, const unsigned int settings_length,
@@ -151,40 +151,50 @@ class NativeMethods(object):
         self._spl_so_face.handle = c_void_p()  # TODO rename to session
         # create a session
 
-        def named_urls(path):
-            return { 
-                "named_urls": {
-                    "predict": f"{self._server_url_string}/{path}/predict",
-                    "enroll": f"{self._server_url_string}/{path}/enroll",
-                    "deleteUser": f"{self._server_url_string}/{path}/deleteUser",
-                    "addbillingrecord": f"{self._server_url_string}/addbillingrecord", # Temporary for testing
-                    "api-key/checkApiKeyValid": f"{self._server_url_string}/api_check", # Temporary for testing
-                    "syncUUID": f"{self._server_url_string}/syncUUID" # Temporary for testing
-                 }
-             }
-
-        config_dict = {
-	    "collections": {
-                "default": {
+        def named_urls(path : str ,model_id : int):
+            route = path
+            # the default collection is FACE3_4
+            if (route == "default" or route == ""): 
+                route = "FACE3_4"
+                return { 
                     "named_urls": {
-                        "base_url": self._server_url_string
-                   }
-                },
-                "collection_a": named_urls("FACE3_1"),
-                "collection_b": named_urls("FACE3_2"),
-                "collection_c": named_urls("FACE3_3"),
-                "collection_d": named_urls("FACE3_4"),
-                "collection_e": named_urls("FACE4_1"),
-                "collection_f": named_urls("FACE4_2"),
+                        "base_url": self._server_url_string,
+                        "predict": f"{self._server_url_string}/{route}/predict",
+                        "enroll": f"{self._server_url_string}/{route}/enroll",
+                        "deleteUser": f"{self._server_url_string}/{route}/deleteUser",                      
+                        "syncUUID": f"{self._server_url_string}/syncUUID"  
+                    }
+                }
+            else:
+                return { 
+                     
+                    "named_urls": {
+                        "base_url": self._server_url_string,
+                        "predict": f"{self._server_url_string}/{route}/predict",
+                        "enroll": f"{self._server_url_string}/{route}/enroll",
+                        "deleteUser": f"{self._server_url_string}/{route}/deleteUser",                       
+                        "syncUUID": f"{self._server_url_string}/syncUUID"  
+                    },
+                    "embedding_model_id": model_id
+                }
+
+        session_seetings = {
+	    "collections": {              
+                "default": named_urls("default",None),
+                "RES100": named_urls("RES100",14),
+                "RES200": named_urls("RES200",19)
             },
             "session_token": self._api_key_string,
             "debug_level": self._logging_level.value,
             "request_timeout_ms": 5000
         }
 
-        config_json = json.dumps(config_dict)
-        c_config_param = c_char_p(bytes(config_json, "utf-8"))
-        c_config_param_len = c_int(len(config_json))
+        try:
+            session_seetings_json = json.dumps(session_seetings)
+        except TypeError as e:
+            raise ValueError(f"Failed to serialize config_dict to JSON: {e}")
+        c_config_param = c_char_p(bytes(session_seetings_json, "utf-8"))
+        c_config_param_len = c_int(len(session_seetings_json))
 
         return_type = self._spl_so_face.privid_initialize_session(
             c_config_param, c_config_param_len,
@@ -201,8 +211,20 @@ class NativeMethods(object):
         if not return_type:
             raise Exception("Wrong API_KEY or Server URL.") 
         ##############################################################################################
-       
 
+        ##############################################################################################
+        ## void privid_initialize_lib(const char* working_directory, const int working_directory_length);
+        ##############################################################################################
+        self._spl_so_face.privid_initialize_lib.argtypes = [
+            c_char_p,  # const char *working_directory
+            c_int,     # working_directory_length
+        ]  # const int user_config_length
+        
+
+        # initialize the library
+        c_local_lib_path_param = c_char_p(bytes(self._local_lib_path_str, "utf-8"))
+        c_local_lib_path_len_param = c_int(len(self._local_lib_path_str))
+        self._spl_so_face.privid_initialize_lib(c_local_lib_path_param,c_local_lib_path_len_param)
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_set_configuration(void *session_ptr, const char *user_config,
         # const int user_config_length);
@@ -390,6 +412,7 @@ class NativeMethods(object):
             POINTER(c_int),
         ]  # int* output_iso_image_bytes_length
         self._spl_so_face.privid_face_iso.restype = c_int32 
+        ##############################################################################################
 
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_set_billing_record_threshold(
@@ -488,18 +511,18 @@ class NativeMethods(object):
 
             c_result = c_char_p()
             c_result_len = c_int()
+            
             if config_object and config_object.get_config_param():
                 # Load existing config from the object
                 config_dict = json.loads(config_object.get_config_param())
                 # Ensure disable_enroll_mf is always added
                 config_dict["disable_enroll_mf"] = True
-                config_dict["conf_score_thr_enroll"]=0.2
-                config_json = json.dumps(config_dict)
+                config_dict["conf_score_thr_enroll"]=0.2                
             else:
                 # Create a new config dict with disable_enroll_mf set to True
-                config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}
-                config_json = json.dumps(config_dict)
+                config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}                
           
+            config_json = json.dumps(config_dict)
             c_config_param = c_char_p(bytes(config_json, "utf-8"))
             c_config_param_len = c_int(len(config_json))
             
@@ -699,6 +722,10 @@ class NativeMethods(object):
             else:
                 config_param_str = json.dumps(config_object_default)
             
+            try:
+                config_param_str = json.dumps(config_object_default)
+            except TypeError as e:
+                raise ValueError(f"Failed to serialize config_dict to JSON: {e}")
             c_config_param = c_char_p(bytes(config_param_str, "utf-8"))
             c_config_param_len = c_int(len(config_param_str))
 
@@ -746,19 +773,17 @@ class NativeMethods(object):
             im_size = im_height * im_width * im_channel
             c_result_out = c_int()  
             c_result = c_char_p()
-            
             if config_object and config_object.get_config_param():
                 # Load existing config from the object
                 config_dict = json.loads(config_object.get_config_param())
                 # Ensure disable_enroll_mf is always added
                 config_dict["disable_enroll_mf"] = True
                 config_dict["conf_score_thr_enroll"]=0.2
-                config_json = json.dumps(config_dict)
             else:
                 # Create a new config dict with disable_enroll_mf set to True
-                config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}
-                config_json = json.dumps(config_dict)
-
+                config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}                
+            
+            config_json = json.dumps(config_dict)
             # Common logic for converting the config dict to the required C types
             c_config_param = c_char_p(bytes(config_json, "utf-8"))
             c_config_param_len = c_int(len(config_json))
@@ -808,19 +833,17 @@ class NativeMethods(object):
             c_result = c_char_p()
             result_out = np.zeros(1, dtype=np.int32)
             c_result_out = result_out.ctypes.data_as(POINTER(ctypes.c_int32))
-            
             if config_object and config_object.get_config_param():
                 # Load existing config from the object
                 config_dict = json.loads(config_object.get_config_param())
                 # Ensure disable_enroll_mf is always added
                 config_dict["disable_enroll_mf"] = True
-                config_dict["conf_score_thr_enroll"]=0.2
-                config_json = json.dumps(config_dict)
+                config_dict["conf_score_thr_enroll"]=0.2                
             else:
                 # Create a new config dict with disable_enroll_mf set to True
                 config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}
-                config_json = json.dumps(config_dict)
-          
+            
+            config_json = json.dumps(config_dict)          
             c_config_param = c_char_p(bytes(config_json, "utf-8"))
             c_config_param_len = c_int(len(config_json))
 
@@ -968,12 +991,12 @@ class NativeMethods(object):
                     config_dict = json.loads(config_object.get_config_param())
                     # Ensure disable_enroll_mf is always added
                     config_dict["disable_enroll_mf"] = True
-                    config_dict["conf_score_thr_enroll"]=0.2
-                    config_json = json.dumps(config_dict)
+                    config_dict["conf_score_thr_enroll"]=0.2                    
                 else:
                     # Create a new config dict with disable_enroll_mf set to True
                     config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}
-                    config_json = json.dumps(config_dict)
+                
+                config_json = json.dumps(config_dict)
                 c_config_param = c_char_p(bytes(config_json, "utf-8"))
                 c_config_param_len = c_int(len(config_json))
                 success = self._spl_so_face.privid_estimate_age(

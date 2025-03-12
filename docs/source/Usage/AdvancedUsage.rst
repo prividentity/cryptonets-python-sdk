@@ -44,7 +44,7 @@ An instance of ConfigObject allows various customizations, enabling fine-tuned c
 
 For a complete list of parameters and valid values, refer to the :ref:`parameter <param_list>` section.
 
-Sample Code for Initializing ConfigObject
+Sample Code for Initializing ConfigObject for the session initialization or for individual method calls:
 
 .. code-block:: py
 
@@ -52,8 +52,15 @@ Sample Code for Initializing ConfigObject
     from cryptonets_python_sdk.settings.configuration import ConfigObject
     from cryptonets_python_sdk.settings.configuration import PARAMETERS
 
-    # Initialize ConfigObject with custom parameters
-    config_object = ConfigObject(config_param={PARAMETERS.INPUT_IMAGE_FORMAT: "rgb"})
+    # Initialize ConfigObject with custom collection name:    
+    def create_config_object(collection_name=""):
+        config_param = { PARAMETERS.INPUT_IMAGE_FORMAT: "rgb" }
+        if collection_name!="":
+            config_param[PARAMETERS.COLLECTION_NAME] = collection_name
+        return ConfigObject(config_param)
+
+    # Pass this configuration object to the FaceFactor object method (enroll, predict, etc.)
+     result = face_factor.enroll(image_path=image_file_path,config=create_config_object("RES200"))
 
 This setup allows you to specify configurations such as the input image format, among other options, to meet your processing needs.
 
@@ -126,7 +133,9 @@ To perform a stricter validation of the face image for enrollment purposes, you 
     from cryptonets_python_sdk.settings.configuration import PARAMETERS
 
     # Configure strict validation for enrollment
-    is_valid_config_object = ConfigObject(config_param={PARAMETERS.CONTEXT_STRING: "enroll"})
+    is_valid_config_object = ConfigObject(config_param={
+        PARAMETERS.CONTEXT_STRING: "enroll"
+        })
 
     # Check if the image is valid with the specified configuration
     is_valid_handle = face_factor.is_valid(image_path="path_to_the_image", config=is_valid_config_object)
