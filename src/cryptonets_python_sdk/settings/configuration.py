@@ -27,6 +27,8 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     THRESHOLD_VERTICAL_PREDICT = "threshold_vertical_predict"
     THRESHOLD_USER_RIGHT = "threshold_user_right"
     THRESHOLD_USER_LEFT = "threshold_user_left"
+    THRESHOLD_USER_DOWN = "threshold_user_down"
+    THRESHOLD_USER_UP = "threshold_user_up"
     THRESHOLD_USER_TOO_FAR = "threshold_user_too_far"
     THRESHOLD_USER_TOO_CLOSE = "threshold_user_too_close"
     IMAGE_BORDER = "image_border"
@@ -165,6 +167,18 @@ class ParameterValidator:
         )
         self.__parameter[PARAMETERS.THRESHOLD_USER_LEFT] = self.Parameter(
             name=PARAMETERS.THRESHOLD_USER_LEFT,
+            _type="NUMBER",
+            min_value=-0.1,
+            max_value=2,
+        )
+        self.__parameter[PARAMETERS.THRESHOLD_USER_DOWN] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_USER_DOWN,
+            _type="NUMBER",
+            min_value=-0.1,
+            max_value=2,
+        )
+        self.__parameter[PARAMETERS.THRESHOLD_USER_UP] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_USER_UP,
             _type="NUMBER",
             min_value=-0.1,
             max_value=2,
