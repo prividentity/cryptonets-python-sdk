@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 1.3.11b3 (2025-03-21)
+--------------------------
+
+Updates:
+
+* Add 3 properties to the class FaceEnrollPredictResult
+
+
 Version 1.3.11b2 (2025-03-11)
 --------------------------
 
