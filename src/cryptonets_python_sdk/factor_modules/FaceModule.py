@@ -63,16 +63,7 @@ class Face(metaclass=Singleton):
             c_response=json_data.get("enroll_onefa", {})
             api_response=c_response.get("api_response", {})
             face_validation_data=c_response.get("face_validation_data", {})
-            if face_validation_data.get("face_validation_status",0)!=0:
-                return FaceEnrollPredictResult(
-                status=face_validation_data.get("face_validation_status",0),
-                enroll_level=json_data.get("enroll_level", None),
-                puid=api_response.get("puid", None),
-                guid=api_response.get("guid", None),
-                token=api_response.get("token", None),
-                score=api_response.get("score", None),
-                message=self.message.get_message(int(face_validation_data.get("face_validation_status",0))),
-                 )
+            api_response=c_response.get("api_response", {})
             return FaceEnrollPredictResult(
                 status=call_status,
                 enroll_level=json_data.get("enroll_level", None),
@@ -80,7 +71,10 @@ class Face(metaclass=Singleton):
                 guid=api_response.get("guid", None),
                 token=api_response.get("token", None),
                 score=api_response.get("score", None),
-                message=api_response.get("message", "ok"),
+                message=self.message.get_message(int(face_validation_data.get("face_validation_status",0))),
+                api_message = api_response.get("message",""),
+                api_status = api_response.get("status",-1),
+                enroll_performed = c_response.get("enroll_performed", False)
             )
         except Exception as e:
             print(e, traceback.format_exc())
