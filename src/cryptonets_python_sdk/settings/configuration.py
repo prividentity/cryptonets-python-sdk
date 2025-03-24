@@ -67,7 +67,8 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     FACE_ISO_RESERVATION_CALLS = "face_iso"
     THRESHOLD_HIGH_VERTICAL="threshold_high_vertical_enroll"
     DOCUMENT_AUTO_ROTATION = "document_auto_rotation"
-    ESTIMATE_AGE_FACE_VALIDATIONS_OFF = "estimate_age_face_validations_off"
+    ESTIMATE_AGE_FACE_VALIDATIONS_OFF = "estimate_age_face_validations_off",
+    RELAX_FACE_VALIDATION = "relax_face_validation"
     
 
 
@@ -334,6 +335,15 @@ class ParameterValidator:
 
         self.__parameter[PARAMETERS.DOCUMENT_AUTO_ROTATION] = self.Parameter(
             name=PARAMETERS.DOCUMENT_AUTO_ROTATION,_type="BOOL")
+        
+        self.__parameter[PARAMETERS.ESTIMATE_AGE_FACE_VALIDATIONS_OFF] = self.Parameter(
+            name=PARAMETERS.ESTIMATE_AGE_FACE_VALIDATIONS_OFF,_type="BOOL")
+
+        # This should not be included in the config and remove before passing
+        # it to the operation
+        self.__parameter[PARAMETERS.RELAX_FACE_VALIDATION] = self.Parameter(
+            name=PARAMETERS.RELAX_FACE_VALIDATION,_type="BOOL")
+
 
     def validate(self, key, value):
         return self.__parameter[key].validate(value)
@@ -374,6 +384,37 @@ class ParameterValidator:
                 return False
 
             return False
+
+
+
+class FACE_VALIDATION_STATUSES   (Enum):
+        FV_OK = 0                    # Face validation is successful.
+        FV_ERR = -100                # Error occurred during face validation.
+        FV_MANY_FACES_DETECTED = -2  # Too many faces detected in the image.
+        FV_FACE_NOT_DETECTED = -1    # Face not detected in the image.
+        FV_FACE_TOO_CLOSE = 3        # Face is too close to the camera.
+        FV_FACE_TOO_FAR = 4          # Face is too far from the camera.
+        FV_FACE_RIGHT = 5            # Face is turned to the right.
+        FV_FACE_LEFT = 6             # Face is turned to the left.
+        FV_FACE_UP = 7               # Face is turned upwards.
+        FV_FACE_DOWN = 8             # Face is turned downwards.
+        FV_IMAGE_BLURR = 9           # Image is blurred.
+        FV_FACE_WITH_GLASS = 10      # Face is wearing glasses.
+        FV_FACE_WITH_MASK = 11       # Face is wearing a mask.
+        FV_LOOKING_LEFT = 12         # Face is looking to the left.
+        FV_LOOKING_RIGHT = 13        # Face is looking to the right.
+        FV_LOOKING_HIGH = 14         # Face is looking upwards.
+        FV_LOOKING_DOWN = 15         # Face is looking downwards.
+        FV_FACE_TOO_DARK = 16        # Face is too dark.
+        FV_FACE_TOO_BRIGHT = 17      # Face is too bright.
+        FV_FACE_LOW_VAL_CONF = 18    # Low confidence in face validation.
+        FV_INVALID_FACE_BACKGROUND = 19   # Invalid face background.
+        FV_EYE_BLINK = 20            # Eye blink detected.
+        FV_MOUTH_OPENED = 21         # Mouth opened detected.
+        FV_FACE_ROTATED_RIGHT = 22   # Face is rotated to the right.
+        FV_FACE_ROTATED_LEFT = 23    # Face is rotated to the left.
+        FV_FACE_WITH_EYEGLASSES_AND_FACEMASK = 24  # The face is wearing eyeglasses and a face mask at the same time.
+        FV_FACE_NOT_IN_OVAL = 25     # The face is not in the anti-spoof recommended position (target oval).    
 
 
 class ConfigObject:
@@ -426,6 +467,46 @@ class ConfigObject:
 
         if len(config_param_dict) == 0:
             return None
+        if PARAMETERS.RELAX_FACE_VALIDATION in config_param_dict:
+            relax_face_validation = config_param_dict[PARAMETERS.RELAX_FACE_VALIDATION]
+            if relax_face_validation not in [True, False]:
+                raise ValueError(
+                    "Invalid key value pair\n'{}' : '{}'".format(
+                        PARAMETERS.RELAX_FACE_VALIDATION, relax_face_validation
+                    )
+                )
+            else: 
+                # if relax is true then allow all face validation statuses
+                if relax_face_validation == True: 
+                    config_param_dict[PARAMETERS.ALLOWED_RESULTS] = [
+                        FACE_VALIDATION_STATUSES.FV_FACE_TOO_CLOSE.value,        # Face is too close to the camera.
+                        FACE_VALIDATION_STATUSES.FV_FACE_TOO_FAR.value,          # Face is too far from the camera.
+                        FACE_VALIDATION_STATUSES.FV_FACE_RIGHT.value,            # Face is turned to the right.
+                        FACE_VALIDATION_STATUSES.FV_FACE_LEFT.value,             # Face is turned to the left.
+                        FACE_VALIDATION_STATUSES.FV_FACE_UP.value,               # Face is turned upwards.
+                        FACE_VALIDATION_STATUSES.FV_FACE_DOWN.value,             # Face is turned downwards.
+                        FACE_VALIDATION_STATUSES.FV_IMAGE_BLURR.value,           # Image is blurred.
+                        FACE_VALIDATION_STATUSES.FV_FACE_WITH_GLASS.value,      # Face is wearing glasses.
+                        FACE_VALIDATION_STATUSES.FV_FACE_WITH_MASK.value,       # Face is wearing a mask.
+                        FACE_VALIDATION_STATUSES.FV_LOOKING_LEFT.value,         # Face is looking to the left.
+                        FACE_VALIDATION_STATUSES.FV_LOOKING_RIGHT.value,        # Face is looking to the right.
+                        FACE_VALIDATION_STATUSES.FV_LOOKING_HIGH.value,         # Face is looking upwards.
+                        FACE_VALIDATION_STATUSES.FV_LOOKING_DOWN.value,         # Face is looking downwards.
+                        FACE_VALIDATION_STATUSES.FV_FACE_TOO_DARK.value,        # Face is too dark.
+                        FACE_VALIDATION_STATUSES.FV_FACE_TOO_BRIGHT.value,      # Face is too bright.
+                        FACE_VALIDATION_STATUSES.FV_FACE_LOW_VAL_CONF.value,    # Low confidence in face validation.
+                        FACE_VALIDATION_STATUSES.FV_INVALID_FACE_BACKGROUND.value,   # Invalid face background.
+                        FACE_VALIDATION_STATUSES.FV_EYE_BLINK.value,            # Eye blink detected.
+                        FACE_VALIDATION_STATUSES.FV_MOUTH_OPENED.value,         # Mouth opened detected.
+                        FACE_VALIDATION_STATUSES.FV_FACE_ROTATED_RIGHT.value,   # Face is rotated to the right.
+                        FACE_VALIDATION_STATUSES.FV_FACE_ROTATED_LEFT.value,    # Face is rotated to the left.
+                        FACE_VALIDATION_STATUSES.FV_FACE_WITH_EYEGLASSES_AND_FACEMASK.value,  # The face is wearing eyeglasses and a face mask at the same time.
+                        FACE_VALIDATION_STATUSES.FV_FACE_NOT_IN_OVAL.value     # The face is not in the anti-spoof recommended position (target oval).    
+                    ]
+
+            # remove the key as t is not a native configuration key
+            config_param_dict.pop(PARAMETERS.RELAX_FACE_VALIDATION)  
+            
         return json.dumps(config_param_dict)
 
     def get_config_billing_param(self):

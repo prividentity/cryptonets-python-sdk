@@ -152,3 +152,15 @@ class FaceEnrollPredictResult:
     @code.setter
     def code(self, value):
         self._code = value
+
+    @api_message.setter
+    def api_message(self, value):
+        self._api_message = value
+
+    @api_status.setter
+    def api_status(self, value):
+        self._api_status = value
+    
+    @enroll_performed.setter
+    def enroll_performed(self, value):
+        self._enroll_performed = value
