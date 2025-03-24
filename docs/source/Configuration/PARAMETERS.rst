@@ -8,6 +8,7 @@ PARAMETERS
 This section covers the valid values for setting up additional configurations pertaining to face factor.
 
 .. autoclass:: PARAMETERS
+    :members: OFF
 
 .. _param_list:
 
@@ -128,3 +129,4 @@ Configurable Parameter List and Valid values
      - `default`, `RES100``and `RES200`.     
    * - RELAX_FACE_VALIDATION
      - `False` by default, if set to `True`, the face validation step in any operation is going to be permissive. 
+     - True, False

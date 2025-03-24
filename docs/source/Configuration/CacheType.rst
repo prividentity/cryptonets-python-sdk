@@ -8,3 +8,4 @@ CacheType
 This section covers how to use cache type for on / off
 
 .. autoclass:: CacheType
+    :members: OFF
