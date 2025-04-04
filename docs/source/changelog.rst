@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Version 1.3.11 (2025-04-04)
+-----------------------------
+
+Updates:
+
+* Backend updates to improve performance and stability.
+
 Version 1.3.11b4 (2025-03-24)
 -----------------------------
 

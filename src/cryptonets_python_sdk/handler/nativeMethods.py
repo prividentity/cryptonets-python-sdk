@@ -77,7 +77,7 @@ class NativeMethods(object):
     
     def _download_from_s3(self, s3_client, bucket, file_name, local_path):
         with open(local_path, 'wb') as f:
-            response = s3_client.get_object(Bucket=bucket, Key="1.3.11b3/"+file_name)
+            response = s3_client.get_object(Bucket=bucket, Key="1.3.11/"+file_name)
             file_size = response['ContentLength']
 
             with tqdm.tqdm(total=file_size, unit='B', unit_scale=True, desc=file_name) as bar:

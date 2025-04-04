@@ -27,7 +27,7 @@ from setuptools import setup, find_packages
 """
 Setup module for cryptonets python sdk.
 
-Created on March 24th - 2025
+Created on April 04th - 2025
 
 @author: Private Identity
 """
@@ -36,7 +36,7 @@ DESCRIPTION = "Cryptonets SDK Library for Python"
 AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
 URL = "https://privateid.com/"
-VERSION = "1.3.11b4"
+VERSION = "1.3.11"
 REQUIRES = ["numpy >= 1.21.0", "pillow >= 9.1.0","boto3","tqdm","exifread"]
 
 LONG_DESCRIPTION = ""
@@ -63,8 +63,8 @@ setup(
     project_urls={
         "Bug Reports": "https://github.com/prividentity/cryptonets-python-sdk/issues",
         "Source": "https://github.com/prividentity/cryptonets-python-sdk",
-        "Documentation": "https://docs.private.id/cryptonets-python-sdk/1.3.11b3/index.html",
-        "Release Notes": "https://docs.private.id/cryptonets-python-sdk/1.3.11b3/changelog.html",
+        "Documentation": "https://docs.private.id/cryptonets-python-sdk/1.3.11/index.html",
+        "Release Notes": "https://docs.private.id/cryptonets-python-sdk/1.3.11/changelog.html",
     },
     classifiers=[
         "Intended Audience :: Developers",
