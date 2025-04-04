@@ -15,7 +15,7 @@ from ..helper.result_objects.isoFaceResult import ISOFaceResult
 from ..helper.result_objects.antispoofCheckResult import AntispoofCheckResult
 from ..helper.utils import FaceValidationCode
 from ..settings.cacheType import CacheType
-from ..settings.configuration import ConfigObject
+from ..settings.configuration import ConfigObject, PARAMETERS
 from ..settings.loggingLevel import LoggingLevel
 
 
@@ -48,6 +48,16 @@ class Face(metaclass=Singleton):
         self, image_data: np.array, config_object: ConfigObject = None
     ) -> FaceEnrollPredictResult:
         try:
+            relax_face_validation = False
+            if (PARAMETERS.RELAX_FACE_VALIDATION in config_object.config_param):
+                relax_face_validation = config_object.config_param[PARAMETERS.RELAX_FACE_VALIDATION]
+                if relax_face_validation not in [True, False]:# this will aise exception
+                    raise ValueError(
+                        "Invalid key value pair\n'{}' : '{}'".format(
+                            PARAMETERS.RELAX_FACE_VALIDATION, relax_face_validation
+                        )
+                    )
+            
             json_data = self.face_factor_processor.enroll(
                 image_data, config_object=config_object
             )
@@ -63,33 +73,61 @@ class Face(metaclass=Singleton):
             c_response=json_data.get("enroll_onefa", {})
             api_response=c_response.get("api_response", {})
             face_validation_data=c_response.get("face_validation_data", {})
-            if face_validation_data.get("face_validation_status",0)!=0:
-                return FaceEnrollPredictResult(
-                status=face_validation_data.get("face_validation_status",0),
-                enroll_level=json_data.get("enroll_level", None),
-                puid=api_response.get("puid", None),
-                guid=api_response.get("guid", None),
-                token=api_response.get("token", None),
-                score=api_response.get("score", None),
-                message=self.message.get_message(int(face_validation_data.get("face_validation_status",0))),
-                 )
-            return FaceEnrollPredictResult(
+            api_response=c_response.get("api_response", {})
+            result =  FaceEnrollPredictResult(
                 status=call_status,
                 enroll_level=json_data.get("enroll_level", None),
                 puid=api_response.get("puid", None),
                 guid=api_response.get("guid", None),
                 token=api_response.get("token", None),
                 score=api_response.get("score", None),
-                message=api_response.get("message", "ok"),
+                message=self.message.get_message(int(face_validation_data.get("face_validation_status",0)))
             )
+            result.api_message=api_response.get("message", "")
+            result.api_status=api_response.get("status",-1)
+            result.enroll_performed=c_response.get("enroll_performed", False)
+            # If the face was successfully enrolled no need to show any message about face validation 
+            # status unlike the native SDK and return a success status
+            if result.enroll_performed: 
+                result.status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS
+            
+            if not result.enroll_performed and not relax_face_validation:
+                result.status = face_validation_data.get("face_validation_status",0)
+
+            if result.enroll_performed or relax_face_validation:
+                result.message = ""            
+            
+            return result
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceEnrollPredictResult(message=self.message.EXCEPTION_ERROR_ENROLL)
+        
+
+    def _valid_uuid(self,uuid):        
+        try :
+            if uuid is None: return False
+            str_uuid = uuid[0] if isinstance(uuid, tuple) else uuid
+            if not isinstance(str_uuid, str): return False
+            if len(str_uuid) == 0 : return False            
+            if str_uuid == "null" or str_uuid == "None"  or str_uuid == "NULL"  or str_uuid == "none" or str_uuid == "Null": return False            
+            return True
+        except:
+            return False
 
     def predict(
         self, image_data: np.array, config_object: ConfigObject = None
     ) -> Union[FaceEnrollPredictResult, List[FaceEnrollPredictResult]]:
         try:
+            relax_face_validation = False
+            if (PARAMETERS.RELAX_FACE_VALIDATION in config_object.config_param):
+                relax_face_validation = config_object.config_param[PARAMETERS.RELAX_FACE_VALIDATION]
+                if relax_face_validation not in [True, False]:# this will aise exception
+                    raise ValueError(
+                        "Invalid key value pair\n'{}' : '{}'".format(
+                            PARAMETERS.RELAX_FACE_VALIDATION, relax_face_validation
+                        )
+                    )
+                                
             json_data = self.face_factor_processor.predict(
                 image_data, config_object=config_object
             )
@@ -104,7 +142,15 @@ class Face(metaclass=Singleton):
 
             c_response=json_data.get("predict_onefa", {})
             api_response=c_response.get("api_response", {})
-            face_validation_data=c_response.get("face_validation_data", {})
+            face_validation_data=c_response.get("face_validation_data", {})            
+            message = self.message.get_message(face_validation_data.get("face_validation_status", 0))
+            # Did we have a successful predict
+            predicted = False
+            api_status = api_response.get("status",-1)
+            puid=api_response.get("puid", None),
+            guid=api_response.get("guid", None),
+            predicted = api_status == 0 and self._valid_uuid(puid) and self._valid_uuid(guid)           
+            result_status =  0 if relax_face_validation or predicted else face_validation_data.get("face_validation_status",0)
             if face_validation_data.get("face_validation_status",0)!=0:
                 if config_object and json.loads(config_object.get_config_param()).get("neighbors",0)>0:
                         if api_response.get("PI_list", []):
@@ -115,26 +161,25 @@ class Face(metaclass=Singleton):
                             guid=api_response.get("guid", None),
                             token=api_response.get("token", None),
                             score=api_response.get("score", None),
-                            message=self.message.get_message(face_validation_data.get("face_validation_status", 0))
+                            message=  "" if relax_face_validation or predicted else message                            
                             )]
-                        else:
+                        else:                            
                             return [FaceEnrollPredictResult(
                                     status=api_response.get("status", "Something went wrong"),
                                     enroll_level=json_data.get("enroll_level", None),
                                     puid= None,
                                     guid=None,
                                     score= None,
-                                    message=api_response.get("message", "Something went wrong"))]
-                            
+                                    message=api_response.get("message", "Something went wrong"))]                            
                 else:
                      return FaceEnrollPredictResult(
-                        status=face_validation_data.get("face_validation_status",0),
+                        status=result_status,
                         enroll_level=json_data.get("enroll_level", None),
                         puid=api_response.get("puid", None),
                         guid=api_response.get("guid", None),
                         token=api_response.get("token", None),
                         score=api_response.get("score", None),
-                        message=self.message.get_message(int(face_validation_data.get("face_validation_status",0))),
+                        message=  "Ok" if relax_face_validation or predicted else message
                         )
             if config_object and json.loads(config_object.get_config_param()).get("neighbors",0)>0:
                 if api_response.get("PI_list", []):
@@ -144,7 +189,7 @@ class Face(metaclass=Singleton):
                         puid=person.get("puid", None),
                         guid=person.get("guid", None),
                         score=person.get("score", None),
-                        message=api_response.get("message", "Something went wrong"),
+                        message=api_response.get("message", "Something went wrong")
                     ) for person in api_response.get("PI_list", [])]
                 else:
                    return [FaceEnrollPredictResult(
@@ -154,9 +199,6 @@ class Face(metaclass=Singleton):
                         guid=None,
                         score= None,
                         message=api_response.get("message", "Something went wrong"))]
-
-            
-               
             else:
                  return FaceEnrollPredictResult(
                     status=call_status,
@@ -165,7 +207,7 @@ class Face(metaclass=Singleton):
                     guid=api_response.get("guid", None),
                     token=api_response.get("token", None),
                     score=api_response.get("score", None),
-                    message=api_response.get("message", ""),
+                    message=api_response.get("message", "")
                 )
         except Exception as e:
             print(e, traceback.format_exc())

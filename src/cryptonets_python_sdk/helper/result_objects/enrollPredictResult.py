@@ -12,6 +12,9 @@ class FaceEnrollPredictResult:
         score=None,
         status=CALL_STATUS_ERROR,
         message="",
+        api_message="",
+        api_status=None,
+        enroll_performed=False
     ):
         self._enroll_level = enroll_level
         self._puid = puid
@@ -20,7 +23,35 @@ class FaceEnrollPredictResult:
         self._status = status
         self._message = message
         self._code = code
-        self._score=score
+        self._score = score
+        self._api_message = api_message,
+        self._api_status = api_status,
+        self._enroll_performed = enroll_performed
+
+    @property 
+    def enroll_performed(self) -> bool:
+        """
+        Returns True if enroll was actually performed,
+        False otherwise
+        This property is only relevant for the enroll operation
+        """
+        return self._enroll_performed
+
+    @property
+    def api_message(self) -> str:
+        """
+        Returns the message received from the API of the operation
+        """
+        return self._api_message
+    
+    @property
+    def api_status(self) -> str:
+        """
+        Returns the status received from the API of the operation
+        0 - Success
+        else - Failure
+        """
+        return self._api_status
 
     @property
     def enroll_level(self) -> int:
@@ -121,3 +152,15 @@ class FaceEnrollPredictResult:
     @code.setter
     def code(self, value):
         self._code = value
+
+    @api_message.setter
+    def api_message(self, value):
+        self._api_message = value
+
+    @api_status.setter
+    def api_status(self, value):
+        self._api_status = value
+    
+    @enroll_performed.setter
+    def enroll_performed(self, value):
+        self._enroll_performed = value

@@ -8,6 +8,7 @@ PARAMETERS
 This section covers the valid values for setting up additional configurations pertaining to face factor.
 
 .. autoclass:: PARAMETERS
+    :members: OFF
 
 .. _param_list:
 
@@ -123,4 +124,9 @@ Configurable Parameter List and Valid values
    * - ESTIMATE_AGE_FACE_VALIDATIONS_OFF
      - `False`` by default, If set `True`, disables the face validation in the age estimation method, the method will return an age estimation unless no face is detected.
      - True, False
-     
+   * - COLLECTION_NAME
+     - Collection name to be used for the operation: possible values are `default`, `RES100``and `RES200`. Each collection is tied a sepcfic enmbeddings, you can't predict a face that was enrolled with different collection, so you need to specify the name of the collection you are targetting. if you leave it empty, the `default`` collection will be used.
+     - `default`, `RES100``and `RES200`.     
+   * - RELAX_FACE_VALIDATION
+     - `False` by default, if set to `True`, the face validation step in any operation is going to be permissive. 
+     - True, False

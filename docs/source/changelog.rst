@@ -1,8 +1,31 @@
 Changelog
 =========
 
+Version 1.3.11 (2025-04-04)
+-----------------------------
+
+Updates:
+
+* Backend updates to improve performance and stability.
+
+Version 1.3.11b4 (2025-03-24)
+-----------------------------
+
+Updates:
+
+* Add 3 properties to the class FaceEnrollPredictResult.
+* Add  RELAX_FACE_VALIDATION config parameter.
+
+Version 1.3.11b2 (2025-03-11)
+-----------------------------
+
+Updates:
+
+* This a beta version which replace the old model selection with the following 3 collections : `default`, `RES100` and `RES200` which correponds to different embedding models. The collection name is passed through the configuration parameter `COLLECTION_NAME` in the `ConfigObject` class of each each operation. The default collection is `default`. When using `RES100` or `RES200`  the model will be downloaded and cacehd on disk.
+* Various fixes.
+
 Version 1.3.10 (2025-02-27)
---------------------------
+----------------------------
 
 Updates:
 
@@ -60,7 +83,6 @@ Updates:
 * Updated document models to improve accuracy and performance in document processing tasks.
 
 
-=========
 Version 1.3.1 (2024-05-15)
 --------------------------
 
