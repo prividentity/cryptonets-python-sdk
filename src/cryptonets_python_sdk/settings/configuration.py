@@ -69,6 +69,8 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     DOCUMENT_AUTO_ROTATION = "document_auto_rotation"
     ESTIMATE_AGE_FACE_VALIDATIONS_OFF = "estimate_age_face_validations_off",
     RELAX_FACE_VALIDATION = "relax_face_validation"
+    # use only for age predict
+    USE_AGE_ESTIMATION_WITH_MODEL_STDD ="use_age_estimate_with_model_stdd"
     
 
 
@@ -343,6 +345,14 @@ class ParameterValidator:
         # it to the operation
         self.__parameter[PARAMETERS.RELAX_FACE_VALIDATION] = self.Parameter(
             name=PARAMETERS.RELAX_FACE_VALIDATION,_type="BOOL")
+
+        # This should not be included in the config and remove before passing
+        # it to the operation
+        self.__parameter[PARAMETERS.RELAX_FACE_VALIDATION] = self.Parameter(
+            name=PARAMETERS.RELAX_FACE_VALIDATION, _type="BOOL")
+
+        self.__parameter[PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD] = self.Parameter(
+            name=PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD, _type="BOOL")
 
 
     def validate(self, key, value):

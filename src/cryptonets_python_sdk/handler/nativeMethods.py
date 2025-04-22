@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 import platform
 from ..settings.cacheType import CacheType
-from ..settings.configuration import ConfigObject
+from ..settings.configuration import ConfigObject, PARAMETERS
 from ..settings.loggingLevel import LoggingLevel
 import boto3
 import botocore
@@ -392,6 +392,24 @@ class NativeMethods(object):
             POINTER(c_int),
         ]  # int *result_out_length
         self._spl_so_face.privid_estimate_age.restype = c_int32
+
+        ##############################################################################################
+        # PRIVID_API_ATTRIB int32_t privid_estimate_age_with_stdd(
+        # void *session_ptr, const uint8_t* image_bytes, const int image_width,
+        # const int image_height,const char *user_config, const int user_config_length,
+        # char **result_out, int *result_out_length);
+        ##############################################################################################
+        self._spl_so_face.privid_estimate_age_with_stdd.argtypes = [
+            c_void_p,  # void *session_ptr
+            POINTER(c_uint8),  # const uint8_t* image_bytes
+            c_int,  # const int image_width
+            c_int,  # const int image_height,
+            c_char_p,  # const char *user_config,
+            c_int,  # const int user_config_length
+            POINTER(c_char_p),  # char **result_out
+            POINTER(c_int),
+        ]  # int *result_out_length
+        self._spl_so_face.privid_estimate_age_with_stdd.restype = c_int32
 
         ##############################################################################################
         # PRIVID_API_ATTRIB int32_t privid_face_iso(
@@ -999,16 +1017,30 @@ class NativeMethods(object):
                 config_json = json.dumps(config_dict)
                 c_config_param = c_char_p(bytes(config_json, "utf-8"))
                 c_config_param_len = c_int(len(config_json))
-                success = self._spl_so_face.privid_estimate_age(
-                    self._spl_so_face.handle,
-                    c_p_buffer_images_in,
-                    c_int(im_width),
-                    c_int(im_height),
-                    c_config_param,
-                    c_config_param_len,
-                    byref(c_result),
-                    byref(c_result_len),
-                )
+
+                with_model_stdd: bool | None =  config_object.get_config_param(PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD)
+                if with_model_stdd is not None and with_model_stdd == True:
+                    success = self._spl_so_face.privid_estimate_age_with_stdd(
+                        self._spl_so_face.handle,
+                        c_p_buffer_images_in,
+                        c_int(im_width),
+                        c_int(im_height),
+                        c_config_param,
+                        c_config_param_len,
+                        byref(c_result),
+                        byref(c_result_len)
+                    )
+                else:
+                    success = self._spl_so_face.privid_estimate_age(
+                        self._spl_so_face.handle,
+                        c_p_buffer_images_in,
+                        c_int(im_width),
+                        c_int(im_height),
+                        c_config_param,
+                        c_config_param_len,
+                        byref(c_result),
+                        byref(c_result_len)
+                    )
 
                 if not success:
                     raise Exception("privid_estimate_age call failed")

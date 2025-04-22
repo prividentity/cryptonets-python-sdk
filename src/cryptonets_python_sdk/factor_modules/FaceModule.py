@@ -431,6 +431,7 @@ class Face(metaclass=Singleton):
                     message=_message,
                     top_left_coordinate=_top_left,
                     bottom_right_coordinate=_bottom_right,
+                    age_confidence_score=_age_confidence_score,
                 )
 
             return face_age_result_object

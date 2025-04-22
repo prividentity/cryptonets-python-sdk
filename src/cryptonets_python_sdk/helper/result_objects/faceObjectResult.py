@@ -9,11 +9,13 @@ class FaceObjectResult(object):
         age=None,
         top_left_coordinate=None,
         bottom_right_coordinate=None,
+        age_confidence_score=None
     ):
         self._return_code = return_code
         self._message = message
         self._age = age
         self._bounding_box = BoundingBox(top_left_coordinate, bottom_right_coordinate)
+        self._age_confidence_score = age_confidence_score
 
     @property
     def return_code(self) -> int:
@@ -39,6 +41,15 @@ class FaceObjectResult(object):
         return self._age
 
     @property
+    def age_confidence_score(self) -> float:
+        """
+        Returns the predicted age confidence score as retuned from the native api
+
+        age_confidence_score value is float
+        """
+        return self._age_confidence_score
+
+    @property
     def bounding_box(self) -> BoundingBox:
         """Returns the bounding box for the images found
 
@@ -62,6 +73,10 @@ class FaceObjectResult(object):
     @age.setter
     def age(self, value):
         self._age = value
+
+    @age_confidence_score.setter
+    def age_confidence_score(self, value):
+        self._age_confidence_score = value
 
     @bounding_box.setter
     def bounding_box(self, value):
