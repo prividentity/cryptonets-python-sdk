@@ -73,15 +73,7 @@ Configurable Parameter List and Valid values
    * - IMAGE_PRE_PROC
      - Enable additional image processing prior to validity check / cropping
      - "zoom_pan", "rotate90", "rotate180", "rotate270", "blur", "fliplr", "none"
-   * - THRESHOLD_GLASS
-     - Threshold to detect glass (eye wear)
      - -0.1 to 2
-   * - THRESHOLD_MASK
-     - Threshold to detect mask on a face
-     - -0.1 to 2
-   * - ENROLL_ALLOW_EYE_GLASS
-     - Allow eyeglasses for enroll if within threshold
-     - True, False
    * - CONF_SCORE_THR_ENROLL
      - Threshold to reject a face if the crop confidence score is lesser than this value - enroll
      - -0.1 to 2
