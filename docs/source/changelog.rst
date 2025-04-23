@@ -1,6 +1,18 @@
 Changelog
 =========
 
+Version 1.3.12b1 (2025-04-23)
+-----------------------------
+
+Updates:
+
+* Add new configuration parameter `USE_AGE_ESTIMATION_WITH_MODEL_STDD` that affect the age prediction method.
+  The parameter have the value `False` by default.
+  If `USE_AGE_ESTIMATION_WITH_MODEL_STDD` set to `True`, it will return a standard deviation of the age estimation based on the model data.
+* Remove obsolete configuration parameters `THRESHOLD_GLASS`, `THRESHOLD_MASK` and `ENROLL_ALLOW_EYE_GLASS`
+* Remove `billing failed` log message in age operation.
+* Update native library to '25.04.23-9b772ba'
+
 Version 1.3.11 (2025-04-04)
 -----------------------------
 
