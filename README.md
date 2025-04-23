@@ -40,7 +40,7 @@ python -m pip install --upgrade cryptonets_python_sdk
 ```
 
 This will install the cryptonets_python_sdk package as well as all dependencies.
-See the [installation](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/1.3.11/installation.html) section of
+See the [installation](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/1.3.12b1/installation.html) section of
 the SDK homepage Guide for more information.
 
 ## Usage
@@ -71,10 +71,10 @@ Copyright (c) 2020-present, Private Identity All rights reserved.
 
 ## More Resources:
 
-[Getting Started](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/1.3.11/index.html#getting-started)
+[Getting Started](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/1.3.12b1/index.html#getting-started)
 
-[Installation](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/1.3.11/installation.html)
+[Installation](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/1.3.12b1/installation.html)
 
-[Usage](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/1.3.11/usage.html)
+[Usage](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/1.3.12b1/usage.html)
 
-[SDK-Docs](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/1.3.11/Factor/Face.html#cryptonets_python_sdk.factor.FaceFactor)
+[SDK-Docs](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/1.3.12b1/Factor/Face.html#cryptonets_python_sdk.factor.FaceFactor)
