@@ -121,4 +121,7 @@ Configurable Parameter List and Valid values
      - `default`, `RES100``and `RES200`.     
    * - RELAX_FACE_VALIDATION
      - `False` by default, if set to `True`, the face validation step in any operation is going to be permissive. 
+     - True, False     
+   * - USE_AGE_ESTIMATION_WITH_MODEL_STDD
+     - `False` by default, if set to `True`, the age estimation will produce a standard deviation of the age estimation based on the model data
      - True, False
