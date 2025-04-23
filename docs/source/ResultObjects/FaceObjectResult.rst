@@ -10,7 +10,7 @@ This section covers how to use the Face Object Result Object.
 Check :ref:`return codes <return_codes>` for all possible result codes and its status
 
 .. autoclass:: FaceObjectResult
-   :members: return_code, message, age, bounding_box
+   :members: return_code, message, age, bounding_box, age_confidence_score
 
 .. toctree::
    :maxdepth: 2
