@@ -1004,21 +1004,23 @@ class NativeMethods(object):
 
                 c_result = c_char_p()
                 c_result_len = c_int()
-                if config_object and config_object.get_config_param():
+
+                with_model_stdd: bool | None =  config_object._get_param_value(PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD)
+                config_json = config_object.get_config_param()
+                if config_object and config_json:
                     # Load existing config from the object
-                    config_dict = json.loads(config_object.get_config_param())
+                    config_dict = json.loads(config_json)
                     # Ensure disable_enroll_mf is always added
-                    config_dict["disable_enroll_mf"] = True
+                    config_dict["skip_antispoof"] = True
                     config_dict["conf_score_thr_enroll"]=0.2                    
                 else:
                     # Create a new config dict with disable_enroll_mf set to True
-                    config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}
+                    config_dict = {"skip_antispoof": True,"conf_score_thr_enroll":0.2}                    
                 
                 config_json = json.dumps(config_dict)
                 c_config_param = c_char_p(bytes(config_json, "utf-8"))
                 c_config_param_len = c_int(len(config_json))
 
-                with_model_stdd: bool | None =  config_object.get_config_param(PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD)
                 if with_model_stdd is not None and with_model_stdd == True:
                     success = self._spl_so_face.privid_estimate_age_with_stdd(
                         self._spl_so_face.handle,
