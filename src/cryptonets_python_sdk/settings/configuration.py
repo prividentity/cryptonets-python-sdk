@@ -467,9 +467,13 @@ class ConfigObject:
             print("Config Error:", exp)
             sys.exit(1)
 
+    def _get_param_value(self, key: PARAMETERS) -> str | None:
+        return self._config_param.get(key) 
+
     def get_config_param(self):
         if len(self._config_param) == 0:
             return None
+        self._config_param.pop(PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD, None)
         config_param_dict = {}
         for key, value in self._config_param.items():
             if not self._validate_parameter.is_billing_parameter(key):
