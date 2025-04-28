@@ -59,7 +59,8 @@ class NativeMethods(object):
             self._config_object = config_object
             self._server_url_string=server_url
             self._api_key_string=api_key
-            self._local_lib_path = pathlib.Path(__file__).parent.joinpath("lib")
+            self._package_version = NativeMethods.get_package_version("cryptonets-python-sdk")
+            self._local_lib_path = pathlib.Path(__file__).parent.joinpath("lib", self._package_version)
             self._local_lib_path.mkdir(parents=True, exist_ok=True)
             # set local lib path as models download directory
             self._local_lib_path_str = str(self._local_lib_path.resolve())        
@@ -106,7 +107,7 @@ class NativeMethods(object):
     
     def _download_from_s3(self, s3_client, bucket, file_name, local_path):
         with open(local_path, 'wb') as f:
-            response = s3_client.get_object(Bucket=bucket, Key="1.3.12b1/"+file_name)
+            response = s3_client.get_object(Bucket=bucket, Key=self._package_version+"/"+file_name)
             file_size = response['ContentLength']
 
             with tqdm.tqdm(total=file_size, unit='B', unit_scale=True, desc=file_name) as bar:
