@@ -1,6 +1,38 @@
 Changelog
 =========
 
+Version 1.3.12b2 (2025-04-28)
+-----------------------------
+
+Updates:
+
+* Now native library files are downloaded into their own directory under `cryptonets_python_sdk/handler/lib/package_version`.
+* Remove all obsolete configuration parameters :
+ - CONF_FAST_PROCESS
+ - INPUT_TYPE
+ - BLUR_THRESHOLD_DOC_LEVEL_1
+ - BLUR_THRESHOLD_DOC_LEVEL_2
+ - THRESHOLD_VERTICAL_ENROLL
+ - THRESHOLD_VERTICAL_PREDICT
+ - IMAGE_BORDER
+ - IMAGE_PRE_PROC
+ - THRESHOLD_GLASS
+ - THRESHOLD_MASK
+ - FACE_THRESHOLD_RIGHT
+ - FACE_THRESHOLD_LEFT
+ - FACE_THRESHOLD_VERTICAL
+ - DOCUMENT_FACE_CHECK_VALIDITY
+ - DOCUMENT_CHECK_VALIDITY
+ - DOCUMENT_FACE_PREDICT
+ - ENABLE_DOC_PERSPECTIVE_CORRECTION
+ - ENROLL_ALLOW_EYE_GLASS
+ - FACE_DETECT_PREFERRED_SIZE
+ - FACE_DETECT_MAX_OUT_IMAGE_SIZE
+
+* Remove billing methods and related parameters.
+* Native library is still points to '25.04.23-9b772ba'.
+
+
 Version 1.3.12b1 (2025-04-23)
 -----------------------------
 
