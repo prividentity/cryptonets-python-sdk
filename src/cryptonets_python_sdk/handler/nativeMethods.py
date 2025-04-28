@@ -15,7 +15,36 @@ import botocore
 import tqdm
 import subprocess
 import platform
+import importlib
+import importlib.metadata
 class NativeMethods(object):
+    @staticmethod
+    def get_package_version(package_name: str) -> str:
+        """Get the version of a package installed in the current environment.
+
+        Args:
+            package_name: Name of the package
+
+        Returns:
+            str: Version of the package, or ValueError if package not found
+        """
+        if not package_name:
+            raise ValueError("Package name cannot be empty")
+            
+        # Try importlib.metadata (Python 3.8+)
+        try:
+            return importlib.metadata.version(package_name)
+        except (importlib.metadata.PackageNotFoundError, AttributeError):
+            pass
+            
+        # Fall back to pkg_resources for compatibility with older Python versions
+        try:
+            import pkg_resources
+            return pkg_resources.get_distribution(package_name).version
+        except (pkg_resources.DistributionNotFound, ImportError):
+            pass            
+        raise ValueError(f"Package '{package_name}' not found")
+
     def __init__(
         self,
         api_key: str,
