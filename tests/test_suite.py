@@ -111,8 +111,7 @@ def factor_object():
     config_object = ConfigObject(
         config_param={
             PARAMETERS.INPUT_IMAGE_FORMAT: "rgb",
-            PARAMETERS.CONTEXT_STRING: "predict",
-            PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS: 10,
+            PARAMETERS.CONTEXT_STRING: "predict"
         }
     )
     face_factor = FaceFactor(

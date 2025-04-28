@@ -463,19 +463,6 @@ class NativeMethods(object):
         ##############################################################################################
 
         ##############################################################################################
-        # (ok) PRIVID_API_ATTRIB bool privid_set_billing_record_threshold(
-        #         void *session_ptr, const char *billing_config,
-        #         const int billing_config_length);
-        ##############################################################################################
-        self._spl_so_face.privid_set_billing_record_threshold.argtypes = [
-            c_void_p,  # void *session_ptr
-            c_char_p,  # const char *billing_config
-            c_int,
-        ]  # const int billing_config_length
-        self._spl_so_face.privid_set_billing_record_threshold.restype = c_bool
-        ##############################################################################################
-
-        ##############################################################################################
         # PRIVID_API_ATTRIB int32_t privid_anti_spoofing(
         # void* session_ptr, const uint8_t* image_bytes, const int image_width,
         # const int image_height, const char* user_config, const int user_config_length,
@@ -493,19 +480,7 @@ class NativeMethods(object):
         ]  # int *result_out_length
         self._spl_so_face.privid_anti_spoofing.restype = c_int32
         ##############################################################################################
-
-        if self._config_object and self._config_object.get_config_billing_param():
-            c_config_param = c_char_p(
-                bytes(self._config_object.get_config_billing_param(), "utf-8")
-            )
-            c_config_param_len = c_int(
-                len(self._config_object.get_config_billing_param())
-            )
-            self._spl_so_face.privid_set_billing_record_threshold(
-                self._spl_so_face.handle, c_config_param, c_config_param_len
-            )
-        ##############################################################################################
-
+        
         ##############################################################################################
         # PRIVID_API_ATTRIB int32_t privid_doc_scan_face(
         # void *session_ptr, const char *user_config, const int user_config_length,

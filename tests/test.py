@@ -237,15 +237,15 @@ def setup_compare_test(
 def test_predict_enrol_valid_image_with_cache():
     # Notice we do not need to pass enroll reservation qty
     (face_factor, image_path) = setup_test("8.png", use_cache=True)
-    test_enroll(face_factor, image_path)  # => no billing reservation
-    result_handle = test_predict(face_factor, image_path)  # =>  no billing reservation
-    result_handle = test_predict(face_factor, image_path)  # => no billing reservation
-    result_handle = test_predict(face_factor, image_path)  # => no billing reservation
-    test_delete(face_factor, result_handle)  # => no billing for delete
-    result_handle = test_predict(face_factor, image_path)  # => no billing reservation
-    test_delete(face_factor, result_handle)  # => no billing for delete
-    result_handle = test_predict(face_factor, image_path)  # => no billing reservation
-    test_delete(face_factor, result_handle)  # => no billing for delete
+    test_enroll(face_factor, image_path)  
+    result_handle = test_predict(face_factor, image_path)  
+    result_handle = test_predict(face_factor, image_path)  
+    result_handle = test_predict(face_factor, image_path) 
+    test_delete(face_factor, result_handle)  
+    result_handle = test_predict(face_factor, image_path)  
+    test_delete(face_factor, result_handle)  
+    result_handle = test_predict(face_factor, image_path)  
+    test_delete(face_factor, result_handle)  
 
 
 def test_predict_enrol_valid_image_with_no_cache():
@@ -280,34 +280,8 @@ def test_valid_with_bad_image_and_no_cache():
     test_valid(face_factor, build_sample_image_path("6.png"))  # => no billing
 
 
-def test_age_estimate_with_cache():
-    (face_factor, image_path) = setup_test(
-        "5.png", PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS, 2, True
-    )
-    test_age_estimate(
-        face_factor, image_path
-    )  # => no billing for invalid age => tested OK
-    test_age_estimate(
-        face_factor, build_sample_image_path("6.png")
-    )  # => no billing for invalid age
-    test_age_estimate(
-        face_factor, build_sample_image_path("8.png")
-    )  # => billing reservation of 2 and local bill increment (1)
-    test_age_estimate(
-        face_factor, build_sample_image_path("6.png")
-    )  # => no billing for invalid age
-    test_age_estimate(
-        face_factor, build_sample_image_path("6.png")
-    )  # => no billing for invalid age
-    test_age_estimate(
-        face_factor, build_sample_image_path("8.png")
-    )  # => local bill increment (2)
-
-
 def test_age_estimate_with_no_cache():
-    (face_factor, image_path) = setup_test(
-        "5.png", PARAMETERS.ESTIMATE_AGE_RESERVATION_CALLS, 2
-    )
+    (face_factor, image_path) = setup_test("5.png")
     test_age_estimate(
         face_factor, image_path
     )  # => no billing for invalid age => tested OK
@@ -333,7 +307,7 @@ def test_age_estimate_with_no_cache():
 
 def test_compare_with_cache():
     (face_factor, image_path) = setup_test(
-        "8.png", PARAMETERS.COMPARE_RESERVATION_CALLS, 2, True
+        "8.png",None,None, True
     )
     test_compare(
         face_factor, image_path
@@ -352,7 +326,7 @@ def test_compare_with_cache():
 
 def test_compare_with_no_cache():
     (face_factor, image_path) = setup_test(
-        "8.png", PARAMETERS.COMPARE_RESERVATION_CALLS, 2
+        "8.png", None, None
     )
     test_compare(
         face_factor, image_path
@@ -368,7 +342,7 @@ def test_compare_with_no_cache():
 
 def test_get_iso_image_with_cache():
     (face_factor, image_path) = setup_test(
-        "8.png", PARAMETERS.FACE_ISO_RESERVATION_CALLS, 2, True
+        "8.png", None,None, True
     )
     test_get_iso_face(face_factor, image_path)  # no billing reservation
     test_get_iso_face(face_factor, image_path)  # no billing reservation
@@ -379,7 +353,7 @@ def test_get_iso_image_with_cache():
 
 def test_get_iso_image_with_no_cache():
     (face_factor, image_path) = setup_test(
-        "8.png", PARAMETERS.FACE_ISO_RESERVATION_CALLS, 2
+        "8.png", None,None
     )
     test_get_iso_face(face_factor, image_path)  # no billing reservation
     test_get_iso_face(face_factor, image_path)  # no billing reservation
