@@ -45,9 +45,6 @@ class FaceFactor(metaclass=Singleton):
         server_url : str
             The URL of the FaceFactor server.
 
-        local_storage_path : str (optional)
-            Absolute path to the local storage.
-
         logging_level : LoggingLevel (Optional)
             LoggingLevel needed while performing operation
 
@@ -80,7 +77,6 @@ class FaceFactor(metaclass=Singleton):
         self,
         api_key: str = None,
         server_url: str = None,
-        local_storage_path: str = None,
         logging_level: LoggingLevel = LoggingLevel.off,
         tf_num_thread: int = 0,
         cache_type: CacheType = CacheType.OFF,
@@ -119,15 +115,7 @@ class FaceFactor(metaclass=Singleton):
                 self._api_key = os.environ.get("PI_API_KEY")
             else:
                 self._api_key = api_key
-            if local_storage_path is None:
-                self._local_storage_path = str(
-                    pathlib.Path(__file__)
-                    .parent.parent.joinpath("privateid_local_storage")
-                    .resolve()
-                )
-            else:
-                self._local_storage_path = local_storage_path
-
+            
             if self._server_url[-1] == "/":
                 self._server_url = self._server_url[:-1]
 
@@ -137,7 +125,6 @@ class FaceFactor(metaclass=Singleton):
             self.face_factor = Face(
                 api_key=self._api_key,
                 server_url=self._server_url,
-                local_storage_path=self._local_storage_path,
                 logging_level=self._logging_level,
                 tf_num_thread=self._tf_num_thread,
                 cache_type=self._cache_type,
@@ -895,11 +882,7 @@ class FaceFactor(metaclass=Singleton):
     @property
     def server_url(self) -> str:
         return self._server_url
-
-    @property
-    def local_storage_path(self) -> str:
-        return self._local_storage_path
-
+    
     @property
     def logging_level(self) -> LoggingLevel:
         return self._logging_level
@@ -915,11 +898,7 @@ class FaceFactor(metaclass=Singleton):
     @server_url.setter
     def server_url(self, value):
         self._server_url = value
-
-    @local_storage_path.setter
-    def local_storage_path(self, value):
-        self._local_storage_path = value
-
+    
     @logging_level.setter
     def logging_level(self, value):
         self._logging_level = value

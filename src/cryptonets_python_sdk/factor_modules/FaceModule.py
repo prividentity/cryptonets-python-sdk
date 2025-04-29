@@ -24,7 +24,6 @@ class Face(metaclass=Singleton):
         self,
         api_key: str,
         server_url: str,
-        local_storage_path: str,
         logging_level: LoggingLevel,
         tf_num_thread: int,
         cache_type: CacheType,
@@ -34,7 +33,6 @@ class Face(metaclass=Singleton):
         self.face_factor_processor = NativeMethods(
             api_key=api_key,
             server_url=server_url,
-            local_storage_path=local_storage_path,
             logging_level=logging_level,
             tf_num_thread=tf_num_thread,
             cache_type=cache_type,
