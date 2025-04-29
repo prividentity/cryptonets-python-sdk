@@ -60,10 +60,14 @@ class NativeMethods(object):
             self._server_url_string=server_url
             self._api_key_string=api_key
             self._package_version = NativeMethods.get_package_version("cryptonets-python-sdk")
+            model_storage_path = pathlib.Path(__file__).parent.joinpath("lib")                
+            model_storage_path.mkdir(parents=True, exist_ok=True)
             self._local_lib_path = pathlib.Path(__file__).parent.joinpath("lib", self._package_version)
             self._local_lib_path.mkdir(parents=True, exist_ok=True)
-            # set local lib path as models download directory
+            # set local lib path as library download directory
             self._local_lib_path_str = str(self._local_lib_path.resolve())        
+            # set model storage path as model download directory
+            self._model_storage_path_str = str(model_storage_path.resolve())
             self._check_and_download_files(platform.system())
 
             if platform.system() == "Linux":
@@ -251,10 +255,10 @@ class NativeMethods(object):
         ]  # const int user_config_length
         
 
-        # initialize the library
-        c_local_lib_path_param = c_char_p(bytes(self._local_lib_path_str, "utf-8"))
-        c_local_lib_path_len_param = c_int(len(self._local_lib_path_str))
-        self._spl_so_face.privid_initialize_lib(c_local_lib_path_param,c_local_lib_path_len_param)
+        # initialize the library and set the model storage path
+        c_model_path_param = c_char_p(bytes(self._model_storage_path_str, "utf-8"))
+        c_model_path_len_param = c_int(len(self._model_storage_path_str))
+        self._spl_so_face.privid_initialize_lib(c_model_path_param,c_model_path_len_param)
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_set_configuration(void *session_ptr, const char *user_config,
         # const int user_config_length);
