@@ -18,7 +18,6 @@ from .helper.result_objects.faceValidationResult import FaceValidationResult
 from .helper.result_objects.antispoofCheckResult import AntispoofCheckResult
 from .helper.result_objects.isoFaceResult import ISOFaceResult
 from .helper.utils import image_path_to_array
-from .settings.cacheType import CacheType
 from .settings.configuration import ConfigObject, PARAMETERS
 from .settings.loggingLevel import LoggingLevel
 from .settings.supportedPlatforms import SupportedPlatforms
@@ -51,9 +50,6 @@ class FaceFactor(metaclass=Singleton):
         tf_num_thread: int (Optional)
             Number of thread to use for Tensorflow model inference
 
-        cache_type: CacheType (Optional)
-            To set the cache on / off
-
         config : ConfigObject (Optional)
             Configuration class object with parameters
 
@@ -78,8 +74,7 @@ class FaceFactor(metaclass=Singleton):
         api_key: str = None,
         server_url: str = None,
         logging_level: LoggingLevel = LoggingLevel.off,
-        tf_num_thread: int = 0,
-        cache_type: CacheType = CacheType.OFF,
+        tf_num_thread: int = 0,        
         config: ConfigObject = None,
     ):
 
@@ -120,14 +115,12 @@ class FaceFactor(metaclass=Singleton):
                 self._server_url = self._server_url[:-1]
 
             self._config_object = config
-            self._logging_level = logging_level
-            self._cache_type = cache_type
+            self._logging_level = logging_level            
             self.face_factor = Face(
                 api_key=self._api_key,
                 server_url=self._server_url,
                 logging_level=self._logging_level,
-                tf_num_thread=self._tf_num_thread,
-                cache_type=self._cache_type,
+                tf_num_thread=self._tf_num_thread,                
                 config_object=self._config_object,
             )
             self.message = Message()

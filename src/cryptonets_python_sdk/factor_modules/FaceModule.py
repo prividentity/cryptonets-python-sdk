@@ -14,7 +14,6 @@ from ..helper.result_objects.faceValidationResult import FaceValidationResult
 from ..helper.result_objects.isoFaceResult import ISOFaceResult
 from ..helper.result_objects.antispoofCheckResult import AntispoofCheckResult
 from ..helper.utils import FaceValidationCode
-from ..settings.cacheType import CacheType
 from ..settings.configuration import ConfigObject, PARAMETERS
 from ..settings.loggingLevel import LoggingLevel
 
@@ -26,7 +25,6 @@ class Face(metaclass=Singleton):
         server_url: str,
         logging_level: LoggingLevel,
         tf_num_thread: int,
-        cache_type: CacheType,
         config_object: ConfigObject = None,
     ):
         self.message = Message()
@@ -34,8 +32,7 @@ class Face(metaclass=Singleton):
             api_key=api_key,
             server_url=server_url,
             logging_level=logging_level,
-            tf_num_thread=tf_num_thread,
-            cache_type=cache_type,
+            tf_num_thread=tf_num_thread,            
             config_object=config_object,
         )
 

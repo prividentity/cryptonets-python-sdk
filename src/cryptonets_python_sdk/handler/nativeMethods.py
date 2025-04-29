@@ -7,7 +7,6 @@ from typing import Any
 import numpy as np
 from PIL import Image
 import platform
-from ..settings.cacheType import CacheType
 from ..settings.configuration import ConfigObject, PARAMETERS
 from ..settings.loggingLevel import LoggingLevel
 import boto3
@@ -50,8 +49,7 @@ class NativeMethods(object):
         api_key: str,
         server_url: str,
         logging_level: LoggingLevel,
-        tf_num_thread: int,
-        cache_type: CacheType,
+        tf_num_thread: int,        
         config_object: ConfigObject = None,        
     ):
         try:
@@ -75,7 +73,7 @@ class NativeMethods(object):
                 self._load_windows_libraries()
             elif platform.system() == "Darwin":
                 self._load_macos_libraries()
-            self._initialize_properties(tf_num_thread, api_key, server_url, logging_level, cache_type)
+            self._initialize_properties(tf_num_thread, api_key, server_url, logging_level)
             self._face_setup()
         except Exception as e:
             print("Error ", e)
@@ -147,12 +145,11 @@ class NativeMethods(object):
         self._spl_so_face = ctypes.CDLL(self._library_path)
 
 
-    def _initialize_properties(self, tf_num_thread, api_key, server_url,logging_level, cache_type):
+    def _initialize_properties(self, tf_num_thread, api_key, server_url,logging_level):
         self._tf_num_thread = tf_num_thread
         self._api_key = bytes(api_key, "utf-8")
         self._server_url = bytes(server_url, "utf-8")
-        self._logging_level = logging_level        
-        self._cache_type = cache_type
+        self._logging_level = logging_level
 
     def update_config(self, config_object):
         self._config_object = config_object
