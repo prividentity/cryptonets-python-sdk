@@ -1,26 +1,8 @@
-Usage Guide
-===========
+CryptoNets SDK Usage Guide
+==========================
 
-
-Supported Python Versions
--------------------------
-
-We recommend using the latest version of Python for compatibility and performance.
-CryptoNets™ SDK supports Python 3.6 and newer.
-
-
-Installation
-------------
-
-To install the CryptoNets™ SDK, run the following command:
-
-.. code-block:: sh
-
-    pip3 install cryptonets_python_sdk
-
-
-Setup
------
+API_KEY and SERVER_URL initialization parameters
+------------------------------------------------
 
 To access the factor server, you need to configure the server URL and API key.
 These values should be stored in environment variables for secure and streamlined access.
@@ -32,25 +14,26 @@ Set the environment variables with the following commands:
     export PI_SERVER_URL = "SERVER_URL"
     export PI_API_KEY = "YOUR_API_KEY"
 
-Using the Face Factor Object
-----------------------------
 
-After setting up the environment variables, you can start using the SDK's FaceFactor object directly.
+Also, they can be passed directly to the FaceFactor constructor as we will show in the next section.
+
+Create and the Face Factor Object
+---------------------------------
+
+You need to create an instance of the FaceFactor class in order to start using the SDK's FaceFactor object.
+
+You can rely on environment variables to set the server URL and API key:
 
 .. code-block:: py
 
     # Import the FaceFactor class from the CryptoNets SDK
     from cryptonets_python_sdk.factor import FaceFactor
 
-    # Create an instance of the FaceFactor class
+    # Create an instance of the FaceFactor class using the environment variables
     face_factor = FaceFactor()
 
-With this setup, you're ready to use the CryptoNets™ SDK to generate and verify private IDs.
-Refer to the full documentation for advanced configuration options and detailed examples.
 
-Import and Usage
-----------------
-In addition to setting the server URL and API key as environment variables, you can also configure these directly when initializing the FaceFactor instance.
+Or set the server URL and API key directly:
 
 .. code-block:: py
 
@@ -64,13 +47,15 @@ In addition to setting the server URL and API key as environment variables, you 
     # Initialize the FaceFactor instance with the server URL and API key
     face_factor = FaceFactor(server_url=server_url, api_key=api_key)
 
-This method provides flexibility, allowing you to set the server URL and API key dynamically within your code rather than through environment variables.
 
-is_valid: Find, Validate and return facial biometric
-----------------------------------------------------
+With this setup, you're ready to use the CryptoNets™ SDK to generate and verify private IDs.
+
+
+1) is_valid(): Validating Facial Biometrics
+-------------------------------------------
 
 The ``is_valid`` method checks an image for the presence of a valid facial biometric that meets specified restrictions.
-This function processes the image, validates the facial biometric, and returns either a perfectly cropped and aligned facial biometric or relevant error codes.
+This function processes the image, validates the facial biometric, and returns a facial validation result or relevant error codes.
 
 This method is ideal for live capture scenarios, as it can guide users to make necessary adjustments (e.g., "remove eyeglasses," "remove mask," "look at camera") to ensure a valid facial image is captured.
 
@@ -96,12 +81,12 @@ Sample Usage:
     face_factor = FaceFactor(server_url=SERVER_URL, api_key=API_KEY)
 
     # Validate the image
-    is_valid_handle = face_factor.is_valid(image_path="path_to_the_image")  # Replace with the actual image path
+    is_valid_result = face_factor.is_valid(image_path="path_to_the_image")  # Replace with the actual image path
 
     # Accessing results
-    error_code = is_valid_handle.error        # Error code, if any
-    message = is_valid_handle.message         # Operation message
-    face_objects = is_valid_handle.face_objects  # List of detected Face objects
+    error_code = is_valid_result.error        # Error code, if any
+    message = is_valid_result.message         # Operation message
+    face_objects = is_valid_result.face_objects  # List of detected Face objects
 
 
 Example Output:
@@ -135,8 +120,8 @@ Output:
 For a complete list of return and status codes, see :ref:`return codes <return_codes>`.
 Additional configurations can be found in the :ref:`is_valid advanced instructions <isvalid_advanced>` section.
 
-estimate_age: Estimate user's age
----------------------------------
+2) estimate_age(): Determining User Age
+---------------------------------------
 
 The ``estimate_age`` method analyzes a frontal facial image to determine if a valid biometric match is present
 based on specified restrictions, and it returns an estimated age (range: 0-100) along with the bounding box or relevant error codes.
@@ -145,7 +130,7 @@ This method is particularly useful for live capture applications where continuou
 
 Key Features of ``estimate_age``:
 
-* Runs on-device with a 50ms response time, eliminating the need for server calls
+* Runs on-device with ~50ms response time, eliminating the need for server calls
 * Supports head tilt between -22.5 to 22.5 degrees (left to right)
 * Allows uncontrolled poses (excluding full profiles)
 * Recommended minimum face size is 224 x 224 pixels for optimal accuracy
@@ -212,15 +197,15 @@ Output:
 For a complete list of return and status codes, see :ref:`return codes <return_codes>`.
 Additional configurations can be found in the :ref:`estimate_age advanced instructions <age_advanced>` section.
 
-compare: 1:1 verification of two valid face images
---------------------------------------------------
+3) compare(): 1:1 Verification of Face Images
+---------------------------------------------
 
 The ``compare`` method performs a 1:1 verification of two frontal facial images, analyzing them to determine if both images contain valid frontal facial biometrics that meet specified restrictions.
 It then returns whether the subjects in the images are the same person (Result: 1) or different subjects (Result: -1), along with additional information and error codes if applicable.
 
 Key Features of ``compare``:
 
-* Runs on-device with a 50ms response time, without requiring a server call
+* Runs on-device with a ~50ms response time, without requiring a server call
 * Supports head tilt between -22.5 to 22.5 degrees (left to right)
 * Allows uncontrolled poses (excluding full profiles)
 * Recommended minimum face size is 224 x 224 pixels for optimal accuracy
@@ -286,15 +271,15 @@ Output:
 For a complete list of return and status codes, see :ref:`return codes <return_codes>`.
 Additional configurations can be found in the :ref:`compare advanced instructions <compare_advanced>` section.
 
-compare_doc_with_face: 1:1 Verification of a Face Image and Document Image
---------------------------------------------------------------------------
+4) compare_doc_with_face(): 1:1 Verification of a Face Image and Document Image
+-------------------------------------------------------------------------------
 
 The ``compare_doc_with_face`` method enables 1:1 verification by comparing a frontal facial image with a facial image on a driver’s license or similar document. It takes a facial image and a document image as input, along with the API key and specified restrictions, and assesses whether the facial biometrics match.
 The method returns 1 if the images are from the same individual and -1 if they are not, along with any relevant error codes.
 
 Key Features of ``compare_doc_with_face``:
 
-* Runs on-device with a 200ms response time, without requiring a server call
+* Runs on-device with a ~200ms response time, without requiring a server call
 * Supports head tilt between -22.5 to 22.5 degrees (left to right)
 * Allows uncontrolled poses (excluding full profiles)
 * Recommended minimum face size is 224 x 224 pixels for optimal accuracy
@@ -351,35 +336,28 @@ Sample Output:
 For a complete list of return and status codes, see :ref:`return codes <return_codes>`.
 Additional configurations can be found in the :ref:`compare advanced instructions <compare_advanced>` section.
 
-antispoof_check: Spoof Detection in Facial Recognition
-------------------------------------------------------
+5) antispoof_check(): Spoof Detection in Facial Recognition
+-----------------------------------------------------------
 
 The ``antispoof_check`` method is designed to enhance the security of facial recognition systems by distinguishing authentic live captures from potential spoof attempts.
 By analyzing specific characteristics within the image, this method helps prevent fraudulent access.
 
-Functionality
-~~~~~~~~~~~~~
-- **Input**: Accepts a single frontal face image.
-- **Operation**: Analyzes the image for signs of spoofing, such as texture irregularities or digital alterations.
-- **Output**: Returns an ``AntispoofCheckResult`` object, which includes the status, message, and a boolean indicating if spoofing was detected.
+* Accepts a single frontal face image.
+* Analyzes the image for signs of spoofing, such as texture irregularities or digital alterations.
+* Returns an ``AntispoofCheckResult`` object, which includes the status, message, and a boolean indicating if spoofing was detected.
+* **On-device processing**: The check runs locally, with a typical response time of 100ms, requiring no server communication.
+* **Image Requirements**:igh-resolution images (224 x 224 pixels minimum) are recommended. Lower resolutions are supported, though detection accuracy may vary.
+* **Head Pose**:Effective for frontal views, within a range of -15 to +15 degrees for both yaw and pitch.
+* **Best Practices**:se unprocessed images for optimal results. If cropping is needed, include sufficient background around the face.
 
-Features
-~~~~~~~~
-- **On-device processing**: The check runs locally, with a typical response time of 100ms, requiring no server communication.
-- **Image Requirements**: High-resolution images (224 x 224 pixels minimum) are recommended. Lower resolutions are supported, though detection accuracy may vary.
-- **Head Pose**:  Effective for frontal views, within a range of -15 to +15 degrees for both yaw and pitch.
-- **Best Practices**: Use unprocessed images for optimal results. If cropping is needed, include sufficient background around the face.
-
-AntispoofCheckResult Object
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The ``AntispoofCheckResult`` encapsulates the output of the antispoof check, with these attributes:
 
-- **status**: Integer that indicates the status of the operation.
-- **message**: A descriptive message about the operation’s outcome.
-- **is_antispoof**: Boolean that indicates whether a spoofing attempt was detected (``True`` if spoofing detected, ``False`` otherwise).
+* **status**: Integer that indicates the status of the operation.
+* **message**: A descriptive message about the operation’s outcome.
+* **is_antispoof**: Boolean that indicates whether a spoofing attempt was detected (``True`` if spoofing detected, ``False`` otherwise).
 
-Example Usage
-~~~~~~~~~~~~~
+Sample Usage:
+
 .. code-block:: python
 
    # Import the FaceFactor class from the CryptoNets SDK
@@ -396,10 +374,9 @@ Example Usage
         antispoof_result.status, antispoof_result.message, antispoof_result.is_antispoof))
 
 
-Output
-~~~~~~
+Sample Output:
 
-.. code-block:: python
+.. code-block:: py
 
     Status: 0
     Message: 'No spoofing detected.'
@@ -407,8 +384,8 @@ Output
 
 Refer to :ref:`return_codes <return_codes>` for a comprehensive list of possible result and status codes.
 
-enroll: Initialize Subject’s Face in the Identification System
---------------------------------------------------------------
+6) enroll(): Initialize Subject’s Face in the Identification System
+-------------------------------------------------------------------
 
 The ``enroll`` method is used to register a subject’s facial biometric in the identification system.
 It accepts a frontal facial image, along with an API key and specified restrictions.
@@ -481,8 +458,8 @@ Output:
 
 For additional configuration options and advanced settings, see the :ref:`enroll advanced instructions <enroll_advanced>` section.
 
-predict: 1:N Matching of a Probe Image to the Enrolled Gallery
---------------------------------------------------------------
+7) predict(): 1:N Matching of a Probe Image to the Enrolled Gallery
+-------------------------------------------------------------------
 
 The ``predict`` method performs a 1:n match, comparing a single probe image containing one or more faces against a gallery of enrolled faces.
 This method verifies if the probe image meets specified restrictions, transforms valid facial biometrics into homomorphic token ciphertexts, deletes the original plaintext data, and securely transmits the ciphertext to the backend.
@@ -494,7 +471,7 @@ Process Flow:
 
 Key Features of ``predict``:
 
-* The operation completes within 200ms, including server processing.
+* The operation completes within ~200ms, including server processing.
 * Supports head tilt from -22.5 to 22.5 degrees (left to right).
 * Allows uncontrolled poses, though not full profiles.
 * Minimum recommended face size is 224 x 224 pixels.
@@ -552,8 +529,8 @@ Output:
 
 For advanced settings and configuration options, see the :ref:`predict advanced instructions <predict_advanced>` section.
 
-delete: Remove a User’s PUID from the Server
---------------------------------------------
+8) delete(): Remove a User’s PUID from the Server
+-------------------------------------------------
 
 The ``delete`` method is used to remove a user’s PUID (Personal Unique Identifier) from the identification system.
 This method accepts a PUID and an API key as input and performs the following actions:
@@ -592,8 +569,9 @@ Output:
     Status:0
     Message: Ok.
 
-get_iso_face: Extract ISO Spec Face Image
------------------------------------------
+9) get_iso_face(): Extract ISO Spec Face Image
+----------------------------------------------
+
 The ``get_iso_face`` method captures an ISO-compliant facial image, adhering to specified restrictions.
 This method accepts a frontal facial image along with an API key, verifies if the image meets the required restrictions, and returns the ISO face image or relevant error codes if validation fails.
 
@@ -601,7 +579,7 @@ This function is ideal for live capture scenarios to continually acquire ISO-com
 
 Key Features of ``get_iso_face``:
 
-* Runs on-device with a response time of 50ms, without requiring a server call.
+* Runs on-device with a response time of ~50ms, without requiring a server call.
 * Supports head tilt from -22.5 to 22.5 degrees (left to right).
 * Allows uncontrolled poses but excludes full profiles.
 * Minimum recommended face size is 224 x 224 pixels.
