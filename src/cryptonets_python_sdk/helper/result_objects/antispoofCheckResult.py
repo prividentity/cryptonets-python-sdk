@@ -1,29 +1,29 @@
 class AntispoofCheckResult:
-    def __init__(self, status=None, message="", is_antispoof=False):
+    def __init__(self, status=None, message="", is_spoof=False):
         self._status = status
         self._message = message
-        self._is_antispoof = is_antispoof
+        self._is_spoof = is_spoof
 
     @property
     def status(self) -> int:
         """
-        Returns the status of the anti-spoofing operation.
+        Returns the status of the operation.
         """
         return self._status
 
     @property
     def message(self) -> str:
         """
-        Returns a descriptive message associated with the anti-spoofing operation result.
+        Returns a descriptive message associated with operation result.
         """
         return self._message
 
     @property
-    def is_antispoof(self) -> bool:
+    def is_spoof(self) -> bool:
         """
-        Returns a boolean indicating if the anti-spoofing operation detected spoofing.
+        Returns a boolean indicating if the operation detected spoofing, False otherwise.
         """
-        return self._is_antispoof
+        return self._is_spoof
 
     @status.setter
     def status(self, value):
@@ -33,6 +33,6 @@ class AntispoofCheckResult:
     def message(self, value):
         self._message = value
 
-    @is_antispoof.setter
-    def is_antispoof(self, value):
-        self._is_antispoof = value
+    @is_spoof.setter
+    def is_spoof(self, value):
+        self._is_spoof = value
