@@ -47,9 +47,6 @@ class FaceFactor(metaclass=Singleton):
         logging_level : LoggingLevel (Optional)
             LoggingLevel needed while performing operation
 
-        tf_num_thread: int (Optional)
-            Number of thread to use for Tensorflow model inference
-
         config : ConfigObject (Optional)
             Configuration class object with parameters
 
@@ -73,8 +70,7 @@ class FaceFactor(metaclass=Singleton):
         self,
         api_key: str = None,
         server_url: str = None,
-        logging_level: LoggingLevel = LoggingLevel.off,
-        tf_num_thread: int = 0,        
+        logging_level: LoggingLevel = LoggingLevel.off,        
         config: ConfigObject = None,
     ):
 
@@ -91,17 +87,7 @@ class FaceFactor(metaclass=Singleton):
                 or len(os.environ.get("PI_API_KEY")) <= 0
             ):
                 raise ValueError("API Key is required.")
-
-            if tf_num_thread is None and (
-                os.environ.get("PI_TF_NUM_THREAD") is None
-                or len(os.environ.get("PI_TF_NUM_THREAD")) <= 0
-            ):
-                tf_num_thread = 0
-
-            if tf_num_thread is None:
-                self._tf_num_thread = int(os.environ.get("PI_TF_NUM_THREAD"))
-            else:
-                self._tf_num_thread = tf_num_thread
+            
             if server_url is None:
                 self._server_url = os.environ.get("PI_SERVER_URL")
             else:
@@ -119,8 +105,7 @@ class FaceFactor(metaclass=Singleton):
             self.face_factor = Face(
                 api_key=self._api_key,
                 server_url=self._server_url,
-                logging_level=self._logging_level,
-                tf_num_thread=self._tf_num_thread,                
+                logging_level=self._logging_level,                
                 config_object=self._config_object,
             )
             self.message = Message()

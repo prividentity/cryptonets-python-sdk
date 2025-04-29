@@ -23,16 +23,14 @@ class Face(metaclass=Singleton):
         self,
         api_key: str,
         server_url: str,
-        logging_level: LoggingLevel,
-        tf_num_thread: int,
+        logging_level: LoggingLevel,        
         config_object: ConfigObject = None,
     ):
         self.message = Message()
         self.face_factor_processor = NativeMethods(
             api_key=api_key,
             server_url=server_url,
-            logging_level=logging_level,
-            tf_num_thread=tf_num_thread,            
+            logging_level=logging_level,            
             config_object=config_object,
         )
 
