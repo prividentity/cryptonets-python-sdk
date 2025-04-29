@@ -1,7 +1,0 @@
-numpy
-Pillow
-termcolor
-tqdm
-pandas
-matplotlib
-cryptonets_python_sdk>=1.3.9
