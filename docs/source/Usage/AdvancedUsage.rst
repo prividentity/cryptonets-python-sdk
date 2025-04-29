@@ -1,41 +1,6 @@
 Advanced Usage
 ==============
 
-Environment Setup
------------------
-To access the factor server, you need to set the Server URL and API Key as prerequisites.
-
-To control the number of threads used by TensorFlow for model inference, you can configure the PI_TF_NUM_THREAD environment variable.
-This allows you to optimize performance based on available system resources.
-
-Set Environment Variable
-------------------------
-
-To set the number of threads, use the following command:
-
-.. code-block:: sh
-
-    export PI_TF_NUM_THREAD = 3
-
-Set Threads Directly in the Factor Object
------------------------------------------
-
-Alternatively, you can pass the thread configuration directly when initializing the FaceFactor object:
-
-.. code-block:: py
-
-    # Import the FaceFactor class from the CryptoNets SDK
-    from cryptonets_python_sdk.factor import FaceFactor
-
-    # Define server URL and API key
-    server_url = "https://sample.url.domain"  # Replace with your server URL
-    api_key = "your-api-key"  # Replace with your API key
-
-    # Initialize the FaceFactor instance with specified thread configuration
-    face_factor = FaceFactor(server_url=server_url, api_key=api_key, tf_num_thread=1)
-
-This flexibility allows you to manage TensorFlow’s threading behavior for optimal performance, whether you set it through an environment variable or directly in your code.
-
 Configuration Setup
 -------------------
 

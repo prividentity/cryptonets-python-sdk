@@ -30,6 +30,10 @@ Updates:
  - FACE_DETECT_MAX_OUT_IMAGE_SIZE
 
 * Remove billing methods and related parameters.
+* Remove obsolete caching functionality.
+* Remove obsolete `tf_num_thread` FaceFactor constructor argument.
+* Remove obsolete tests. new set of tests will eb added in he coming version 2.0.0.
+* Change the binaries download location to be versioned, where each version download binaries from its own directory. The models download location is not chanegd and and they are shared by all versions. 
 * Native library is still points to '25.04.23-9b772ba'.
 
 
