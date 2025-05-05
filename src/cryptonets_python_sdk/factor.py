@@ -853,6 +853,38 @@ class FaceFactor(metaclass=Singleton):
             )
             return AntispoofCheckResult(message=self.message.ANTISPOOF_CHECK_ERROR)
 
+    def delete(self, puid: str ,config_object: ConfigObject = None ) -> FaceDeleteResult:
+        """Deletes a user by their PUID from the system
+
+        Parameters
+        ----------
+        puid : str
+            The PUID (Private User ID) of the user to delete
+        
+        config_object : ConfigObject (Optional)
+            Additional configuration parameters for the operation
+
+        Returns
+        -------
+        FaceDeleteResult
+            Result of the delete operation
+        """
+        if puid is None:
+            return FaceDeleteResult(message=self.message.MISSING_ARGUMENT.format("puid"))   
+        elif puid == '':
+            return FaceDeleteResult(message=self.message.INVALID_ARGUMENT.format("puid"))
+        
+        try:
+            return self.face_factor.delete(puid,config_object=config_object)
+        except Exception as e:
+            import traceback
+            print(f"Delete operation failed: {e}\nTrace: {traceback.format_exc()}")
+            print(
+                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
+            )
+            return FaceDeleteResult(status=-1, message=self.message.EXCEPTION_ERROR_DELETE)
+
+
     @property
     def api_key(self) -> str:
         return self._api_key
