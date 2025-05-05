@@ -79,3 +79,6 @@ Configurable Parameter List and Valid values
    * - USE_AGE_ESTIMATION_WITH_MODEL_STDD
      - `False` by default, if set to `True`, the age estimation will produce a standard deviation of the age estimation based on the model data
      - True, False
+   * - USER_IDENTIFIER
+     - A string  representing a supplmentary user identifier, to be added in `enroll`` requests if your enroll workflow needs it. 
+     - Any string.
