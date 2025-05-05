@@ -470,19 +470,19 @@ class Face(metaclass=Singleton):
 
                 # Validate response
                 if json_data is None:
-                    return AntispoofCheckResult(status=-100, message="No response from antispoofing processor.", is_antispoof=False)
+                    return AntispoofCheckResult(status=-100, message="No response from antispoofing processor.", is_spoof=False)
 
                 # Check if there is an error in processing
                 if json_data.get("call_status", {}).get("return_status",0) != 0:
                     error_message = json_data.get("call_status", {}).get("return_message", "Error during antispoofing check.")
-                    return AntispoofCheckResult(status=json_data.get("call_status", {}).get("return_status"), message=error_message, is_antispoof=False)
+                    return AntispoofCheckResult(status=json_data.get("call_status", {}).get("return_status"), message=error_message, is_spoof=False)
                 
                 if json_data.get("antispoofing", 0) in [-1,-2,-3,-4,-5,-6,-100]:
-                    return AntispoofCheckResult(status=json_data.get("antispoofing", 0), message=self.message.APP_MESSAGES.get(json_data.get("antispoofing", 0), "Error during antispoofing check."), is_antispoof=False)
+                    return AntispoofCheckResult(status=json_data.get("antispoofing", 0), message=self.message.APP_MESSAGES.get(json_data.get("antispoofing", 0), "Error during antispoofing check."), is_spoof=False)
                 # Check antispoofing result
                 is_spoof_detected = json_data.get("antispoofing", 0) == 1
-                return AntispoofCheckResult(status=0, message="No spoofing detected." if not is_spoof_detected else "Spoofing detected.", is_antispoof=is_spoof_detected)
+                return AntispoofCheckResult(status=0, message="No spoofing detected." if not is_spoof_detected else "Spoofing detected.", is_spoof=is_spoof_detected)
 
             except Exception as e:
                 print("Exception occurred:", e, traceback.format_exc())
-                return AntispoofCheckResult(status=-100, message="Exception occurred during antispoofing check.", is_antispoof=False)
+                return AntispoofCheckResult(status=-100, message="Exception occurred during antispoofing check.", is_spoof=False)
