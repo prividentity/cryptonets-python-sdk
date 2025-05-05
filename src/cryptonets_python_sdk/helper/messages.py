@@ -1,5 +1,7 @@
 class Message:
     def __init__(self):
+        self.MISSING_ARGUMENT = "Missing argument: {}"
+        self.INVALID_ARGUMENT = "Invalid argument: {}"
         self.IS_VALID_ERROR = "Unknown error while validating the image"
         self.AGE_ESTIMATE_ERROR = "Unknown error while predicting the age."
         self.EXCEPTION_ERROR_ENROLL = "Something went wrong while doing enroll."
@@ -56,7 +58,9 @@ class Message:
             106: self.IS_VALID_ERROR,
             107: self.EXCEPTION_ERROR_ENROLL,
             108: self.EXCEPTION_ERROR_PREDICT,
-            109: "Error Description: Incorrect Usage.",
+            109: "Error Description: Incorrect Usage."
+           
+
         }
 
     def get_message(self, code):
