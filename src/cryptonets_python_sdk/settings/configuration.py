@@ -288,7 +288,7 @@ class ConfigObject:
                     raise ValueError(
                         "Invalid key value pair\n'{}' : '{}'".format(key, value)
                     )
-        except ValueError as exp:
+        except Exception as exp:
             print("Config Error:", exp)
             sys.exit(1)
 
