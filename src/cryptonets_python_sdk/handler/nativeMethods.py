@@ -349,9 +349,16 @@ class NativeMethods(object):
         ##############################################################################################
 
         ##############################################################################################
-        # (ok) PRIVID_API void privid_free_char_buffer(char **buffer);
+        # (ok) PRIVID_API void privid_free_char_buffer(char* buffer);
         ##############################################################################################
-        self._spl_so_face.privid_free_char_buffer.argtypes = [c_char_p]  # char **buffer        
+        self._spl_so_face.privid_free_char_buffer.argtypes = [c_char_p]  # char* buffer        
+        ##############################################################################################
+
+
+        ##############################################################################################
+        # (ok) PRIVID_API void privid_free_buffer(void* buffer);
+        ##############################################################################################
+        self._spl_so_face.privid_free_buffer.argtypes = [c_void_p]          
         ##############################################################################################
 
         ##############################################################################################
@@ -659,13 +666,15 @@ class NativeMethods(object):
                 ).convert(
                     "RGBA" if output_json.get("iso_image_channels", 0) == 4 else "RGB"
                 )
+                # Release the memory of the image returned by the API
+                self._free_image(c_iso_image)                
             else:
                 # Empty Image
                 output_json["image"] = Image.new("RGB", (800, 1280), (255, 255, 255))
             return output_json
         except Exception as e:
             print(e)
-            return False
+            return False    
 
     def delete(self, puid: str,config_object) -> Any:
         puid = bytes(puid, "utf-8")
@@ -822,9 +831,9 @@ class NativeMethods(object):
                 byref(c_result),
                 byref(c_result_out),
             )
-            # reelase the memory of the unused image returned by the API
-            ptr = cast(best_input_out, c_char_p)
-            self._spl_so_face.privid_free_char_buffer(ptr)
+            # Release the memory of the unused image returned by the API
+            self._free_image(best_input_out)      
+            
 
             len_ = c_result_out.value
             output_json_str = c_result.value[:len_].decode()           
@@ -976,6 +985,7 @@ class NativeMethods(object):
             if not c_result.value or not c_result_len.value:
                 raise Exception("Something went wrong. Couldn't process the image for Document.")
             output_json = json.loads(c_result.value[:c_result_len.value].decode())
+            self._spl_so_face.privid_free_char_buffer(c_result)
 
             if output_json.get("doc_face",{}).get("document_data",{}).get("document_validation_status",-1)==0:
                 doc_info = output_json['doc_face']['document_data']['cropped_document_image']['info']
@@ -989,6 +999,9 @@ class NativeMethods(object):
                 output_json["doc_face"]["cropped_face"] = np.uint8(np.reshape(cropped_face_bytes, (
                         face_info['height'], face_info['width'], face_info['channels']
                     )))
+
+            self._free_image(c_cropped_doc)
+            self._free_image(c_cropped_face)
             return output_json
         except Exception as e:
             print("Error",e)
@@ -1060,3 +1073,9 @@ class NativeMethods(object):
             except Exception as e:
                 print(e)
                 return False
+
+    def _free_image(self, image_buffer):
+        if image_buffer and image_buffer.contents:
+           # Dereference the pointer to get the actual buffer pointer
+           ptr = cast(image_buffer,c_void_p)
+           self._spl_so_face.privid_free_buffer(ptr)
