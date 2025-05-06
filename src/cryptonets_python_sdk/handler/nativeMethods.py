@@ -748,11 +748,7 @@ class NativeMethods(object):
                 config_param_str = json.dumps(config_from_object)
             else:
                 config_param_str = json.dumps(config_object_default)
-            
-            try:
-                config_param_str = json.dumps(config_object_default)
-            except TypeError as e:
-                raise ValueError(f"Failed to serialize config_dict to JSON: {e}")
+             
             c_config_param = c_char_p(bytes(config_param_str, "utf-8"))
             c_config_param_len = c_int(len(config_param_str))
 
