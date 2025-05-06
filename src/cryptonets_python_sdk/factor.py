@@ -24,10 +24,7 @@ from .settings.supportedPlatforms import SupportedPlatforms
 
 
 class FaceFactor(metaclass=Singleton):
-    """The FaceFactor class implements the methods for enrolling and predicting the Face module as part of the
-        Biometric Authentication.
-
-        It exposes five methods as part of the interface:
+    """The FaceFactor class implements the following methods :
 
         1. is_valid: Verifies the face of the user.
         2. estimate_age: Predicts the age of the face.
@@ -35,6 +32,9 @@ class FaceFactor(metaclass=Singleton):
         4. enroll: Enrolls the face of the user.
         5. predict: Predicts the face of the user.
         6. delete: Deletes the user from the system
+        7. antispoof_check: Check if the image is spoofed or not
+        8. get_iso_face: Takes the face image and gives back the image in ISO Spec format
+        9. compare_doc_with_face: Check if the images are of same person or not
 
         Parameters
         ----------
@@ -63,7 +63,9 @@ class FaceFactor(metaclass=Singleton):
         enroll
         predict
         delete
+        antispoof_check
         get_iso_face
+        compare_doc_with_face
     """
 
     def __init__(
