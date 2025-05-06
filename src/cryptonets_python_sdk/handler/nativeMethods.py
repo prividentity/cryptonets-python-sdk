@@ -178,8 +178,7 @@ class NativeMethods(object):
         self._spl_so_face.handle = c_void_p()  # TODO rename to session
         # create a session
 
-        def named_urls(path : str ,model_id : int):
-            route = path
+        def named_urls(route : str ,model_id : int):
             # the default collection is FACE3_4
             if (route == "default" or route == ""): 
                 route = "FACE3_4"
@@ -188,19 +187,15 @@ class NativeMethods(object):
                         "base_url": self._server_url_string,
                         "predict": f"{self._server_url_string}/{route}/predict",
                         "enroll": f"{self._server_url_string}/{route}/enroll",
-                        "deleteUser": f"{self._server_url_string}/{route}/deleteUser",                      
-                        "syncUUID": f"{self._server_url_string}/syncUUID"  
+                        "deleteUser": f"{self._server_url_string}/{route}/deleteUser"
                     }
                 }
             else:
-                return { 
-                     
+                return {
                     "named_urls": {
-                        "base_url": self._server_url_string,
                         "predict": f"{self._server_url_string}/{route}/predict",
                         "enroll": f"{self._server_url_string}/{route}/enroll",
-                        "deleteUser": f"{self._server_url_string}/{route}/deleteUser",                       
-                        "syncUUID": f"{self._server_url_string}/syncUUID"  
+                        "deleteUser": f"{self._server_url_string}/{route}/deleteUser"
                     },
                     "embedding_model_id": model_id
                 }
