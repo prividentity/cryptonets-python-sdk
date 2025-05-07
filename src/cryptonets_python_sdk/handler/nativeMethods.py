@@ -732,7 +732,6 @@ class NativeMethods(object):
             p_buffer_result = c_char_p()
             p_buffer_result_length = c_int()
             config_object_default = {"face_thresholds_rem_bad_emb_default": 1.24, "face_thresholds_med": 1.24,"conf_score_thr_enroll":0.2}
-            print("config_object_default",config_object_default)
             if config_object and hasattr(config_object, 'get_config_param') and config_object.get_config_param():
                 config_param_str = config_object.get_config_param()
                 config_from_object = json.loads(config_param_str)
