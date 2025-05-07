@@ -228,7 +228,7 @@ class NativeMethods(object):
         # Call the function and decode the byte string to print
         version_bytes = self._spl_so_face.privid_get_version()
         version_str = version_bytes.decode('utf-8')  # Decoding to string
-        print(version_str)
+        print(f"privid_fhe version : {version_str}")
 
         if not return_type:
             raise Exception("Wrong API_KEY or Server URL.") 
