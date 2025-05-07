@@ -1,3 +1,5 @@
+from typing import Union, List
+
 class FaceEnrollPredictResult:
     CALL_STATUS_SUCCESS = 0
     CALL_STATUS_ERROR = -1
@@ -8,7 +10,6 @@ class FaceEnrollPredictResult:
         puid=None,
         guid=None,
         token=None,
-        code=None,
         score=None,
         status=CALL_STATUS_ERROR,
         message="",
@@ -22,10 +23,9 @@ class FaceEnrollPredictResult:
         self._token = token
         self._status = status
         self._message = message
-        self._code = code
         self._score = score
-        self._api_message = api_message,
-        self._api_status = api_status,
+        self._api_message = api_message
+        self._api_status = api_status
         self._enroll_performed = enroll_performed
 
     @property 
@@ -45,7 +45,7 @@ class FaceEnrollPredictResult:
         return self._api_message
     
     @property
-    def api_status(self) -> str:
+    def api_status(self) -> int:
         """
         Returns the status received from the API of the operation
         0 - Success
@@ -108,23 +108,14 @@ class FaceEnrollPredictResult:
         Returns the message of the operation
         """
         return self._message
+    
     @property
     def score(self) -> str:
         """
-        Returns the message of the operation
+        Returns the score obtained from server
         """
-        return self._score
-    @property
-    def code(self) -> int:
-        """
-        Returns The field 'code' is a code or error value returned of the operation, this is needed t distinguish
-        between what data is returned by a successful enroll or predict calls from the success of the call itself.
-        A call is successful if it returned an intelligible JSON.
-        TODO: 1) the field 'code '  to be split in 2 fields after the fix the spec in c/c++ code
-        TODO: 2) pickup a proper name like to express the nature of these codes like error_code, validation_code etc.
-        """
-        return self._code
-
+        return self._score        
+    
     @enroll_level.setter
     def enroll_level(self, value):
         self._enroll_level = value
@@ -148,11 +139,7 @@ class FaceEnrollPredictResult:
     @message.setter
     def message(self, value):
         self._message = value
-
-    @code.setter
-    def code(self, value):
-        self._code = value
-
+    
     @api_message.setter
     def api_message(self, value):
         self._api_message = value
@@ -164,3 +151,31 @@ class FaceEnrollPredictResult:
     @enroll_performed.setter
     def enroll_performed(self, value):
         self._enroll_performed = value
+
+    @staticmethod
+    def print(result: Union['FaceEnrollPredictResult', List['FaceEnrollPredictResult']]) -> None:
+        """
+        Print the result of the enroll or predict operation
+        
+        Args:
+            result (Union[FaceEnrollPredictResult, List[FaceEnrollPredictResult]]): The result of the operation
+        """
+        if isinstance(result, list):
+            print("FaceEnrollPredictResult  List:")
+            for item in result:
+                print(item)
+        elif isinstance(result, FaceEnrollPredictResult):
+            print("FaceEnrollPredictResult  Item:")
+            print(f"Status: {result.status}")
+            print(f"Message: {result.message}")
+            print(f"Enroll Level: {result.enroll_level}")
+            print(f"PUID: {result.puid}")
+            print(f"GUID: {result.guid}")
+            print(f"Token: {result.token}")
+            print(f"Score: {item.score}")
+            print(f"API Status: {result.api_status}")
+            print(f"API Message: {result.api_message}")
+            print(f"Enroll Performed: {result.enroll_performed}")
+        else:
+            print("Argument is not a `FaceEnrollPredictResult` type.")
+    
