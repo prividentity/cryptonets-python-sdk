@@ -36,7 +36,7 @@ class FaceObjectResult(object):
         """
         Returns the predicted age of the image
 
-        Age value might be in the float format as it is returned from DNN model
+        Age value is in the float format that it is returned from DNN model
         """
         return self._age
 
