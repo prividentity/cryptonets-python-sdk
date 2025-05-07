@@ -6,7 +6,6 @@ Version 1.3.12 (2025-05-07)
 
 Updates:
 
-* Now native library files are downloaded into their own directory under `cryptonets_python_sdk/handler/lib/package_version`.
 * Remove all obsolete configuration parameters :
  - CONF_FAST_PROCESS
  - INPUT_TYPE
@@ -32,11 +31,13 @@ Updates:
 * Remove billing methods and related parameters.
 * Remove obsolete caching functionality.
 * Remove obsolete `tf_num_thread` FaceFactor constructor argument.
-* Remove obsolete tests. new set of tests will be added in the coming version 2.0.0.
+* Remove obsolete tests. A new set of tests will be added in the coming version 2.0.0.
 * Change the binaries download location to be versioned, where each version download binaries from its own directory. The models download location is not chanegd and and they are shared by all versions. 
-* Fix various potentials memory leaks and bugs and improve some parts of the code base.
+* Fix various potential memory leaks and bugs and improve some parts of the code base.
 * Fix a bug in compare that discards the collection_name parameter.
-* Add a complete set of basic sampels of all methods under samples folder.
+* Fix bug occurring in some FaceFactor methods when config is not set.
+* Fix and upgrade `face_iso` method.
+* Add a complete set of basic samples of all methods under samples folder.
 * Expose `delete` method to the `Facefactor` interface.
 * Remove obsolete `code`` field from `FaceEnrollPredictResult`.
 * Add a convinience `print` method to th class `FaceEnrollPredictResult`.
