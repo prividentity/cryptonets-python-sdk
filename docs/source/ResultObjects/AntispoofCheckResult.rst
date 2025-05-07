@@ -8,4 +8,4 @@ AntispoofCheckResult
 This section covers how to use the AntispoofCheck Result Object.
 
 .. autoclass:: AntispoofCheckResult
-   :members: status, message, is_antispoof
+   :members: status, message, is_spoof

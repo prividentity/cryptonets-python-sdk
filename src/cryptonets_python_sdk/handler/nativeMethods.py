@@ -7,33 +7,64 @@ from typing import Any
 import numpy as np
 from PIL import Image
 import platform
-from ..settings.cacheType import CacheType
-from ..settings.configuration import ConfigObject
+from ..settings.configuration import ConfigObject, PARAMETERS
 from ..settings.loggingLevel import LoggingLevel
 import boto3
 import botocore
 import tqdm
 import subprocess
 import platform
+import importlib
+import importlib.metadata
 class NativeMethods(object):
+    EmptyConfig = "{}"
+    @staticmethod
+    def get_package_version(package_name: str) -> str:
+        """Get the version of a package installed in the current environment.
+
+        Args:
+            package_name: Name of the package
+
+        Returns:
+            str: Version of the package, or ValueError if package not found
+        """
+        if not package_name:
+            raise ValueError("Package name cannot be empty")
+            
+        # Try importlib.metadata (Python 3.8+)
+        try:
+            return importlib.metadata.version(package_name)
+        except (importlib.metadata.PackageNotFoundError, AttributeError):
+            pass
+            
+        # Fall back to pkg_resources for compatibility with older Python versions
+        try:
+            import pkg_resources
+            return pkg_resources.get_distribution(package_name).version
+        except (pkg_resources.DistributionNotFound, ImportError):
+            pass            
+        raise ValueError(f"Package '{package_name}' not found")
+
     def __init__(
         self,
         api_key: str,
         server_url: str,
-        local_storage_path: str,
-        logging_level: LoggingLevel,
-        tf_num_thread: int,
-        cache_type: CacheType,
+        logging_level: LoggingLevel,        
         config_object: ConfigObject = None,        
     ):
         try:
             self._config_object = config_object
             self._server_url_string=server_url
             self._api_key_string=api_key
-            self._local_lib_path = pathlib.Path(__file__).parent.joinpath("lib")
+            self._package_version = NativeMethods.get_package_version("cryptonets-python-sdk")
+            model_storage_path = pathlib.Path(__file__).parent.joinpath("lib")                
+            model_storage_path.mkdir(parents=True, exist_ok=True)
+            self._local_lib_path = pathlib.Path(__file__).parent.joinpath("lib", self._package_version)
             self._local_lib_path.mkdir(parents=True, exist_ok=True)
-            # set local lib path as models download directory
+            # set local lib path as library download directory
             self._local_lib_path_str = str(self._local_lib_path.resolve())        
+            # set model storage path as model download directory
+            self._model_storage_path_str = str(model_storage_path.resolve())
             self._check_and_download_files(platform.system())
 
             if platform.system() == "Linux":
@@ -42,7 +73,7 @@ class NativeMethods(object):
                 self._load_windows_libraries()
             elif platform.system() == "Darwin":
                 self._load_macos_libraries()
-            self._initialize_properties(tf_num_thread, api_key, server_url, local_storage_path, logging_level, cache_type)
+            self._initialize_properties(api_key, server_url, logging_level)
             self._face_setup()
         except Exception as e:
             print("Error ", e)
@@ -77,7 +108,7 @@ class NativeMethods(object):
     
     def _download_from_s3(self, s3_client, bucket, file_name, local_path):
         with open(local_path, 'wb') as f:
-            response = s3_client.get_object(Bucket=bucket, Key="1.3.11/"+file_name)
+            response = s3_client.get_object(Bucket=bucket, Key=self._package_version+"/"+file_name)
             file_size = response['ContentLength']
 
             with tqdm.tqdm(total=file_size, unit='B', unit_scale=True, desc=file_name) as bar:
@@ -114,13 +145,10 @@ class NativeMethods(object):
         self._spl_so_face = ctypes.CDLL(self._library_path)
 
 
-    def _initialize_properties(self, tf_num_thread, api_key, server_url, local_storage_path, logging_level, cache_type):
-        self._tf_num_thread = tf_num_thread
+    def _initialize_properties(self, api_key, server_url,logging_level):
         self._api_key = bytes(api_key, "utf-8")
         self._server_url = bytes(server_url, "utf-8")
         self._logging_level = logging_level
-        self._local_storage_path = local_storage_path
-        self._cache_type = cache_type
 
     def update_config(self, config_object):
         self._config_object = config_object
@@ -151,8 +179,7 @@ class NativeMethods(object):
         self._spl_so_face.handle = c_void_p()  # TODO rename to session
         # create a session
 
-        def named_urls(path : str ,model_id : int):
-            route = path
+        def named_urls(route : str ,model_id : int):
             # the default collection is FACE3_4
             if (route == "default" or route == ""): 
                 route = "FACE3_4"
@@ -161,19 +188,15 @@ class NativeMethods(object):
                         "base_url": self._server_url_string,
                         "predict": f"{self._server_url_string}/{route}/predict",
                         "enroll": f"{self._server_url_string}/{route}/enroll",
-                        "deleteUser": f"{self._server_url_string}/{route}/deleteUser",                      
-                        "syncUUID": f"{self._server_url_string}/syncUUID"  
+                        "deleteUser": f"{self._server_url_string}/{route}/deleteUser"
                     }
                 }
             else:
-                return { 
-                     
+                return {
                     "named_urls": {
-                        "base_url": self._server_url_string,
                         "predict": f"{self._server_url_string}/{route}/predict",
                         "enroll": f"{self._server_url_string}/{route}/enroll",
-                        "deleteUser": f"{self._server_url_string}/{route}/deleteUser",                       
-                        "syncUUID": f"{self._server_url_string}/syncUUID"  
+                        "deleteUser": f"{self._server_url_string}/{route}/deleteUser"
                     },
                     "embedding_model_id": model_id
                 }
@@ -206,7 +229,7 @@ class NativeMethods(object):
         # Call the function and decode the byte string to print
         version_bytes = self._spl_so_face.privid_get_version()
         version_str = version_bytes.decode('utf-8')  # Decoding to string
-        print(version_str)
+        print(f"privid_fhe version : {version_str}")
 
         if not return_type:
             raise Exception("Wrong API_KEY or Server URL.") 
@@ -221,10 +244,10 @@ class NativeMethods(object):
         ]  # const int user_config_length
         
 
-        # initialize the library
-        c_local_lib_path_param = c_char_p(bytes(self._local_lib_path_str, "utf-8"))
-        c_local_lib_path_len_param = c_int(len(self._local_lib_path_str))
-        self._spl_so_face.privid_initialize_lib(c_local_lib_path_param,c_local_lib_path_len_param)
+        # initialize the library and set the model storage path
+        c_model_path_param = c_char_p(bytes(self._model_storage_path_str, "utf-8"))
+        c_model_path_len_param = c_int(len(self._model_storage_path_str))
+        self._spl_so_face.privid_initialize_lib(c_model_path_param,c_model_path_len_param)
         ##############################################################################################
         # (ok) PRIVID_API_ATTRIB bool privid_set_configuration(void *session_ptr, const char *user_config,
         # const int user_config_length);
@@ -247,8 +270,6 @@ class NativeMethods(object):
             )    
         elif self._config_object and self._config_object.get_config_param():
             config_dict = json.loads(self._config_object.get_config_param())
-            config_dict["cache_type"] = self._cache_type.value
-            config_dict["local_storage_path"] = self._local_storage_path
             config_dict["skip_antispoof"] = True
             config_dict = json.dumps(config_dict)
             c_config_param = c_char_p(bytes(config_dict, "utf-8"))
@@ -324,9 +345,16 @@ class NativeMethods(object):
         ##############################################################################################
 
         ##############################################################################################
-        # (ok) PRIVID_API void privid_free_char_buffer(char **buffer);
+        # (ok) PRIVID_API void privid_free_char_buffer(char* buffer);
         ##############################################################################################
-        self._spl_so_face.privid_free_char_buffer.argtypes = [c_char_p]  # char **buffer        
+        self._spl_so_face.privid_free_char_buffer.argtypes = [c_char_p]  # char* buffer        
+        ##############################################################################################
+
+
+        ##############################################################################################
+        # (ok) PRIVID_API void privid_free_buffer(void* buffer);
+        ##############################################################################################
+        self._spl_so_face.privid_free_buffer.argtypes = [c_void_p]          
         ##############################################################################################
 
         ##############################################################################################
@@ -394,6 +422,24 @@ class NativeMethods(object):
         self._spl_so_face.privid_estimate_age.restype = c_int32
 
         ##############################################################################################
+        # PRIVID_API_ATTRIB int32_t privid_estimate_age_with_stdd(
+        # void *session_ptr, const uint8_t* image_bytes, const int image_width,
+        # const int image_height,const char *user_config, const int user_config_length,
+        # char **result_out, int *result_out_length);
+        ##############################################################################################
+        self._spl_so_face.privid_estimate_age_with_stdd.argtypes = [
+            c_void_p,  # void *session_ptr
+            POINTER(c_uint8),  # const uint8_t* image_bytes
+            c_int,  # const int image_width
+            c_int,  # const int image_height,
+            c_char_p,  # const char *user_config,
+            c_int,  # const int user_config_length
+            POINTER(c_char_p),  # char **result_out
+            POINTER(c_int),
+        ]  # int *result_out_length
+        self._spl_so_face.privid_estimate_age_with_stdd.restype = c_int32
+
+        ##############################################################################################
         # PRIVID_API_ATTRIB int32_t privid_face_iso(
         # void *session_ptr, const uint8_t *image_bytes, const int image_width, const int image_height,
         # const char *user_config, const int user_config_length, char **result_out, int *result_out_length,
@@ -415,19 +461,6 @@ class NativeMethods(object):
         ##############################################################################################
 
         ##############################################################################################
-        # (ok) PRIVID_API_ATTRIB bool privid_set_billing_record_threshold(
-        #         void *session_ptr, const char *billing_config,
-        #         const int billing_config_length);
-        ##############################################################################################
-        self._spl_so_face.privid_set_billing_record_threshold.argtypes = [
-            c_void_p,  # void *session_ptr
-            c_char_p,  # const char *billing_config
-            c_int,
-        ]  # const int billing_config_length
-        self._spl_so_face.privid_set_billing_record_threshold.restype = c_bool
-        ##############################################################################################
-
-        ##############################################################################################
         # PRIVID_API_ATTRIB int32_t privid_anti_spoofing(
         # void* session_ptr, const uint8_t* image_bytes, const int image_width,
         # const int image_height, const char* user_config, const int user_config_length,
@@ -445,19 +478,7 @@ class NativeMethods(object):
         ]  # int *result_out_length
         self._spl_so_face.privid_anti_spoofing.restype = c_int32
         ##############################################################################################
-
-        if self._config_object and self._config_object.get_config_billing_param():
-            c_config_param = c_char_p(
-                bytes(self._config_object.get_config_billing_param(), "utf-8")
-            )
-            c_config_param_len = c_int(
-                len(self._config_object.get_config_billing_param())
-            )
-            self._spl_so_face.privid_set_billing_record_threshold(
-                self._spl_so_face.handle, c_config_param, c_config_param_len
-            )
-        ##############################################################################################
-
+        
         ##############################################################################################
         # PRIVID_API_ATTRIB int32_t privid_doc_scan_face(
         # void *session_ptr, const char *user_config, const int user_config_length,
@@ -599,8 +620,8 @@ class NativeMethods(object):
                 )
                 c_config_param_len = c_int(len(config_object.get_config_param()))
             else:
-                c_config_param = c_char_p(bytes("", "utf-8"))
-                c_config_param_len = c_int(0)
+                c_config_param = c_char_p(bytes(NativeMethods.EmptyConfig, "utf-8"))
+                c_config_param_len = c_int(len(NativeMethods.EmptyConfig))
 
             self._spl_so_face.privid_face_iso(
                 self._spl_so_face.handle,
@@ -621,33 +642,45 @@ class NativeMethods(object):
                 )
             output_json = c_result.value[: c_result_len.value].decode()
             output_json = json.loads(output_json)
+            face_iso_info = output_json.get("face_iso", {}).get("face_image", {}).get("info", {})
+            output_json["iso_image_height"] = im_height = face_iso_info.get("height", 0)
+            output_json["iso_image_width"] = im_width = face_iso_info.get("width", 0)
+            output_json["iso_image_channels"] = im_channels = face_iso_info.get("channels", 0)
+            output_json["confidence"] = im_channels = face_iso_info.get("channels", 0)
+            
             self._spl_so_face.privid_free_char_buffer(c_result)
+            output_image = None
             if (
                 c_iso_image_len.value
-                and "iso_image_width" in output_json
-                and "iso_image_height" in output_json
+                and im_height > 0
+                and im_width > 0
+                and im_channels > 0
             ):
-                output_json["image"] = Image.fromarray(
+                output_image = Image.fromarray(
                     np.uint8(
                         np.reshape(
                             c_iso_image[: c_iso_image_len.value],
                             (
-                                output_json.get("iso_image_height", 0),
-                                output_json.get("iso_image_width", 0),
-                                output_json.get("iso_image_channels", 0),
+                                im_height,
+                                im_width,
+                                im_channels
                             ),
                         )
                     )
                 ).convert(
-                    "RGBA" if output_json.get("iso_image_channels", 0) == 4 else "RGB"
+                    "RGBA" if im_channels == 4 else "RGB"
                 )
+                # Release the memory of the image returned by the API
+                self._free_image(c_iso_image)                
             else:
                 # Empty Image
-                output_json["image"] = Image.new("RGB", (800, 1280), (255, 255, 255))
+                output_image= Image.new("RGB", (800, 1280), (255, 255, 255))
+
+            output_json["image"]= output_image
             return output_json
         except Exception as e:
             print(e)
-            return False
+            return False    
 
     def delete(self, puid: str,config_object) -> Any:
         puid = bytes(puid, "utf-8")
@@ -659,8 +692,8 @@ class NativeMethods(object):
                 )
                 c_config_param_len = c_int(len(config_object.get_config_param()))
         else:
-                c_config_param = c_char_p(bytes("", "utf-8"))
-                c_config_param_len = c_int(0)
+               c_config_param = c_char_p(bytes(NativeMethods.EmptyConfig, "utf-8"))
+               c_config_param_len = c_int(len(NativeMethods.EmptyConfig))
         self._spl_so_face.privid_user_delete(
             self._spl_so_face.handle,
             c_config_param,
@@ -710,7 +743,6 @@ class NativeMethods(object):
             p_buffer_result = c_char_p()
             p_buffer_result_length = c_int()
             config_object_default = {"face_thresholds_rem_bad_emb_default": 1.24, "face_thresholds_med": 1.24,"conf_score_thr_enroll":0.2}
-            print("config_object_default",config_object_default)
             if config_object and hasattr(config_object, 'get_config_param') and config_object.get_config_param():
                 config_param_str = config_object.get_config_param()
                 config_from_object = json.loads(config_param_str)
@@ -721,11 +753,7 @@ class NativeMethods(object):
                 config_param_str = json.dumps(config_from_object)
             else:
                 config_param_str = json.dumps(config_object_default)
-            
-            try:
-                config_param_str = json.dumps(config_object_default)
-            except TypeError as e:
-                raise ValueError(f"Failed to serialize config_dict to JSON: {e}")
+             
             c_config_param = c_char_p(bytes(config_param_str, "utf-8"))
             c_config_param_len = c_int(len(config_param_str))
 
@@ -804,9 +832,9 @@ class NativeMethods(object):
                 byref(c_result),
                 byref(c_result_out),
             )
-            # reelase the memory of the unused image returned by the API
-            ptr = cast(best_input_out, c_char_p)
-            self._spl_so_face.privid_free_char_buffer(ptr)
+            # Release the memory of the unused image returned by the API
+            self._free_image(best_input_out)      
+            
 
             len_ = c_result_out.value
             output_json_str = c_result.value[:len_].decode()           
@@ -891,8 +919,8 @@ class NativeMethods(object):
                 )
                 c_config_param_len = c_int(len(config_object.get_config_param()))
             else:
-                c_config_param = c_char_p(bytes(json.dumps({}), "utf-8"))
-                c_config_param_len = c_int(2)
+               c_config_param = c_char_p(bytes(NativeMethods.EmptyConfig, "utf-8"))
+               c_config_param_len = c_int(len(NativeMethods.EmptyConfig))
 
             self._spl_so_face.privid_anti_spoofing(
                 self._spl_so_face.handle,
@@ -958,6 +986,7 @@ class NativeMethods(object):
             if not c_result.value or not c_result_len.value:
                 raise Exception("Something went wrong. Couldn't process the image for Document.")
             output_json = json.loads(c_result.value[:c_result_len.value].decode())
+            self._spl_so_face.privid_free_char_buffer(c_result)
 
             if output_json.get("doc_face",{}).get("document_data",{}).get("document_validation_status",-1)==0:
                 doc_info = output_json['doc_face']['document_data']['cropped_document_image']['info']
@@ -971,10 +1000,14 @@ class NativeMethods(object):
                 output_json["doc_face"]["cropped_face"] = np.uint8(np.reshape(cropped_face_bytes, (
                         face_info['height'], face_info['width'], face_info['channels']
                     )))
+
+            self._free_image(c_cropped_doc)
+            self._free_image(c_cropped_face)
             return output_json
         except Exception as e:
             print("Error",e)
             return False
+        
     def estimate_age(self, image_data: np.array, config_object: ConfigObject = None) -> Any:
             try:
                 img = image_data
@@ -986,29 +1019,49 @@ class NativeMethods(object):
 
                 c_result = c_char_p()
                 c_result_len = c_int()
+                with_model_stdd = False
+                config_json = None
+
                 if config_object and config_object.get_config_param():
+                   with_model_stdd =  config_object._get_param_value(PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD)     
+                   config_json = config_object.get_config_param()                
+                
+                if config_object and config_json:
                     # Load existing config from the object
-                    config_dict = json.loads(config_object.get_config_param())
+                    config_dict = json.loads(config_json)
                     # Ensure disable_enroll_mf is always added
-                    config_dict["disable_enroll_mf"] = True
+                    config_dict["skip_antispoof"] = True
                     config_dict["conf_score_thr_enroll"]=0.2                    
                 else:
                     # Create a new config dict with disable_enroll_mf set to True
-                    config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}
+                    config_dict = {"skip_antispoof": True,"conf_score_thr_enroll":0.2}                    
                 
                 config_json = json.dumps(config_dict)
                 c_config_param = c_char_p(bytes(config_json, "utf-8"))
                 c_config_param_len = c_int(len(config_json))
-                success = self._spl_so_face.privid_estimate_age(
-                    self._spl_so_face.handle,
-                    c_p_buffer_images_in,
-                    c_int(im_width),
-                    c_int(im_height),
-                    c_config_param,
-                    c_config_param_len,
-                    byref(c_result),
-                    byref(c_result_len),
-                )
+
+                if with_model_stdd is not None and with_model_stdd == True:
+                    success = self._spl_so_face.privid_estimate_age_with_stdd(
+                        self._spl_so_face.handle,
+                        c_p_buffer_images_in,
+                        c_int(im_width),
+                        c_int(im_height),
+                        c_config_param,
+                        c_config_param_len,
+                        byref(c_result),
+                        byref(c_result_len)
+                    )
+                else:
+                    success = self._spl_so_face.privid_estimate_age(
+                        self._spl_so_face.handle,
+                        c_p_buffer_images_in,
+                        c_int(im_width),
+                        c_int(im_height),
+                        c_config_param,
+                        c_config_param_len,
+                        byref(c_result),
+                        byref(c_result_len)
+                    )
 
                 if not success:
                     raise Exception("privid_estimate_age call failed")
@@ -1026,3 +1079,9 @@ class NativeMethods(object):
             except Exception as e:
                 print(e)
                 return False
+
+    def _free_image(self, image_buffer):
+        if image_buffer and image_buffer.contents:
+           # Dereference the pointer to get the actual buffer pointer
+           ptr = cast(image_buffer,c_void_p)
+           self._spl_so_face.privid_free_buffer(ptr)

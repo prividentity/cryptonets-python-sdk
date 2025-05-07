@@ -14,7 +14,6 @@ from ..helper.result_objects.faceValidationResult import FaceValidationResult
 from ..helper.result_objects.isoFaceResult import ISOFaceResult
 from ..helper.result_objects.antispoofCheckResult import AntispoofCheckResult
 from ..helper.utils import FaceValidationCode
-from ..settings.cacheType import CacheType
 from ..settings.configuration import ConfigObject, PARAMETERS
 from ..settings.loggingLevel import LoggingLevel
 
@@ -24,20 +23,14 @@ class Face(metaclass=Singleton):
         self,
         api_key: str,
         server_url: str,
-        local_storage_path: str,
-        logging_level: LoggingLevel,
-        tf_num_thread: int,
-        cache_type: CacheType,
+        logging_level: LoggingLevel,        
         config_object: ConfigObject = None,
     ):
         self.message = Message()
         self.face_factor_processor = NativeMethods(
             api_key=api_key,
             server_url=server_url,
-            local_storage_path=local_storage_path,
-            logging_level=logging_level,
-            tf_num_thread=tf_num_thread,
-            cache_type=cache_type,
+            logging_level=logging_level,            
             config_object=config_object,
         )
 
@@ -66,14 +59,10 @@ class Face(metaclass=Singleton):
                 return FaceEnrollPredictResult(
                     message=self.message.EXCEPTION_ERROR_ENROLL
                 )
-            else:
-                # we received a json response and thus call is successful
-                call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS
-
+            
             c_response=json_data.get("enroll_onefa", {})
             api_response=c_response.get("api_response", {})
             face_validation_data=c_response.get("face_validation_data", {})
-            api_response=c_response.get("api_response", {})
             result =  FaceEnrollPredictResult(
                 status=call_status,
                 enroll_level=json_data.get("enroll_level", None),
@@ -83,8 +72,8 @@ class Face(metaclass=Singleton):
                 score=api_response.get("score", None),
                 message=self.message.get_message(int(face_validation_data.get("face_validation_status",0)))
             )
-            result.api_message=api_response.get("message", "")
-            result.api_status=api_response.get("status",-1)
+            result.api_message=api_response.get("message", None)
+            result.api_status=api_response.get("status",None)
             result.enroll_performed=c_response.get("enroll_performed", False)
             # If the face was successfully enrolled no need to show any message about face validation 
             # status unlike the native SDK and return a success status
@@ -145,69 +134,85 @@ class Face(metaclass=Singleton):
             face_validation_data=c_response.get("face_validation_data", {})            
             message = self.message.get_message(face_validation_data.get("face_validation_status", 0))
             # Did we have a successful predict
-            predicted = False
-            api_status = api_response.get("status",-1)
-            puid=api_response.get("puid", None),
-            guid=api_response.get("guid", None),
-            predicted = api_status == 0 and self._valid_uuid(puid) and self._valid_uuid(guid)           
+            predicted = False   
+            res_enroll_level = json_data.get("enroll_level", None)     
+            api_puid=api_response.get("puid", None)
+            api_guid=api_response.get("guid", None)
+            res_api_status=api_response.get("status", None)
+            res_api_message=api_response.get("message", None)
+            api_token=api_response.get("token", None)
+            api_score=api_response.get("score", None)
+            
+            predicted = res_api_status == 0 and self._valid_uuid(api_puid) and self._valid_uuid(api_guid)           
             result_status =  0 if relax_face_validation or predicted else face_validation_data.get("face_validation_status",0)
             if face_validation_data.get("face_validation_status",0)!=0:
                 if config_object and json.loads(config_object.get_config_param()).get("neighbors",0)>0:
                         if api_response.get("PI_list", []):
                             return [FaceEnrollPredictResult(
                             status=face_validation_data.get("face_validation_status",0),
-                            enroll_level=json_data.get("enroll_level", None),
-                            puid=api_response.get("puid", None),
-                            guid=api_response.get("guid", None),
-                            token=api_response.get("token", None),
-                            score=api_response.get("score", None),
+                            enroll_level=res_enroll_level,
+                            puid=api_puid,
+                            guid=api_guid,
+                            token=api_token,
+                            score=api_score,
+                            api_status=res_api_status,
+                            api_message=res_api_message,
                             message=  "" if relax_face_validation or predicted else message                            
                             )]
                         else:                            
                             return [FaceEnrollPredictResult(
-                                    status=api_response.get("status", "Something went wrong"),
-                                    enroll_level=json_data.get("enroll_level", None),
+                                    status=api_response.get("status", FaceEnrollPredictResult.CALL_STATUS_ERROR),
+                                    enroll_level=res_enroll_level,
                                     puid= None,
                                     guid=None,
                                     score= None,
+                                    api_status=res_api_status,
+                                    api_message=res_api_message,
                                     message=api_response.get("message", "Something went wrong"))]                            
                 else:
                      return FaceEnrollPredictResult(
                         status=result_status,
-                        enroll_level=json_data.get("enroll_level", None),
-                        puid=api_response.get("puid", None),
-                        guid=api_response.get("guid", None),
-                        token=api_response.get("token", None),
-                        score=api_response.get("score", None),
+                        enroll_level=res_enroll_level,
+                        puid=api_puid,
+                        guid=api_guid,
+                        token=api_token,
+                        score=api_score,
+                        api_status=res_api_status,
+                        api_message=res_api_message,
                         message=  "Ok" if relax_face_validation or predicted else message
                         )
             if config_object and json.loads(config_object.get_config_param()).get("neighbors",0)>0:
                 if api_response.get("PI_list", []):
                     return [FaceEnrollPredictResult(
                         status=call_status,
-                        enroll_level=json_data.get("enroll_level", None),
+                        enroll_level=res_enroll_level,
                         puid=person.get("puid", None),
                         guid=person.get("guid", None),
                         score=person.get("score", None),
-                        message=api_response.get("message", "Something went wrong")
+                        message=api_response.get("message", "Something went wrong")                        
                     ) for person in api_response.get("PI_list", [])]
                 else:
                    return [FaceEnrollPredictResult(
                         status=api_response.get("status", "Something went wrong"),
-                        enroll_level=json_data.get("enroll_level", None),
+                        enroll_level=res_enroll_level,
                         puid= None,
                         guid=None,
                         score= None,
+                        api_status=res_api_status,
+                        api_message=res_api_message,
                         message=api_response.get("message", "Something went wrong"))]
             else:
                  return FaceEnrollPredictResult(
                     status=call_status,
-                    enroll_level=json_data.get("enroll_level", None),
-                    puid=api_response.get("puid", None),
-                    guid=api_response.get("guid", None),
-                    token=api_response.get("token", None),
-                    score=api_response.get("score", None),
-                    message=api_response.get("message", "")
+                    enroll_level=res_enroll_level,
+                    puid=api_puid,
+                    guid=api_guid,
+                    token=api_token,
+                    score=api_score,
+                    message=res_api_message,
+                    api_status=res_api_status,
+                    api_message=res_api_message
+                    
                 )
         except Exception as e:
             print(e, traceback.format_exc())
@@ -431,6 +436,7 @@ class Face(metaclass=Singleton):
                     message=_message,
                     top_left_coordinate=_top_left,
                     bottom_right_coordinate=_bottom_right,
+                    age_confidence_score=_age_confidence_score 
                 )
 
             return face_age_result_object
@@ -448,21 +454,29 @@ class Face(metaclass=Singleton):
             )
             if not json_data:
                 return ISOFaceResult(message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)
+            
+            face_iso_data=json_data.get("face_iso",{})
+            call_status=json_data.get("call_status",{}).get("return_status",-1)
 
-            if json_data.get("status", -1) != 0:
-                return ISOFaceResult(
-                    status=json_data.get("status", -1),
-                    message=self.message.EXCEPTION_ERROR_GET_ISO_FACE,
-                )
-
+            if call_status != 0:
+                error_message = json_data.get("call_status", {}).get("return_message", self.message.EXCEPTION_ERROR_GET_ISO_FACE)
+                return ISOFaceResult(status=call_status, message=error_message)            
+            
+            returned_status = face_iso_data.get("face_validation_data",{}).get("face_validation_status", -1)
+            score = face_iso_data.get("face_validation_data",{}).get("face_confidence_score", -1)
+            if returned_status != 0:
+               returned_message = Message.APP_MESSAGES.get(returned_status, "Unknown status code")  
+            else:
+               returned_message = "OK"
+           
             return ISOFaceResult(
                 iso_image_width=json_data.get("iso_image_width", None),
                 iso_image_height=json_data.get("iso_image_height", None),
                 iso_image_channels=json_data.get("iso_image_channels", None),
-                confidence=json_data.get("confidence", None),
+                confidence=score,
                 image=json_data.get("image", None),
-                status=json_data.get("status", -1),
-                message=json_data.get("message", "OK"),
+                status=returned_status,
+                message=returned_message,
             )
 
         except Exception as e:
@@ -476,19 +490,19 @@ class Face(metaclass=Singleton):
 
                 # Validate response
                 if json_data is None:
-                    return AntispoofCheckResult(status=-100, message="No response from antispoofing processor.", is_antispoof=False)
+                    return AntispoofCheckResult(status=-100, message="No response from antispoofing processor.", is_spoof=False)
 
                 # Check if there is an error in processing
                 if json_data.get("call_status", {}).get("return_status",0) != 0:
                     error_message = json_data.get("call_status", {}).get("return_message", "Error during antispoofing check.")
-                    return AntispoofCheckResult(status=json_data.get("call_status", {}).get("return_status"), message=error_message, is_antispoof=False)
+                    return AntispoofCheckResult(status=json_data.get("call_status", {}).get("return_status"), message=error_message, is_spoof=False)
                 
                 if json_data.get("antispoofing", 0) in [-1,-2,-3,-4,-5,-6,-100]:
-                    return AntispoofCheckResult(status=json_data.get("antispoofing", 0), message=self.message.APP_MESSAGES.get(json_data.get("antispoofing", 0), "Error during antispoofing check."), is_antispoof=False)
+                    return AntispoofCheckResult(status=json_data.get("antispoofing", 0), message=self.message.APP_MESSAGES.get(json_data.get("antispoofing", 0), "Error during antispoofing check."), is_spoof=False)
                 # Check antispoofing result
                 is_spoof_detected = json_data.get("antispoofing", 0) == 1
-                return AntispoofCheckResult(status=0, message="No spoofing detected." if not is_spoof_detected else "Spoofing detected.", is_antispoof=is_spoof_detected)
+                return AntispoofCheckResult(status=0, message="No spoofing detected." if not is_spoof_detected else "Spoofing detected.", is_spoof=is_spoof_detected)
 
             except Exception as e:
                 print("Exception occurred:", e, traceback.format_exc())
-                return AntispoofCheckResult(status=-100, message="Exception occurred during antispoofing check.", is_antispoof=False)
+                return AntispoofCheckResult(status=-100, message="Exception occurred during antispoofing check.", is_spoof=False)

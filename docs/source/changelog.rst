@@ -1,6 +1,62 @@
 Changelog
 =========
 
+Version 1.3.12 (2025-05-07)
+-----------------------------
+
+Updates:
+
+* Remove all obsolete configuration parameters :
+ - CONF_FAST_PROCESS
+ - INPUT_TYPE
+ - BLUR_THRESHOLD_DOC_LEVEL_1
+ - BLUR_THRESHOLD_DOC_LEVEL_2
+ - THRESHOLD_VERTICAL_ENROLL
+ - THRESHOLD_VERTICAL_PREDICT
+ - IMAGE_BORDER
+ - IMAGE_PRE_PROC
+ - THRESHOLD_GLASS
+ - THRESHOLD_MASK
+ - FACE_THRESHOLD_RIGHT
+ - FACE_THRESHOLD_LEFT
+ - FACE_THRESHOLD_VERTICAL
+ - DOCUMENT_FACE_CHECK_VALIDITY
+ - DOCUMENT_CHECK_VALIDITY
+ - DOCUMENT_FACE_PREDICT
+ - ENABLE_DOC_PERSPECTIVE_CORRECTION
+ - ENROLL_ALLOW_EYE_GLASS
+ - FACE_DETECT_PREFERRED_SIZE
+ - FACE_DETECT_MAX_OUT_IMAGE_SIZE
+
+* Remove billing methods and related parameters.
+* Remove obsolete caching functionality.
+* Remove obsolete `tf_num_thread` FaceFactor constructor argument.
+* Remove obsolete tests. A new set of tests will be added in the coming version 2.0.0.
+* Change the binaries download location to be versioned, where each version download binaries from its own directory. The models download location is not chanegd and and they are shared by all versions. 
+* Fix various potential memory leaks and bugs and improve some parts of the code base.
+* Fix a bug in compare that discards the collection_name parameter.
+* Fix bug occurring in some FaceFactor methods when config is not set.
+* Fix and upgrade `face_iso` method.
+* Add a complete set of basic samples of all methods under samples folder.
+* Expose `delete` method to the `Facefactor` interface.
+* Remove obsolete `code`` field from `FaceEnrollPredictResult`.
+* Add a convinience `print` method to th class `FaceEnrollPredictResult`.
+* Update documentation notable the  AdvancedUsage samples and make it more complete and uptodate.
+* Update native library to '25.05.07-6491ced'.
+
+
+Version 1.3.12b1 (2025-04-23)
+-----------------------------
+
+Updates:
+
+* Add new configuration parameter `USE_AGE_ESTIMATION_WITH_MODEL_STDD` that affect the age prediction method.
+  The parameter have the value `False` by default.
+  If `USE_AGE_ESTIMATION_WITH_MODEL_STDD` set to `True`, it will return a standard deviation of the age estimation based on the model data.
+* Remove obsolete configuration parameters `THRESHOLD_GLASS`, `THRESHOLD_MASK` and `ENROLL_ALLOW_EYE_GLASS`
+* Remove `billing failed` log message in age operation.
+* Update native library to '25.04.23-9b772ba'
+
 Version 1.3.11 (2025-04-04)
 -----------------------------
 

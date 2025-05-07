@@ -1,41 +1,6 @@
 Advanced Usage
 ==============
 
-Environment Setup
------------------
-To access the factor server, you need to set the Server URL and API Key as prerequisites.
-
-To control the number of threads used by TensorFlow for model inference, you can configure the PI_TF_NUM_THREAD environment variable.
-This allows you to optimize performance based on available system resources.
-
-Set Environment Variable
-------------------------
-
-To set the number of threads, use the following command:
-
-.. code-block:: sh
-
-    export PI_TF_NUM_THREAD = 3
-
-Set Threads Directly in the Factor Object
------------------------------------------
-
-Alternatively, you can pass the thread configuration directly when initializing the FaceFactor object:
-
-.. code-block:: py
-
-    # Import the FaceFactor class from the CryptoNets SDK
-    from cryptonets_python_sdk.factor import FaceFactor
-
-    # Define server URL and API key
-    server_url = "https://sample.url.domain"  # Replace with your server URL
-    api_key = "your-api-key"  # Replace with your API key
-
-    # Initialize the FaceFactor instance with specified thread configuration
-    face_factor = FaceFactor(server_url=server_url, api_key=api_key, tf_num_thread=1)
-
-This flexibility allows you to manage TensorFlow’s threading behavior for optimal performance, whether you set it through an environment variable or directly in your code.
-
 Configuration Setup
 -------------------
 
@@ -64,8 +29,55 @@ Sample Code for Initializing ConfigObject for the session initialization or for 
 
 This setup allows you to specify configurations such as the input image format, among other options, to meet your processing needs.
 
-Validation
-----------
+
+Using Collections
+-----------------
+When calling the following methods: 
+
+- compare(): 1:1 Verification of Face Images
+- compare_doc_with_face(): 1:1 Verification of a Face Image and Document Image
+- enroll(): Initialize Subject’s Face in the Identification System
+- predict(): 1:N Matching of a Probe Image to the Enrolled Gallery
+- delete(): Remove a User’s PUID from the Server
+
+You can set the configuration parameter :ref:`PARAMETERS.COLLECTION_NAME <param_list>`  to specify the collection name.
+The collection name is an optional configuration parameter, that indicates which embedding model to use. 
+The default value is an empty string, which means that the default collection will be used.
+If a user is enrolled in a specific collection, the same collection should be used for prediction and deletion.
+Also you can't compare between users enrolled in different collections.
+
+
+Here is a sample code to create a configuration object:
+
+.. code-block:: py
+
+    def create_config_object(collection_name=""):
+        """
+        Creates a basic configuration object (used for in here for the operation calls).
+
+        Args:
+            collection_name (str, optional): The name of the collection to be added to the configuration. Defaults to an empty string.            
+        Returns:
+            ConfigObject: A configuration object initialized with the specified parameters.
+        """
+
+        config_param = { 
+        PARAMETERS.INPUT_IMAGE_FORMAT: "rgb",
+        PARAMETERS.THRESHOLD_USER_TOO_FAR: 0.0,
+        PARAMETERS.THRESHOLD_USER_RIGHT: 0.0,
+        PARAMETERS.THRESHOLD_USER_LEFT: 1.1,
+        PARAMETERS.THRESHOLD_USER_TOO_CLOSE: 1.0 ,
+        PARAMETERS.RELAX_FACE_VALIDATION: True,      
+        }
+        if collection_name!="":
+            config_param[PARAMETERS.COLLECTION_NAME] = collection_name
+            print(f"collection name: {collection_name}")
+        return ConfigObject(config_param)
+
+
+ 
+Configuration Validation
+------------------------
 
 Each configuration parameter in ConfigObject is validated against a predefined set of acceptable values.
 After initializing the configuration, you can view the parameters currently set by using the following call:
@@ -79,6 +91,7 @@ Output:
 .. code-block:: py
 
     {"input_image_format": "rgb"}
+
 
 Usage - Session
 ---------------
@@ -138,7 +151,7 @@ To perform a stricter validation of the face image for enrollment purposes, you 
         })
 
     # Check if the image is valid with the specified configuration
-    is_valid_handle = face_factor.is_valid(image_path="path_to_the_image", config=is_valid_config_object)
+    is_valid_result = face_factor.is_valid(image_path="path_to_the_image", config=is_valid_config_object)
 
 
 Example 2:
@@ -155,7 +168,7 @@ If you want to decrease the confidence threshold for the enrollment crop, you ca
     })
 
     # Check if the image is valid with the modified configuration
-    is_valid_handle = face_factor.is_valid(image_path="path_to_the_image", config=is_valid_config_object)
+    is_valid_result = face_factor.is_valid(image_path="path_to_the_image", config=is_valid_config_object)
 
 These configurations allow you to customize the is_valid validation criteria, tailoring the enrollment process to specific requirements for accuracy and confidence.
 

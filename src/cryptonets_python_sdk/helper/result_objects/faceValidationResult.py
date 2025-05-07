@@ -39,6 +39,7 @@ class FaceValidationResult:
         age=None,
         top_left_coordinate=None,
         bottom_right_coordinate=None,
+        age_confidence_score=None
     ):
         self._face_objects.append(
             FaceObjectResult(
@@ -47,6 +48,7 @@ class FaceValidationResult:
                 age=age,
                 top_left_coordinate=top_left_coordinate,
                 bottom_right_coordinate=bottom_right_coordinate,
+                age_confidence_score=age_confidence_score
             )
         )
 

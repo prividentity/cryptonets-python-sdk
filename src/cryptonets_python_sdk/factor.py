@@ -18,17 +18,13 @@ from .helper.result_objects.faceValidationResult import FaceValidationResult
 from .helper.result_objects.antispoofCheckResult import AntispoofCheckResult
 from .helper.result_objects.isoFaceResult import ISOFaceResult
 from .helper.utils import image_path_to_array
-from .settings.cacheType import CacheType
 from .settings.configuration import ConfigObject, PARAMETERS
 from .settings.loggingLevel import LoggingLevel
 from .settings.supportedPlatforms import SupportedPlatforms
 
 
 class FaceFactor(metaclass=Singleton):
-    """The FaceFactor class implements the methods for enrolling and predicting the Face module as part of the
-        Biometric Authentication.
-
-        It exposes five methods as part of the interface:
+    """The FaceFactor class implements the following methods :
 
         1. is_valid: Verifies the face of the user.
         2. estimate_age: Predicts the age of the face.
@@ -36,6 +32,9 @@ class FaceFactor(metaclass=Singleton):
         4. enroll: Enrolls the face of the user.
         5. predict: Predicts the face of the user.
         6. delete: Deletes the user from the system
+        7. antispoof_check: Check if the image is spoofed or not
+        8. get_iso_face: Takes the face image and gives back the image in ISO Spec format
+        9. compare_doc_with_face: Check if the images are of same person or not
 
         Parameters
         ----------
@@ -45,17 +44,8 @@ class FaceFactor(metaclass=Singleton):
         server_url : str
             The URL of the FaceFactor server.
 
-        local_storage_path : str (optional)
-            Absolute path to the local storage.
-
         logging_level : LoggingLevel (Optional)
             LoggingLevel needed while performing operation
-
-        tf_num_thread: int (Optional)
-            Number of thread to use for Tensorflow model inference
-
-        cache_type: CacheType (Optional)
-            To set the cache on / off
 
         config : ConfigObject (Optional)
             Configuration class object with parameters
@@ -73,17 +63,16 @@ class FaceFactor(metaclass=Singleton):
         enroll
         predict
         delete
+        antispoof_check
         get_iso_face
+        compare_doc_with_face
     """
 
     def __init__(
         self,
         api_key: str = None,
         server_url: str = None,
-        local_storage_path: str = None,
-        logging_level: LoggingLevel = LoggingLevel.off,
-        tf_num_thread: int = 0,
-        cache_type: CacheType = CacheType.OFF,
+        logging_level: LoggingLevel = LoggingLevel.off,        
         config: ConfigObject = None,
     ):
 
@@ -100,17 +89,7 @@ class FaceFactor(metaclass=Singleton):
                 or len(os.environ.get("PI_API_KEY")) <= 0
             ):
                 raise ValueError("API Key is required.")
-
-            if tf_num_thread is None and (
-                os.environ.get("PI_TF_NUM_THREAD") is None
-                or len(os.environ.get("PI_TF_NUM_THREAD")) <= 0
-            ):
-                tf_num_thread = 0
-
-            if tf_num_thread is None:
-                self._tf_num_thread = int(os.environ.get("PI_TF_NUM_THREAD"))
-            else:
-                self._tf_num_thread = tf_num_thread
+            
             if server_url is None:
                 self._server_url = os.environ.get("PI_SERVER_URL")
             else:
@@ -119,28 +98,16 @@ class FaceFactor(metaclass=Singleton):
                 self._api_key = os.environ.get("PI_API_KEY")
             else:
                 self._api_key = api_key
-            if local_storage_path is None:
-                self._local_storage_path = str(
-                    pathlib.Path(__file__)
-                    .parent.parent.joinpath("privateid_local_storage")
-                    .resolve()
-                )
-            else:
-                self._local_storage_path = local_storage_path
-
+            
             if self._server_url[-1] == "/":
                 self._server_url = self._server_url[:-1]
 
             self._config_object = config
-            self._logging_level = logging_level
-            self._cache_type = cache_type
+            self._logging_level = logging_level            
             self.face_factor = Face(
                 api_key=self._api_key,
                 server_url=self._server_url,
-                local_storage_path=self._local_storage_path,
-                logging_level=self._logging_level,
-                tf_num_thread=self._tf_num_thread,
-                cache_type=self._cache_type,
+                logging_level=self._logging_level,                
                 config_object=self._config_object,
             )
             self.message = Message()
@@ -888,6 +855,38 @@ class FaceFactor(metaclass=Singleton):
             )
             return AntispoofCheckResult(message=self.message.ANTISPOOF_CHECK_ERROR)
 
+    def delete(self, puid: str ,config_object: ConfigObject = None ) -> FaceDeleteResult:
+        """Deletes a user by their PUID from the system
+
+        Parameters
+        ----------
+        puid : str
+            The PUID (Private User ID) of the user to delete
+        
+        config_object : ConfigObject (Optional)
+            Additional configuration parameters for the operation
+
+        Returns
+        -------
+        FaceDeleteResult
+            Result of the delete operation
+        """
+        if puid is None:
+            return FaceDeleteResult(message=self.message.MISSING_ARGUMENT.format("puid"))   
+        elif puid == '':
+            return FaceDeleteResult(message=self.message.INVALID_ARGUMENT.format("puid"))
+        
+        try:
+            return self.face_factor.delete(puid,config_object=config_object)
+        except Exception as e:
+            import traceback
+            print(f"Delete operation failed: {e}\nTrace: {traceback.format_exc()}")
+            print(
+                "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
+            )
+            return FaceDeleteResult(status=-1, message=self.message.EXCEPTION_ERROR_DELETE)
+
+
     @property
     def api_key(self) -> str:
         return self._api_key
@@ -895,11 +894,7 @@ class FaceFactor(metaclass=Singleton):
     @property
     def server_url(self) -> str:
         return self._server_url
-
-    @property
-    def local_storage_path(self) -> str:
-        return self._local_storage_path
-
+    
     @property
     def logging_level(self) -> LoggingLevel:
         return self._logging_level
@@ -915,22 +910,14 @@ class FaceFactor(metaclass=Singleton):
     @server_url.setter
     def server_url(self, value):
         self._server_url = value
-
-    @local_storage_path.setter
-    def local_storage_path(self, value):
-        self._local_storage_path = value
-
+    
     @logging_level.setter
     def logging_level(self, value):
         self._logging_level = value
 
     @config.setter
     def config(self, value):
-        self._config_object = value
-
-    @property
-    def version(self) -> str:
-        return self._version
+        self._config_object = value    
 
 
 if __name__ == "__main__":

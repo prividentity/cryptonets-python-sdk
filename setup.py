@@ -36,8 +36,17 @@ DESCRIPTION = "Cryptonets SDK Library for Python"
 AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
 URL = "https://privateid.com/"
-VERSION = "1.3.11"
-REQUIRES = ["numpy >= 1.21.0", "pillow >= 9.1.0","boto3","tqdm","exifread"]
+VERSION = "1.3.12"
+REQUIRES = [
+    "numpy >= 1.21.0", 
+    "pillow >= 9.1.0",
+    "boto3 >= 1.24.0",
+    "tqdm >= 4.64.0",
+    "exifread >= 3.0.0",
+    # Note: importlib.metadata is part of stdlib in Python 3.8+
+    # For older Python versions, add the backport
+    "importlib-metadata >= 4.0.0; python_version < '3.8'",    
+]
 
 LONG_DESCRIPTION = ""
 if os.path.exists("./README.md"):
@@ -63,8 +72,8 @@ setup(
     project_urls={
         "Bug Reports": "https://github.com/prividentity/cryptonets-python-sdk/issues",
         "Source": "https://github.com/prividentity/cryptonets-python-sdk",
-        "Documentation": "https://docs.private.id/cryptonets-python-sdk/1.3.11/index.html",
-        "Release Notes": "https://docs.private.id/cryptonets-python-sdk/1.3.11/changelog.html",
+        "Documentation": "https://docs.private.id/cryptonets-python-sdk/1.3.12/index.html",
+        "Release Notes": "https://docs.private.id/cryptonets-python-sdk/1.3.12/changelog.html",
     },
     classifiers=[
         "Intended Audience :: Developers",
