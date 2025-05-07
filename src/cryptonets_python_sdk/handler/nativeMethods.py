@@ -997,6 +997,7 @@ class NativeMethods(object):
         except Exception as e:
             print("Error",e)
             return False
+        
     def estimate_age(self, image_data: np.array, config_object: ConfigObject = None) -> Any:
             try:
                 img = image_data
@@ -1008,9 +1009,13 @@ class NativeMethods(object):
 
                 c_result = c_char_p()
                 c_result_len = c_int()
+                with_model_stdd = False
+                config_json = None
 
-                with_model_stdd: bool | None =  config_object._get_param_value(PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD)
-                config_json = config_object.get_config_param()
+                if config_object and config_object.get_config_param():
+                   with_model_stdd =  config_object._get_param_value(PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD)     
+                   config_json = config_object.get_config_param()                
+                
                 if config_object and config_json:
                     # Load existing config from the object
                     config_dict = json.loads(config_json)
