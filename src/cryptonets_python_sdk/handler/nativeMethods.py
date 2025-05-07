@@ -17,6 +17,7 @@ import platform
 import importlib
 import importlib.metadata
 class NativeMethods(object):
+    EmptyConfig = "{}"
     @staticmethod
     def get_package_version(package_name: str) -> str:
         """Get the version of a package installed in the current environment.
@@ -619,8 +620,8 @@ class NativeMethods(object):
                 )
                 c_config_param_len = c_int(len(config_object.get_config_param()))
             else:
-                c_config_param = c_char_p(bytes("", "utf-8"))
-                c_config_param_len = c_int(0)
+                c_config_param = c_char_p(bytes(NativeMethods.EmptyConfig, "utf-8"))
+                c_config_param_len = c_int(len(NativeMethods.EmptyConfig))
 
             self._spl_so_face.privid_face_iso(
                 self._spl_so_face.handle,
@@ -681,8 +682,8 @@ class NativeMethods(object):
                 )
                 c_config_param_len = c_int(len(config_object.get_config_param()))
         else:
-                c_config_param = c_char_p(bytes("", "utf-8"))
-                c_config_param_len = c_int(0)
+               c_config_param = c_char_p(bytes(NativeMethods.EmptyConfig, "utf-8"))
+               c_config_param_len = c_int(len(NativeMethods.EmptyConfig))
         self._spl_so_face.privid_user_delete(
             self._spl_so_face.handle,
             c_config_param,
@@ -908,8 +909,8 @@ class NativeMethods(object):
                 )
                 c_config_param_len = c_int(len(config_object.get_config_param()))
             else:
-                c_config_param = c_char_p(bytes(json.dumps({}), "utf-8"))
-                c_config_param_len = c_int(2)
+               c_config_param = c_char_p(bytes(NativeMethods.EmptyConfig, "utf-8"))
+               c_config_param_len = c_int(len(NativeMethods.EmptyConfig))
 
             self._spl_so_face.privid_anti_spoofing(
                 self._spl_so_face.handle,
