@@ -917,11 +917,7 @@ class FaceFactor(metaclass=Singleton):
 
     @config.setter
     def config(self, value):
-        self._config_object = value
-
-    @property
-    def version(self) -> str:
-        return self._version
+        self._config_object = value    
 
 
 if __name__ == "__main__":
