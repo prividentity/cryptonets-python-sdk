@@ -454,21 +454,29 @@ class Face(metaclass=Singleton):
             )
             if not json_data:
                 return ISOFaceResult(message=self.message.EXCEPTION_ERROR_GET_ISO_FACE)
+            
+            face_iso_data=json_data.get("face_iso",{})
+            call_status=json_data.get("call_status",{}).get("return_status",-1)
 
-            if json_data.get("status", -1) != 0:
-                return ISOFaceResult(
-                    status=json_data.get("status", -1),
-                    message=self.message.EXCEPTION_ERROR_GET_ISO_FACE,
-                )
-
+            if call_status != 0:
+                error_message = json_data.get("call_status", {}).get("return_message", self.message.EXCEPTION_ERROR_GET_ISO_FACE)
+                return ISOFaceResult(status=call_status, message=error_message)            
+            
+            returned_status = face_iso_data.get("face_validation_data",{}).get("face_validation_status", -1)
+            score = face_iso_data.get("face_validation_data",{}).get("face_confidence_score", -1)
+            if returned_status != 0:
+               returned_message = Message.APP_MESSAGES.get(returned_status, "Unknown status code")  
+            else:
+               returned_message = "OK"
+           
             return ISOFaceResult(
                 iso_image_width=json_data.get("iso_image_width", None),
                 iso_image_height=json_data.get("iso_image_height", None),
                 iso_image_channels=json_data.get("iso_image_channels", None),
-                confidence=json_data.get("confidence", None),
+                confidence=score,
                 image=json_data.get("image", None),
-                status=json_data.get("status", -1),
-                message=json_data.get("message", "OK"),
+                status=returned_status,
+                message=returned_message,
             )
 
         except Exception as e:

@@ -642,31 +642,41 @@ class NativeMethods(object):
                 )
             output_json = c_result.value[: c_result_len.value].decode()
             output_json = json.loads(output_json)
+            face_iso_info = output_json.get("face_iso", {}).get("face_image", {}).get("info", {})
+            output_json["iso_image_height"] = im_height = face_iso_info.get("height", 0)
+            output_json["iso_image_width"] = im_width = face_iso_info.get("width", 0)
+            output_json["iso_image_channels"] = im_channels = face_iso_info.get("channels", 0)
+            output_json["confidence"] = im_channels = face_iso_info.get("channels", 0)
+            
             self._spl_so_face.privid_free_char_buffer(c_result)
+            output_image = None
             if (
                 c_iso_image_len.value
-                and "iso_image_width" in output_json
-                and "iso_image_height" in output_json
+                and im_height > 0
+                and im_width > 0
+                and im_channels > 0
             ):
-                output_json["image"] = Image.fromarray(
+                output_image = Image.fromarray(
                     np.uint8(
                         np.reshape(
                             c_iso_image[: c_iso_image_len.value],
                             (
-                                output_json.get("iso_image_height", 0),
-                                output_json.get("iso_image_width", 0),
-                                output_json.get("iso_image_channels", 0),
+                                im_height,
+                                im_width,
+                                im_channels
                             ),
                         )
                     )
                 ).convert(
-                    "RGBA" if output_json.get("iso_image_channels", 0) == 4 else "RGB"
+                    "RGBA" if im_channels == 4 else "RGB"
                 )
                 # Release the memory of the image returned by the API
                 self._free_image(c_iso_image)                
             else:
                 # Empty Image
-                output_json["image"] = Image.new("RGB", (800, 1280), (255, 255, 255))
+                output_image= Image.new("RGB", (800, 1280), (255, 255, 255))
+
+            output_json["image"]= output_image
             return output_json
         except Exception as e:
             print(e)
