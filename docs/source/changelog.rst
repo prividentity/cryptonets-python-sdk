@@ -1,7 +1,7 @@
 Changelog
 =========
 
-Version 1.3.12b2 (2025-04-28)
+Version 1.3.12 (2025-05-07)
 -----------------------------
 
 Updates:
@@ -32,9 +32,16 @@ Updates:
 * Remove billing methods and related parameters.
 * Remove obsolete caching functionality.
 * Remove obsolete `tf_num_thread` FaceFactor constructor argument.
-* Remove obsolete tests. new set of tests will eb added in he coming version 2.0.0.
+* Remove obsolete tests. new set of tests will be added in the coming version 2.0.0.
 * Change the binaries download location to be versioned, where each version download binaries from its own directory. The models download location is not chanegd and and they are shared by all versions. 
-* Native library is still points to '25.04.23-9b772ba'.
+* Fix various potentials memory leaks and bugs and improve some parts of the code base.
+* Fix a bug in compare that discards the collection_name parameter.
+* Add a complete set of basic sampels of all methods under samples folder.
+* Expose `delete` method to the `Facefactor` interface.
+* Remove obsolete `code`` field from `FaceEnrollPredictResult`.
+* Add a convinience `print` method to th class `FaceEnrollPredictResult`.
+* Update documentation notable the  AdvancedUsage samples and make it more complete and uptodate.
+* Update native library to '25.05.07-6491ced'.
 
 
 Version 1.3.12b1 (2025-04-23)
