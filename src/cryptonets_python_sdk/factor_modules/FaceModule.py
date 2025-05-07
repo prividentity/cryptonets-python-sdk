@@ -59,14 +59,10 @@ class Face(metaclass=Singleton):
                 return FaceEnrollPredictResult(
                     message=self.message.EXCEPTION_ERROR_ENROLL
                 )
-            else:
-                # we received a json response and thus call is successful
-                call_status = FaceEnrollPredictResult.CALL_STATUS_SUCCESS
-
+            
             c_response=json_data.get("enroll_onefa", {})
             api_response=c_response.get("api_response", {})
             face_validation_data=c_response.get("face_validation_data", {})
-            api_response=c_response.get("api_response", {})
             result =  FaceEnrollPredictResult(
                 status=call_status,
                 enroll_level=json_data.get("enroll_level", None),
@@ -76,8 +72,8 @@ class Face(metaclass=Singleton):
                 score=api_response.get("score", None),
                 message=self.message.get_message(int(face_validation_data.get("face_validation_status",0)))
             )
-            result.api_message=api_response.get("message", "")
-            result.api_status=api_response.get("status",-1)
+            result.api_message=api_response.get("message", None)
+            result.api_status=api_response.get("status",None)
             result.enroll_performed=c_response.get("enroll_performed", False)
             # If the face was successfully enrolled no need to show any message about face validation 
             # status unlike the native SDK and return a success status
@@ -138,69 +134,85 @@ class Face(metaclass=Singleton):
             face_validation_data=c_response.get("face_validation_data", {})            
             message = self.message.get_message(face_validation_data.get("face_validation_status", 0))
             # Did we have a successful predict
-            predicted = False
-            api_status = api_response.get("status",-1)
-            puid=api_response.get("puid", None),
-            guid=api_response.get("guid", None),
-            predicted = api_status == 0 and self._valid_uuid(puid) and self._valid_uuid(guid)           
+            predicted = False   
+            res_enroll_level = json_data.get("enroll_level", None)     
+            api_puid=api_response.get("puid", None)
+            api_guid=api_response.get("guid", None)
+            res_api_status=api_response.get("status", None)
+            res_api_message=api_response.get("message", None)
+            api_token=api_response.get("token", None)
+            api_score=api_response.get("score", None)
+            
+            predicted = res_api_status == 0 and self._valid_uuid(api_puid) and self._valid_uuid(api_guid)           
             result_status =  0 if relax_face_validation or predicted else face_validation_data.get("face_validation_status",0)
             if face_validation_data.get("face_validation_status",0)!=0:
                 if config_object and json.loads(config_object.get_config_param()).get("neighbors",0)>0:
                         if api_response.get("PI_list", []):
                             return [FaceEnrollPredictResult(
                             status=face_validation_data.get("face_validation_status",0),
-                            enroll_level=json_data.get("enroll_level", None),
-                            puid=api_response.get("puid", None),
-                            guid=api_response.get("guid", None),
-                            token=api_response.get("token", None),
-                            score=api_response.get("score", None),
+                            enroll_level=res_enroll_level,
+                            puid=api_puid,
+                            guid=api_guid,
+                            token=api_token,
+                            score=api_score,
+                            api_status=res_api_status,
+                            api_message=res_api_message,
                             message=  "" if relax_face_validation or predicted else message                            
                             )]
                         else:                            
                             return [FaceEnrollPredictResult(
-                                    status=api_response.get("status", "Something went wrong"),
-                                    enroll_level=json_data.get("enroll_level", None),
+                                    status=api_response.get("status", FaceEnrollPredictResult.CALL_STATUS_ERROR),
+                                    enroll_level=res_enroll_level,
                                     puid= None,
                                     guid=None,
                                     score= None,
+                                    api_status=res_api_status,
+                                    api_message=res_api_message,
                                     message=api_response.get("message", "Something went wrong"))]                            
                 else:
                      return FaceEnrollPredictResult(
                         status=result_status,
-                        enroll_level=json_data.get("enroll_level", None),
-                        puid=api_response.get("puid", None),
-                        guid=api_response.get("guid", None),
-                        token=api_response.get("token", None),
-                        score=api_response.get("score", None),
+                        enroll_level=res_enroll_level,
+                        puid=api_puid,
+                        guid=api_guid,
+                        token=api_token,
+                        score=api_score,
+                        api_status=res_api_status,
+                        api_message=res_api_message,
                         message=  "Ok" if relax_face_validation or predicted else message
                         )
             if config_object and json.loads(config_object.get_config_param()).get("neighbors",0)>0:
                 if api_response.get("PI_list", []):
                     return [FaceEnrollPredictResult(
                         status=call_status,
-                        enroll_level=json_data.get("enroll_level", None),
+                        enroll_level=res_enroll_level,
                         puid=person.get("puid", None),
                         guid=person.get("guid", None),
                         score=person.get("score", None),
-                        message=api_response.get("message", "Something went wrong")
+                        message=api_response.get("message", "Something went wrong")                        
                     ) for person in api_response.get("PI_list", [])]
                 else:
                    return [FaceEnrollPredictResult(
                         status=api_response.get("status", "Something went wrong"),
-                        enroll_level=json_data.get("enroll_level", None),
+                        enroll_level=res_enroll_level,
                         puid= None,
                         guid=None,
                         score= None,
+                        api_status=res_api_status,
+                        api_message=res_api_message,
                         message=api_response.get("message", "Something went wrong"))]
             else:
                  return FaceEnrollPredictResult(
                     status=call_status,
-                    enroll_level=json_data.get("enroll_level", None),
-                    puid=api_response.get("puid", None),
-                    guid=api_response.get("guid", None),
-                    token=api_response.get("token", None),
-                    score=api_response.get("score", None),
-                    message=api_response.get("message", "")
+                    enroll_level=res_enroll_level,
+                    puid=api_puid,
+                    guid=api_guid,
+                    token=api_token,
+                    score=api_score,
+                    message=res_api_message,
+                    api_status=res_api_status,
+                    api_message=res_api_message
+                    
                 )
         except Exception as e:
             print(e, traceback.format_exc())
