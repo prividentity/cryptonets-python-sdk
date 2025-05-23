@@ -741,7 +741,7 @@ class NativeMethods(object):
             )
             p_buffer_result = c_char_p()
             p_buffer_result_length = c_int()
-            config_object_default = {"face_thresholds_med": 1.24}
+            config_object_default = {"face_thresholds_med": 1.00}
             if config_object and hasattr(config_object, 'get_config_param') and config_object.get_config_param():
                 config_param_str = config_object.get_config_param()
                 config_from_object = json.loads(config_param_str)

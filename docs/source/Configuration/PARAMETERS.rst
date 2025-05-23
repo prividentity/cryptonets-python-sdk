@@ -82,3 +82,7 @@ Configurable Parameter List and Valid values
    * - USER_IDENTIFIER
      - A string  representing a supplmentary user identifier, to be added in `enroll`` requests if your enroll workflow needs it. 
      - Any string.
+   * - FACE_THRESHOLD
+      - Threshold for compare operation. If the calculated distance between 2 faces is strictly less than this value, the faces are considered similar.
+      - Default value is 1.0 which suitable for most collections (i.e enmbeddings models).
+      - 0 to 2
