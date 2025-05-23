@@ -305,7 +305,9 @@ Sample Usage:
     status = compare_doc_with_face_handle.status                  # Status of the operation
     result = compare_doc_with_face_handle.result                  # Result: 1 (same person), -1 (different subjects)
     message = compare_doc_with_face_handle.message                # Operation message
-    distance = compare_doc_with_face_handle.distance              # Distance of comparison
+    distance_min = compare_doc_with_face_handle.distance_min      # Minimum comparison distance
+    distance_mean = compare_doc_with_face_handle.distance_mean    # Mean comparison distance
+    distance_max = compare_doc_with_face_handle.distance_max      # Maximum comparison distance
     first_validation = compare_doc_with_face_handle.first_validation_result  # Validation result for the face image
     second_validation = compare_doc_with_face_handle.second_validation_result # Validation result for the document image
 
@@ -318,7 +320,9 @@ Example Output:
     print(f"Status: {compare_doc_with_face_handle.status}")
     print(f"Result: {compare_doc_with_face_handle.result}")
     print(f"Message: {compare_doc_with_face_handle.message}")
-    print(f"Distance: {compare_doc_with_face_handle.distance}")
+    print(f"Min Distance: {compare_doc_with_face_handle.distance_min}")
+    print(f"Mean Distance: {compare_doc_with_face_handle.distance_mean}")
+    print(f"Max Distance: {compare_doc_with_face_handle.distance_max}")
     print(f"Face Image Validation Result: {compare_doc_with_face_handle.first_validation_result}")
     print(f"Document Image Validation Result: {compare_doc_with_face_handle.second_validation_result}")
 

@@ -67,8 +67,8 @@ def compare(collection_name=""):
     
     Returns:
         CompareResult: A result object with the following attributes:
-            - status: Operation status code (0 indicates success)
-            - result: Boolean indicating if faces match (True) or not (False)
+            - status: Operation status code (0 indicates success and the comparaison was performed. -1 failure: comparaison was not performed)
+            - result: integer indicating if faces match (1) or not (-1) [status is 0 in this case because the comparaison was performed]
             - message: Descriptive message about the operation outcome
             - distance_min/mean/max: Similarity metrics between the faces
             - first/second_validation_result: Validation results for each input image
@@ -267,7 +267,7 @@ def face_iso():
     """
     
     start_time = time.time()
-    # Call compare from the face factor object
+    # Call get_iso_face from the face factor object
     result = face_factor.get_iso_face(image_path = face_iso_file)
     end_time = time.time()
     duration = end_time - start_time    
@@ -301,9 +301,10 @@ def compare_doc_with_face(collection_name=""):
     
     Returns:
         CompareResult: A comparison result object with the following attributes:
-            - status: Operation status code (0 indicates success)
+            - status: Operation status code (0 indicates success and the comparaison was performed. -1 failure: comparaison was not performed)
+            - result: integer indicating if faces match (1) or not (-1) [status is 0 in this case because the comparaison was performed]
             - message: Descriptive message about the operation outcome
-            - distance: Similarity metric (lower values indicate greater similarity)
+            - distance_min/mean/max: Similarity metrics between the faces
             - first/second_validation_result: Validation results for each image
     """
     start_time = time.time()
@@ -321,7 +322,7 @@ def compare_doc_with_face(collection_name=""):
             "Status:{}\nMessage:{}\nDistance:{}\nFirst Validation:{}\nSecond Validation:{}\n".format(
                 result.status,
                 result.message,
-                result.distance,
+                result.distance_min,
                 result.first_validation_result,
                 result.second_validation_result,
             )
