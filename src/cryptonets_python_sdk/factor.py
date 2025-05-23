@@ -575,15 +575,11 @@ class FaceFactor(metaclass=Singleton):
 
             result: int [1 if same, -1 if different]
 
-            distance_min: str
+            distance: float [comparaison distance]
 
-            distance_mean: str
+            first_validation_result: int
 
-            distance_max: str
-
-            first_validation_result: str
-
-            second_validation_result: str
+            second_validation_result: int
 
         """
 
@@ -696,15 +692,11 @@ class FaceFactor(metaclass=Singleton):
 
             result: int [1 if same, -1 if different]
 
-            distance_min: str
+            distance: float [comparaison distance]
 
-            distance_mean: str
+            first_validation_result: int
 
-            distance_max: str
-
-            first_validation_result: str
-
-            second_validation_result: str
+            second_validation_result: int
 
         """
 

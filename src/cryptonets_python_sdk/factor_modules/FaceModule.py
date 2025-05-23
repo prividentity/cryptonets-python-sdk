@@ -315,9 +315,7 @@ class Face(metaclass=Singleton):
 
             return FaceCompareResult(
                 result=result,                
-                distance_min=face_data.get("distance_min", None),
-                distance_mean=face_data.get("distance_mean", None),
-                distance_max=face_data.get("distance_max", None),
+                distance=face_data.get("distance_mean", None),                
                 first_validation_result=face_data.get("a_face_validation_status", None),
                 second_validation_result=face_data.get("b_face_validation_status", None),
                 status=call_status,
