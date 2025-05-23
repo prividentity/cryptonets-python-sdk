@@ -4,10 +4,12 @@ class FaceCompareResult:
     # ERROR_CODE_
     CALL_STATUS_SUCCESS = 0
     CALL_STATUS_ERROR = -1
+    RESULT_SAME_FACE = 1
+    RESULT_DIFFERENT_FACE = -1
 
     def __init__(
         self,
-        result=None,
+        result=RESULT_DIFFERENT_FACE,
         distance_min=None,
         distance_mean=None,
         distance_max=None,
@@ -34,9 +36,9 @@ class FaceCompareResult:
         """
         Returns the status of the operation
 
-        0 - If successfully obtained result from server
+        0 - If the compare call was successful (regardless of the result)
 
-        -1 - In case of error
+        -1 - In case of error and the compare was not performed because of an error
 
         """
         return self._status
@@ -45,6 +47,8 @@ class FaceCompareResult:
     def result(self) -> int:
         """
         Returns the result of the operation
+        1  - if 2 images are same
+        -1 - if 2 images are different
         """
         return self._result
 
