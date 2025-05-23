@@ -250,57 +250,28 @@ class Face(metaclass=Singleton):
         config_object: ConfigObject = None,
     ) -> FaceCompareResult:
         try:
+            # process the document 
             processed_document=self._doc_scan_face(image_data=doc_data)
-            if processed_document.get("doc_face",{}).get("document_data",{}).get("document_validation_status",-1)!=0:
-                 if processed_document.get("doc_face",{}).get("document_data",{}).get("status_message","Unable to detect face in the document.").strip()=="":
-                        return FaceCompareResult(message="Unable to detect face in the document.")
-                 return FaceCompareResult(message= processed_document.get("doc_face",{}).get("document_data",{}).get("status_message","Unable to detect face in the document."))
-        
+            if not processed_document:
+                return FaceCompareResult(message="Unable to detect face in the document.")
+            
+            doc_validation_status=processed_document.get("doc_face",{}).get("document_data",{}).get("document_validation_status",-1)
+            if doc_validation_status != 0:
+                 error_message = processed_document.get("doc_face",{}).get("document_data",{}).get("status_message","Unable to detect face in the document.").strip()
+                 if error_message == "": 
+                    error_message = "Unable to detect face in the document."
+                 return FaceCompareResult(message=error_message)
+                 
+            # process the image data
             cropped_face_array = processed_document.get("doc_face",{}).get("cropped_face")
             if cropped_face_array is None:
                  return FaceCompareResult(message= "Unable to detect face in the document.")
-            if cropped_face_array is not None:
             
-                face_compare_json_data_all = self.face_factor_processor.compare_files(
-                    face_data, processed_document.get("doc_face",{}).get("cropped_face"), config_object=config_object
-                )
-            else:
-                return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
-
-            call_status = FaceCompareResult.CALL_STATUS_ERROR
-            if not face_compare_json_data_all:
-                return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
-            else:
-                call_status = FaceCompareResult.CALL_STATUS_SUCCESS
-            face_data=face_compare_json_data_all.get("face_compare",{})
-            call_status=face_compare_json_data_all.get("call_status",{}).get("return_status",-1)
-            if face_data.get("result", None)==1:
-                return FaceCompareResult(
-                    result=face_data.get("result", None),
-                    distance=face_data.get("distance_min", None),
-                    first_validation_result=face_data.get("a_face_validation_status", None),
-                    second_validation_result=face_data.get("b_face_validation_status", None),
-                    status=face_data.get("result", None),
-                    message= "Same face",
-                )
-            elif face_data.get("result", None)==-1:
-                 return FaceCompareResult(
-                    result=face_data.get("result", None),
-                    distance=face_data.get("distance_min", None),
-                    first_validation_result=face_data.get("a_face_validation_status", None),
-                    second_validation_result=face_data.get("b_face_validation_status", None),
-                    status=call_status,
-                    message= "Different face",
-                )
-            else:
-                 return FaceCompareResult(
-                    result=face_data.get("result", None),
-                    distance=face_data.get("distance_min", None),
-                    first_validation_result=face_data.get("a_face_validation_status", None),
-                    second_validation_result=face_data.get("b_face_validation_status", None),
-                    status=call_status,
-                    message=self.message.EXCEPTION_ERROR_COMPARE,
-                )
+            return self.compare(
+                image_data_1=face_data,
+                image_data_2=cropped_face_array,
+                config_object=config_object,
+            )
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
@@ -311,45 +282,47 @@ class Face(metaclass=Singleton):
         image_data_2: np.array,
         config_object: ConfigObject = None,
     ) -> FaceCompareResult:
-        try:
-            
-                face_compare_json_data_all = self.face_factor_processor.compare_files(
-                       image_data_1, image_data_2, config_object=config_object
-                )
-                call_status = FaceCompareResult.CALL_STATUS_ERROR
-                if not face_compare_json_data_all:
+        try:            
+            face_compare_json_data_all = self.face_factor_processor.compare_files(
+                    image_data_1, image_data_2, config_object=config_object
+            )
+            call_status = FaceCompareResult.CALL_STATUS_ERROR
+            if not face_compare_json_data_all:
+                return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
+
+            call_status=face_compare_json_data_all.get("call_status",{}).get("return_status",None)
+            if (call_status == None):
                     return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
-                else:
-                    call_status = FaceCompareResult.CALL_STATUS_SUCCESS
-                face_data=face_compare_json_data_all.get("face_compare",{})
-                call_status=face_compare_json_data_all.get("call_status",{}).get("return_status",-1)
-                if face_data.get("result", None)==1:
-                    return FaceCompareResult(
-                        result=face_data.get("result", None),
-                        distance=face_data.get("distance_min", None),
-                        first_validation_result=face_data.get("a_face_validation_status", None),
-                        second_validation_result=face_data.get("b_face_validation_status", None),
-                        status=face_data.get("result", None),
-                        message= "Same face",
-                    )
-                elif face_data.get("result", None)==-1:
-                    return FaceCompareResult(
-                        result=face_data.get("result", None),
-                        distance=face_data.get("distance_min", None),
-                        first_validation_result=face_data.get("a_face_validation_status", None),
-                        second_validation_result=face_data.get("b_face_validation_status", None),
-                        status=call_status,
-                        message= "Different face",
-                    )
-                else:
-                    return FaceCompareResult(
-                        result=face_data.get("result", None),
-                        distance=face_data.get("distance_min", None),
-                        first_validation_result=face_data.get("a_face_validation_status", None),
-                        second_validation_result=face_data.get("b_face_validation_status", None),
-                        status=call_status,
-                        message=self.message.EXCEPTION_ERROR_COMPARE,
-                    )
+            
+            if call_status != 0:
+                error_message = face_compare_json_data_all.get("call_status", {}).get("return_message", self.message.EXCEPTION_ERROR_COMPARE)
+                return FaceCompareResult(status=FaceCompareResult.CALL_STATUS_ERROR, message=error_message)
+            
+            face_data=face_compare_json_data_all.get("face_compare",{})
+            if face_data is None:
+                return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
+
+            result = face_data.get("result", None)
+            if result is None:
+                return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
+            
+            if result == 1:
+                returned_message = "Same face"
+            elif result == -1:
+                returned_message = "Different face"
+            else:
+                return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)
+
+            return FaceCompareResult(
+                result=result,                
+                distance_min=face_data.get("distance_min", None),
+                distance_mean=face_data.get("distance_mean", None),
+                distance_max=face_data.get("distance_max", None),
+                first_validation_result=face_data.get("a_face_validation_status", None),
+                second_validation_result=face_data.get("b_face_validation_status", None),
+                status=call_status,
+                message= returned_message
+            )
         except Exception as e:
             print(e, traceback.format_exc())
             return FaceCompareResult(message=self.message.EXCEPTION_ERROR_COMPARE)

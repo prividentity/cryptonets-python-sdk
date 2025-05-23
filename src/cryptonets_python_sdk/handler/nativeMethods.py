@@ -139,11 +139,11 @@ class NativeMethods(object):
                 print("Quarantine attribute removed successfully.")
             except subprocess.CalledProcessError as e:
                 print(f"Failed to remove quarantine attribute")
+    
     def _load_macos_libraries(self):
 
         self._library_path = str(self._local_lib_path.joinpath("libprivid_fhe_universal.dylib").resolve())
         self._spl_so_face = ctypes.CDLL(self._library_path)
-
 
     def _initialize_properties(self, api_key, server_url,logging_level):
         self._api_key = bytes(api_key, "utf-8")
@@ -596,7 +596,6 @@ class NativeMethods(object):
             print(e)
             return False
 
-
     def get_iso_face(
         self, image_data: np.array, config_object: ConfigObject = None
     ) -> Any:
@@ -742,15 +741,14 @@ class NativeMethods(object):
             )
             p_buffer_result = c_char_p()
             p_buffer_result_length = c_int()
-            config_object_default = {"face_thresholds_rem_bad_emb_default": 1.24, "face_thresholds_med": 1.24,"conf_score_thr_enroll":0.2}
+            config_object_default = {"face_thresholds_med": 1.24}
             if config_object and hasattr(config_object, 'get_config_param') and config_object.get_config_param():
                 config_param_str = config_object.get_config_param()
                 config_from_object = json.loads(config_param_str)
                 for key, value in config_object_default.items():
                     if key not in config_from_object:
-                        config_from_object[key] = value
-                config_from_object["face_thresholds_rem_bad_emb_default"]=config_from_object["face_thresholds_med"]
-                config_param_str = json.dumps(config_from_object)
+                        config_from_object[key] = value                
+                config_param_str = json.dumps(config_from_object)                
             else:
                 config_param_str = json.dumps(config_object_default)
              
