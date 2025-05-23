@@ -1,6 +1,20 @@
 Changelog
 =========
 
+Version 1.3.13 (2025-05-23)
+-----------------------------
+
+Solve  `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/30>`_  :
+Updates:
+* Update the semantics and structure of result object `FaceCompareResult`. 
+* The methods `compare` and `compare_doc_with_face` will return the a single `distance` float value. `distance_min/mean|max` are removed.
+* Update the `compare` and `compare_doc_with_face` methods to return the new `FaceCompareResult` object.
+* Update docs & samples `FaceCompareResult`  `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/30>`_  
+* Update the configuration parameter `FACE_THRESHOLD`.
+* Update default value for `FACE_THRESHOLD` to suit the 3 current embeddings types `1.0`.
+* The native library still points to '25.05.07-6491ced'.
+
+
 Version 1.3.12 (2025-05-07)
 -----------------------------
 
