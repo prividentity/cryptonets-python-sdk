@@ -305,17 +305,7 @@ class FaceFactor(metaclass=Singleton):
         Returns
         -------
         FaceEnrollPredictResult
-            status: int [0 if successful -1 if unsuccessful]
 
-            message: str [Message from the operation]
-
-            enroll_level: str
-
-            guid: str
-
-            puid: str
-
-            token: str
         """
 
         try:
@@ -474,18 +464,7 @@ class FaceFactor(metaclass=Singleton):
 
         Returns
         -------
-        FaceEnrollPredictResult
-            status: int [0 if successful -1 if unsuccessful]
-
-            message: str [Message from the operation]
-
-            enroll_level: str
-
-            guid: str
-
-            puid: str
-
-            token: str
+        FaceEnrollPredictResult             
 
         """
         try:
