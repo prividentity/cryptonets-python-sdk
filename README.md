@@ -75,6 +75,6 @@ Copyright (c) 2020-present, Private Identity All rights reserved.
 
 [Installation](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/last_stable/installation.html)
 
-[Usage](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/last_stable/usage.html)
+[Usage](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/last_stable/Usage/index.html)
 
 [SDK-Docs](https://privid-sdk.s3.us-east-2.amazonaws.com/cryptonets-python-sdk/last_stable/Factor/Face.html#cryptonets_python_sdk.factor.FaceFactor)

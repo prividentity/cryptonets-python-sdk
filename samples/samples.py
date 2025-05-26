@@ -67,10 +67,10 @@ def compare(collection_name=""):
     
     Returns:
         CompareResult: A result object with the following attributes:
-            - status: Operation status code (0 indicates success)
-            - result: Boolean indicating if faces match (True) or not (False)
+            - status: Operation status code (0 indicates success and the comparaison was performed. -1 failure: comparaison was not performed)
+            - result: integer indicating if faces match (1) or not (-1) [status is 0 in this case because the comparaison was performed]
             - message: Descriptive message about the operation outcome
-            - distance_min/mean/max: Similarity metrics between the faces
+            - distance: Similarity metrics between the faces
             - first/second_validation_result: Validation results for each input image
     """
     start_time = time.time()
@@ -89,13 +89,11 @@ def compare(collection_name=""):
     if print_results:
         print(f"Compare operation took {duration} seconds")
         print(
-            "Status:{}\nResult:{}\nMessage:{}\nMin:{}\nMean:{}\nMax:{}\n1VR:{}\n2VR:{}\n".format(
+            "Status:{}\nResult:{}\nMessage:{}\nDistance:{}\n1VR:{}\n2VR:{}\n".format(
                 result.status,
                 result.result,
                 result.message,
-                result.distance_min,
-                result.distance_mean,
-                result.distance_max,
+                result.distance,
                 result.first_validation_result,
                 result.second_validation_result,
             )
@@ -122,8 +120,7 @@ def enroll(collection_name=""):
             - message: Descriptive message about the operation outcome
             - enroll_level: The enrollment quality level achieved
             - puid: Private Unique Identifier assigned to this enrollment
-            - guid: Global Unique Identifier for the enrollment
-            - token: Authentication token (if applicable)
+            - guid: Global Unique Identifier for the enrollment            
             - enroll_performed: Boolean indicating if the enrollment was performed
     """
     
@@ -185,8 +182,7 @@ def predict(collection_name=""):
             - message: Descriptive message about the operation outcome
             - enroll_level: The enrollment level of the matched face
             - puid: Private Unique Identifier of the matched enrollment
-            - guid: Global Unique Identifier
-            - token: Authentication token (if applicable)
+            - guid: Global Unique Identifier            
             - api_status: API status code, supplmentary information about the status code returned by the rest API call.
             - api_message: API message, supplmentary information about the message returned by the rest API call.
             
@@ -267,7 +263,7 @@ def face_iso():
     """
     
     start_time = time.time()
-    # Call compare from the face factor object
+    # Call get_iso_face from the face factor object
     result = face_factor.get_iso_face(image_path = face_iso_file)
     end_time = time.time()
     duration = end_time - start_time    
@@ -301,9 +297,10 @@ def compare_doc_with_face(collection_name=""):
     
     Returns:
         CompareResult: A comparison result object with the following attributes:
-            - status: Operation status code (0 indicates success)
+            - status: Operation status code (0 indicates success and the comparaison was performed. -1 failure: comparaison was not performed)
+            - result: integer indicating if faces match (1) or not (-1) [status is 0 in this case because the comparaison was performed]
             - message: Descriptive message about the operation outcome
-            - distance: Similarity metric (lower values indicate greater similarity)
+            - distance: Similarity metrics between the faces
             - first/second_validation_result: Validation results for each image
     """
     start_time = time.time()

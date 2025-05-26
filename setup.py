@@ -36,7 +36,7 @@ DESCRIPTION = "Cryptonets SDK Library for Python"
 AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
 URL = "https://privateid.com/"
-VERSION = "1.3.12"
+VERSION = "1.3.13"
 REQUIRES = [
     "numpy >= 1.21.0", 
     "pillow >= 9.1.0",
@@ -72,8 +72,8 @@ setup(
     project_urls={
         "Bug Reports": "https://github.com/prividentity/cryptonets-python-sdk/issues",
         "Source": "https://github.com/prividentity/cryptonets-python-sdk",
-        "Documentation": "https://docs.private.id/cryptonets-python-sdk/1.3.12/index.html",
-        "Release Notes": "https://docs.private.id/cryptonets-python-sdk/1.3.12/changelog.html",
+        "Documentation": "https://docs.private.id/cryptonets-python-sdk/{}/index.html".format(VERSION),
+        "Release Notes": "https://docs.private.id/cryptonets-python-sdk/{}/changelog.html".format(VERSION),
     },
     classifiers=[
         "Intended Audience :: Developers",

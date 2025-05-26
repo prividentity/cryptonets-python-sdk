@@ -8,4 +8,4 @@ FaceCompareResult
 This section covers how to use the Compare Result Object.
 
 .. autoclass:: FaceCompareResult
-   :members: status, result, message, distance_min, distance_mean, distance_max, first_validation_result, second_validation_result
+   :members: status, result, message, distance, first_validation_result, second_validation_result

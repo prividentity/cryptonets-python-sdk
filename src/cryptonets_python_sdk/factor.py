@@ -305,17 +305,7 @@ class FaceFactor(metaclass=Singleton):
         Returns
         -------
         FaceEnrollPredictResult
-            status: int [0 if successful -1 if unsuccessful]
 
-            message: str [Message from the operation]
-
-            enroll_level: str
-
-            guid: str
-
-            puid: str
-
-            token: str
         """
 
         try:
@@ -474,18 +464,7 @@ class FaceFactor(metaclass=Singleton):
 
         Returns
         -------
-        FaceEnrollPredictResult
-            status: int [0 if successful -1 if unsuccessful]
-
-            message: str [Message from the operation]
-
-            enroll_level: str
-
-            guid: str
-
-            puid: str
-
-            token: str
+        FaceEnrollPredictResult             
 
         """
         try:
@@ -569,17 +548,17 @@ class FaceFactor(metaclass=Singleton):
         Returns
         -------
         FaceCompareResult
-            status: int
+            status: int [0 if call successful -1 if unsuccessful]
 
             message: str [Message from the operation]
 
-            result: int [0 if same, 1 if different, -1 if unsuccessful]
+            result: int [1 if same, -1 if different]
 
-            distance: str
+            distance: float [comparaison distance]
 
-            first_validation_result: str
+            first_validation_result: int
 
-            second_validation_result: str
+            second_validation_result: int
 
         """
 
@@ -686,21 +665,17 @@ class FaceFactor(metaclass=Singleton):
         Returns
         -------
         FaceCompareResult
-            status: int [0 if same, 1 if different, -1 if unsuccessful]
+            status: int [0 if call successful -1 if unsuccessful]
 
             message: str [Message from the operation]
 
-            result: str
+            result: int [1 if same, -1 if different]
 
-            distance_min: str
+            distance: float [comparaison distance]
 
-            distance_mean: str
+            first_validation_result: int
 
-            distance_max: str
-
-            first_validation_result: str
-
-            second_validation_result: str
+            second_validation_result: int
 
         """
 
