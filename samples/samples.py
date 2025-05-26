@@ -120,8 +120,7 @@ def enroll(collection_name=""):
             - message: Descriptive message about the operation outcome
             - enroll_level: The enrollment quality level achieved
             - puid: Private Unique Identifier assigned to this enrollment
-            - guid: Global Unique Identifier for the enrollment
-            - token: Authentication token (if applicable)
+            - guid: Global Unique Identifier for the enrollment            
             - enroll_performed: Boolean indicating if the enrollment was performed
     """
     
@@ -183,8 +182,7 @@ def predict(collection_name=""):
             - message: Descriptive message about the operation outcome
             - enroll_level: The enrollment level of the matched face
             - puid: Private Unique Identifier of the matched enrollment
-            - guid: Global Unique Identifier
-            - token: Authentication token (if applicable)
+            - guid: Global Unique Identifier            
             - api_status: API status code, supplmentary information about the status code returned by the rest API call.
             - api_message: API message, supplmentary information about the message returned by the rest API call.
             

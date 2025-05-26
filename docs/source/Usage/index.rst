@@ -416,13 +416,12 @@ Sample Usage:
     enroll_handle = face_factor.enroll(image_path="path_to_the_image")  # Replace with the actual image path
 
     # Accessing results
-    print("Status: {}\nMessage: {}\nEnroll Level: {}\nPUID: {}\nGUID: {}\nToken: {}".format(
+    print("Status: {}\nMessage: {}\nEnroll Level: {}\nPUID: {}\nGUID: {}".format(
         enroll_handle.status,
         enroll_handle.message,
         enroll_handle.enroll_level,
         enroll_handle.puid,
-        enroll_handle.guid,
-        enroll_handle.token
+        enroll_handle.guid
     ))
 
 Output Description:
@@ -434,7 +433,6 @@ Each enroll operation returns an EnrollHandle object with the following attribut
 - **enroll_level**: Represents the enrollment level of the user.
 - **puid**: The unique PUID assigned to the enrolled user.
 - **guid**: The unique GUID for the enrolled user.
-- **token**: A token, if applicable, for additional security measures.
 
 Example Output:
 
@@ -450,7 +448,6 @@ Output:
   Enroll Level:1
   PUID:2o4747qo77op7140747o
   GUID:rq0rqpo647s317n30145
-  Token:None
 
 For additional configuration options and advanced settings, see the :ref:`enroll advanced instructions <enroll_advanced>` section.
 
@@ -487,13 +484,12 @@ Sample Usage:
     predict_handle = face_factor.predict(image_path="path_to_the_image")  # Replace with the actual image path
 
     # Accessing results
-    print("Status: {}\nMessage: {}\nEnroll Level: {}\nPUID: {}\nGUID: {}\nToken: {}".format(
+    print("Status: {}\nMessage: {}\nEnroll Level: {}\nPUID: {}\nGUID: {}".format(
         predict_handle.status,
         predict_handle.message,
         predict_handle.enroll_level,
         predict_handle.puid,
-        predict_handle.guid,
-        predict_handle.token
+        predict_handle.guid
     ))
 
 Output Description:
@@ -505,7 +501,6 @@ The predict method returns a PredictHandle object containing the following attri
 - **enroll_level**: Specifies the enrollment level of the user.
 - **puid**: The unique PUID associated with the matched user.
 - **guid**: The unique GUID associated with the matched user.
-- **token**: A token, if applicable, for additional security.
 
 Example:
 
@@ -521,7 +516,6 @@ Output:
   Enroll Level:1
   PUID:2o4747qo77op7140747o
   GUID:rq0rqpo647s317n30145
-  Token:None
 
 For advanced settings and configuration options, see the :ref:`predict advanced instructions <predict_advanced>` section.
 

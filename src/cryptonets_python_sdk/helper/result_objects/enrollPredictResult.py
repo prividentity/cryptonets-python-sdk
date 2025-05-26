@@ -9,7 +9,6 @@ class FaceEnrollPredictResult:
         enroll_level=None,
         puid=None,
         guid=None,
-        token=None,
         score=None,
         status=CALL_STATUS_ERROR,
         message="",
@@ -20,7 +19,6 @@ class FaceEnrollPredictResult:
         self._enroll_level = enroll_level
         self._puid = puid
         self._guid = guid
-        self._token = token
         self._status = status
         self._message = message
         self._score = score
@@ -40,7 +38,8 @@ class FaceEnrollPredictResult:
     @property
     def api_message(self) -> str:
         """
-        Returns the message received from the API of the operation
+        Returns the message received from the API of the operation.
+        If the user is enrolled, this message will be "User Already Enrolled"
         """
         return self._api_message
     
@@ -80,16 +79,7 @@ class FaceEnrollPredictResult:
         Unique ID of length 20
         """
         return self._guid
-
-    @property
-    def token(self) -> str:
-        """
-        Returns the token for verifying the operation
-
-        Yet to be implemented for configuration
-        """
-        return self._token
-
+    
     @property
     def status(self) -> int:
         """
@@ -132,10 +122,6 @@ class FaceEnrollPredictResult:
     def status(self, value):
         self._status = value
 
-    @token.setter
-    def token(self, value):
-        self._token = value
-
     @message.setter
     def message(self, value):
         self._message = value
@@ -170,8 +156,7 @@ class FaceEnrollPredictResult:
             print(f"Message: {result.message}")
             print(f"Enroll Level: {result.enroll_level}")
             print(f"PUID: {result.puid}")
-            print(f"GUID: {result.guid}")
-            print(f"Token: {result.token}")
+            print(f"GUID: {result.guid}")            
             print(f"Score: {item.score}")
             print(f"API Status: {result.api_status}")
             print(f"API Message: {result.api_message}")
