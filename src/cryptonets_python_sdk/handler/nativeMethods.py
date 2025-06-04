@@ -1017,11 +1017,15 @@ class NativeMethods(object):
 
                 c_result = c_char_p()
                 c_result_len = c_int()
-                with_model_stdd = False
+                with_model_stdd = False 
+                if config_object and hasattr(config_object, '_get_param_value'):                    
+                    value = config_object._get_param_value(PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD) 
+                    if value is not None and isinstance(value, bool):
+                        with_model_stdd = value
+
                 config_json = None
 
                 if config_object and config_object.get_config_param():
-                   with_model_stdd =  config_object._get_param_value(PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD)     
                    config_json = config_object.get_config_param()                
                 
                 if config_object and config_json:
