@@ -1,6 +1,20 @@
 Changelog
 =========
 
+
+Version 1.3.14 (2025-06-04)
+-----------------------------
+
+Updates:
+
+* Solve  `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/32>`_. 
+* Implement  `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/34>`_.
+* Update Updates to face validation error codes to align with the native library status codes.
+* Updated the error messages in messages.py to reflect the new error codes and removed unused messages for image and video spoofing.
+* Age Estimation calls now return a message for face validation even if face validation is relaxed with the parameter: `ESTIMATE_AGE_FACE_VALIDATIONS_OFF`.
+* The native library points to '25.06.04-21817a7'.
+
+
 Version 1.3.13 (2025-05-23)
 -----------------------------
 
