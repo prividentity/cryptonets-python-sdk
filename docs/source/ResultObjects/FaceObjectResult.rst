@@ -40,15 +40,11 @@ Return Codes for is valid and Error Messages
    * - -3
      - Face too close to the edge; please center your face in the image.
    * - -2
-     - Mobile phone detected in the vicinity, which may indicate a spoof attempt.
+     - Too many faces detected.
    * - -1
      - NoFace
    * - 0
      - Valid Biometric
-   * - 1
-     - Face is an image of an image (spoof). Please only provide live facial image(s). (Under implementation)
-   * - 2
-     - Face is an image of a video (spoof). Please only provide live facial image(s). (Under implementation)
    * - 3
      - Face in image is too close to the camera. Please move away from the camera.
    * - 4
@@ -84,6 +80,16 @@ Return Codes for is valid and Error Messages
    * - 19
      - Invalid face background. Too noisy to capture face
    * - 20
-     - Eye blink detected.
+     - Eye blink detected
    * - 21
-     - Mouth open detected.
+     - Mouth open detected
+   * - 22 
+     - Face is rotated to the right
+   * - 23 
+     - Face is rotated to the left 
+   * - 24
+     - The face is wearing eyeglasses and a face mask at the same time 
+   * - 25  
+     - Face not in oval. Please center your face in the oval area (used in antispoofing)
+
+
