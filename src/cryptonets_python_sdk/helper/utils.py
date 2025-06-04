@@ -131,11 +131,9 @@ class FaceValidationCodeMeta(EnumMeta):
 
 class FaceValidationCode(Enum, metaclass=FaceValidationCodeMeta):
     InvalidImage = -100  # Err = -100
+    ManyFacesDetected = -2 # Too many faces detected in the image.
     NoFace = -1  # faceNotDetected = -1
     ValidBiometric = 0  # Ok = 0
-    ImageSpoof =  1
-
-    VideoSpoof = 2 
     TooClose = 3  # faceTooClose = 3
     TooFaraway = 4  # faceTooFar = 4
     TooFarToRight = 5  # faceRight = 5
@@ -155,7 +153,8 @@ class FaceValidationCode(Enum, metaclass=FaceValidationCodeMeta):
     InvalidFaceBackground = 19  # InvalidFaceBackground = 19
     EyeBlink = 20  # EyeBlink = 20
     МouthOpened = 21  # МouthOpened = 21
-    faceRotatedRight = 22
-    faceRotatedLeft = 23
-
+    faceRotatedRight = 22  # Face is rotated to the right.
+    faceRotatedLeft = 23 # Face is rotated to the left.
+    FaceWithEyeglassesAndFacemask = 24 # The face is wearing eyeglasses and a face mask at the same time.
+    FaceNotInOval = 25;    # The face is not in the anti-spoof recommended position (target oval). 
     
