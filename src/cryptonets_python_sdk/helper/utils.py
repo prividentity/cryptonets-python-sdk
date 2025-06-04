@@ -156,5 +156,5 @@ class FaceValidationCode(Enum, metaclass=FaceValidationCodeMeta):
     faceRotatedRight = 22  # Face is rotated to the right.
     faceRotatedLeft = 23 # Face is rotated to the left.
     FaceWithEyeglassesAndFacemask = 24 # The face is wearing eyeglasses and a face mask at the same time.
-    FaceNotInOval = 25;    # The face is not in the anti-spoof recommended position (target oval). 
+    FaceNotInOval = 25     # The face is not in the anti-spoof recommended position (target oval). 
     
