@@ -1,3 +1,6 @@
+from cryptonets_python_sdk.settings.configuration import FACE_VALIDATION_STATUSES
+
+
 class Message:
     def __init__(self):
         self.MISSING_ARGUMENT = "Missing argument: {}"
@@ -59,9 +62,49 @@ class Message:
             107: self.EXCEPTION_ERROR_ENROLL,
             108: self.EXCEPTION_ERROR_PREDICT,
             109: "Error Description: Incorrect Usage."
-           
-
         }
 
-    def get_message(self, code):
-        return self.APP_MESSAGES.get(code,"Something went wrong!")
+        self.NON_PROMPTING_FACE_STATUS_MESSAGES = {
+            FACE_VALIDATION_STATUSES.FV_OK:                    "Face validation is successful.",
+            FACE_VALIDATION_STATUSES.FV_ERR:                "Error occurred during face validation.",
+            FACE_VALIDATION_STATUSES.FV_MANY_FACES_DETECTED:  "Too many faces detected in the image.",
+            FACE_VALIDATION_STATUSES.FV_FACE_NOT_DETECTED:    "Face not detected in the image.",
+            FACE_VALIDATION_STATUSES.FV_FACE_TOO_CLOSE:        "Face is too close to the camera.",
+            FACE_VALIDATION_STATUSES.FV_FACE_TOO_FAR:          "Face is too far from the camera.",
+            FACE_VALIDATION_STATUSES.FV_FACE_RIGHT:            "Face is turned to the right.",
+            FACE_VALIDATION_STATUSES.FV_FACE_LEFT:             "Face is turned to the left.",
+            FACE_VALIDATION_STATUSES.FV_FACE_UP:               "Face is turned upwards.",
+            FACE_VALIDATION_STATUSES.FV_FACE_DOWN:             "Face is turned downwards.",
+            FACE_VALIDATION_STATUSES.FV_IMAGE_BLURR:           "Image is blurred.",
+            FACE_VALIDATION_STATUSES.FV_FACE_WITH_GLASS:      "Face is wearing glasses.",
+            FACE_VALIDATION_STATUSES.FV_FACE_WITH_MASK:       "Face is wearing a mask.",
+            FACE_VALIDATION_STATUSES.FV_LOOKING_LEFT:         "Face is looking to the left.",
+            FACE_VALIDATION_STATUSES.FV_LOOKING_RIGHT:        "Face is looking to the right.",
+            FACE_VALIDATION_STATUSES.FV_LOOKING_HIGH:         "Face is looking upwards.",
+            FACE_VALIDATION_STATUSES.FV_LOOKING_DOWN:         "Face is looking downwards.",
+            FACE_VALIDATION_STATUSES.FV_FACE_TOO_DARK:        "Face is too dark.",
+            FACE_VALIDATION_STATUSES.FV_FACE_TOO_BRIGHT:      "Face is too bright.",
+            FACE_VALIDATION_STATUSES.FV_FACE_LOW_VAL_CONF:    "Low confidence in face validation.",
+            FACE_VALIDATION_STATUSES.FV_INVALID_FACE_BACKGROUND:   "Invalid face background.",
+            FACE_VALIDATION_STATUSES.FV_EYE_BLINK:            "Eye blink detected.",
+            FACE_VALIDATION_STATUSES.FV_MOUTH_OPENED:         "Mouth opened detected.",
+            FACE_VALIDATION_STATUSES.FV_FACE_ROTATED_RIGHT:   "Face is rotated to the right.",
+            FACE_VALIDATION_STATUSES.FV_FACE_ROTATED_LEFT:    "Face is rotated to the left.",
+            FACE_VALIDATION_STATUSES.FV_FACE_WITH_EYEGLASSES_AND_FACEMASK:  "The face is wearing eyeglasses and a face mask at the same time.",
+            FACE_VALIDATION_STATUSES.FV_FACE_NOT_IN_OVAL:     "The face is not in the anti-spoof recommended position (target oval).",
+        }
+
+
+
+    def get_message(self, code,prompting_message:bool = True):
+        if prompting_message:
+            return self.APP_MESSAGES.get(code,"Something went wrong!")
+        else:
+            # Allow lookup by integer value as well as enum
+            if code in self.NON_PROMPTING_FACE_STATUS_MESSAGES:
+                return self.NON_PROMPTING_FACE_STATUS_MESSAGES[code]
+            # Try to match by integer value of enum
+            for k, v in self.NON_PROMPTING_FACE_STATUS_MESSAGES.items():
+                if hasattr(k, 'value') and k.value == code:
+                    return v
+            return "Something went wrong!"
