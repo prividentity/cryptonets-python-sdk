@@ -96,7 +96,7 @@ class Message:
 
 
 
-    def get_message(self, code,prompting_message:bool = True):
+    def get_message(self, code, prompting_message:bool = True):
         if prompting_message:
             return self.APP_MESSAGES.get(code,"Something went wrong!")
         else:
