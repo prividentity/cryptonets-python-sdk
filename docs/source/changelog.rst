@@ -1,6 +1,17 @@
 Changelog
 =========
 
+Version 1.3.15 (2025-06-12)
+-----------------------------
+
+Updates:
+
+* Update message returned in `estimate_age` to be non prompting `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/37>`_.
+* Native library change: Enhancement of `estimate age with stddev` returned stddev. 
+* Native library change: In `estimate age` full face  analysis is done and therefore more possible face statuses can be returned (eye glasses, face mask, blurriness status). 
+* Enhance eyes and mouth statuses detection.
+* The native library points to '25.06.12-f293068'.
+
 
 Version 1.3.14 (2025-06-04)
 -----------------------------

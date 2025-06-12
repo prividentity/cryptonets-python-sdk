@@ -392,7 +392,7 @@ class Face(metaclass=Singleton):
                 _age_confidence_score = face_data.get('age_confidence_score', 0.0)
 
                 if _return_code in FaceValidationCode:
-                    _message = self.message.get_message(_return_code)
+                    _message = self.message.get_message(_return_code,False)
                 else:
                     _message = "Unknown status code"
 
