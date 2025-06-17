@@ -16,6 +16,7 @@ from .helper.result_objects.deleteResult import FaceDeleteResult
 from .helper.result_objects.enrollPredictResult import FaceEnrollPredictResult
 from .helper.result_objects.faceValidationResult import FaceValidationResult
 from .helper.result_objects.antispoofCheckResult import AntispoofCheckResult
+from .helper.result_objects.ageEstimateResult import AgeEstimateResult
 from .helper.result_objects.isoFaceResult import ISOFaceResult
 from .helper.utils import image_path_to_array
 from .settings.configuration import ConfigObject, PARAMETERS
@@ -210,7 +211,7 @@ class FaceFactor(metaclass=Singleton):
         image_path: str = None,
         image_data: np.array = None,
         config: ConfigObject = None,
-    ) -> FaceValidationResult:
+    ) -> AgeEstimateResult:
         """Check if the image is valid and returns the age of the image
 
         Parameters
@@ -226,13 +227,13 @@ class FaceFactor(metaclass=Singleton):
 
         Returns
         -------
-        FaceValidationResult
-            error: int [0 if successful -1 if any error]
-
-            message: str [Message from the operation]
-
-            face_objects: List[FaceObjectResult]
-
+        AgeEstimateResult
+            operation_status_code: ApiReturnStatus [ApiReturnStatus.API_NO_ERROR (0) if successful, failure otherwise].
+                                   if failure, face_age_objects list will be None. 
+                                   The operation is considered successful if no face were detected in the image.
+                                   In his case face_age_objects will be an empty list.
+            operation_message: str [Message explaining the error  if any]
+            face_age_objects: List[FaceAgeObjectResult] 
         """
         try:
             if (
@@ -250,26 +251,26 @@ class FaceFactor(metaclass=Singleton):
             if (image_path is not None and image_data is not None) or (
                 image_path is None and image_data is None
             ):
-                return FaceValidationResult(
+                return AgeEstimateResult(
                     message="Specify either image_path or image_data"
                 )
             img_data = None
             if image_data is not None:
                 if not isinstance(image_data, np.ndarray):
-                    return FaceValidationResult(
+                    return AgeEstimateResult(
                         message="Required numpy array in RGB/RGBA/BGR format"
                     )
                 img_data = image_data
             if image_path is not None and len(image_path) > 0:
                 if not os.path.exists(image_path):
-                    return FaceValidationResult(message=self.message.get_message(101))
+                    return AgeEstimateResult(message=self.message.get_message(101))
                 img_data = image_path_to_array(image_path, input_format=input_format)
             if img_data is None:
-                return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
+                return AgeEstimateResult(message=self.message.AGE_ESTIMATE_ERROR)
 
             # Check image dimensions
             if img_data.shape[0] <= 224 or img_data.shape[1] <= 224:
-                return FaceValidationResult(
+                return AgeEstimateResult(
                     message="Image dimensions should be greater than 224x224."
                 )
 
@@ -281,7 +282,7 @@ class FaceFactor(metaclass=Singleton):
             print(
                 "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
             )
-            return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
+            return AgeEstimateResult(message=self.message.AGE_ESTIMATE_ERROR)
 
     def enroll(
         self,

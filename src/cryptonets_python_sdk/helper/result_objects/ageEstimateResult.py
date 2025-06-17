@@ -158,6 +158,20 @@ class AgeEstimateResult:
     """Age Estimation result class is used to encapsulate the results of the FaceFactory's age estimation operation: 
     FaceFactory.estimate_age
     It includes the operation status code, message, and a list of FaceAgeObjectResult.
+    - operation_status_code: if equal to ApiReturnStatus.API_NO_ERROR (0), it indicate that the operation is successful.
+    and face_age_objects will contain the list of detected faces with their estimated ages.
+    If the operation failed, operation_status_code will contain the error code and operation_message will contain
+    the error message explaining the error. 
+    In cas eof error , face_age_objects will be None.    
+    The operation is considered successful if no face were detected in the image.
+    In his case face_age_objects will be an empty list.
+    - operation_message: will be set to an empty string if the operation is successful. If the operation failed, it will contain the error message explaining the error.
+    - face_age_objects: A list of the detected faces with their estimated ages.
+    Each FaceAgeObjectResult contains the following attributes:
+    - face_traits: A list of FaceTraitObject, each containing a validation code (FaceValidationCode) and a message (non prompting style).
+    - bounding_box: A BoundingBox object representing the bounding box of the face.
+    - face_confidence_score: A float representing the confidence score of the face detection.
+    - age_confidence_score: A float representing the confidence score of the age estimation.
     """
     def __init__(self, operation_status_code:ApiReturnStatus=ApiReturnStatus.API_GENERIC_ERROR, operation_message:str=""):
         """Age Estimation result class for handling the detected faces and their estimated ages. 
