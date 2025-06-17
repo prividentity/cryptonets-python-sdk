@@ -50,6 +50,13 @@ class Point(object):
         self._x = x
         self._y = y
 
+    def __repr__(self):
+        return "Point()"
+    
+    def __str__(self):
+        return "Point(x=%s, y=%s)" % (self._x, self._y)
+        
+
     @property
     def x(self):
         """
@@ -84,6 +91,15 @@ class BoundingBox(object):
             self._top_left_coordinate = Point(
                 top_left_coordinate.get("x", None), top_left_coordinate.get("y", None)
             )
+
+    def __repr__(self):
+        return "BoundingBox()"
+    
+    def __str__(self):
+        return "BoundingBox(top_left_coordinate=%s, bottom_right_coordinate=%s)" % (
+            self._top_left_coordinate,
+            self._bottom_right_coordinate,
+        )
 
     @property
     def bottom_right_coordinate(self) -> Point:
@@ -158,3 +174,4 @@ class FaceValidationCode(Enum, metaclass=FaceValidationCodeMeta):
     FaceWithEyeglassesAndFacemask = 24 # The face is wearing eyeglasses and a face mask at the same time.
     FaceNotInOval = 25     # The face is not in the anti-spoof recommended position (target oval). 
     
+
