@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Version 1.3.16 (2025-06-18)
+-----------------------------
+
+Updates:
+
+* Update message returned in `estimate_age` to include all detected face traits `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/39>`_.
+* Add new result object `AgeEstimateResult` to to be used as distinct return type for `estimate_age` operations.
+* The native library points to '25.06.18-d1a2cf0'.
+
 Version 1.3.15 (2025-06-12)
 -----------------------------
 

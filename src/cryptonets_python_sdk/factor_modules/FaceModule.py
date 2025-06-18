@@ -13,6 +13,7 @@ from ..helper.result_objects.enrollPredictResult import FaceEnrollPredictResult
 from ..helper.result_objects.faceValidationResult import FaceValidationResult
 from ..helper.result_objects.isoFaceResult import ISOFaceResult
 from ..helper.result_objects.antispoofCheckResult import AntispoofCheckResult
+from ..helper.result_objects.ageEstimateResult import AgeEstimateResult
 from ..helper.utils import FaceValidationCode
 from ..settings.configuration import ConfigObject, PARAMETERS
 from ..settings.loggingLevel import LoggingLevel
@@ -359,56 +360,20 @@ class Face(metaclass=Singleton):
 
     def estimate_age(
         self, image_data: np.array, config_object: ConfigObject = None
-    ) -> FaceValidationResult:
+    ) -> AgeEstimateResult:
         try:
             json_data = self.face_factor_processor.estimate_age(
                 image_data, config_object=config_object
             )
             if not json_data:
-                return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
+                return AgeEstimateResult(message=self.message.AGE_ESTIMATE_ERROR)
 
-            # Check if call_status indicates success
-            call_status = json_data.get('call_status', {})
-            if call_status.get('return_status', -1) != 0:
-                return FaceValidationResult(
-                    error=call_status.get('return_status', -1),
-                    message=self.message.AGE_ESTIMATE_ERROR,
-                )
-
-            face_age_result_object = FaceValidationResult(
-                error=call_status.get('return_status', -1), message="OK"
-            )
-
-            # Get the list of faces from the 'ages' key
-            ages_list = json_data.get('ages', {}).get('ages', [])
-            for face_data in ages_list:
-                # Get face validation data
-                face_validation = face_data.get('face_validation', {})
-                _return_code = face_validation.get('face_validation_status', -1)
-                _bounding_box = face_validation.get('bounding_box', {})
-                _top_left = _bounding_box.get('top_left', None)
-                _bottom_right = _bounding_box.get('bottom_right', None)
-                _age = face_data.get('estimated_age', -1.0)
-                _age_confidence_score = face_data.get('age_confidence_score', 0.0)
-
-                if _return_code in FaceValidationCode:
-                    _message = self.message.get_message(_return_code,False)
-                else:
-                    _message = "Unknown status code"
-
-                face_age_result_object.append_face_objects(
-                    return_code=_return_code,
-                    age=_age,
-                    message=_message,
-                    top_left_coordinate=_top_left,
-                    bottom_right_coordinate=_bottom_right,
-                    age_confidence_score=_age_confidence_score 
-                )
-
-            return face_age_result_object
+            final_result = AgeEstimateResult.from_json(json_data)
+            return final_result
+        
         except Exception as e:
             print(e, traceback.format_exc())
-            return FaceValidationResult(message=self.message.AGE_ESTIMATE_ERROR)
+            return AgeEstimateResult(message=self.message.AGE_ESTIMATE_ERROR)
 
 
     def get_iso_face(

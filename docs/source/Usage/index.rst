@@ -145,17 +145,27 @@ Sample Usage:
 
     # Import the FaceFactor class from the CryptoNets SDK
     from cryptonets_python_sdk.factor import FaceFactor
+    from cryptonets_python_sdk.helper.result_objects.ageEstimateResult import AgeEstimateResult
+    from cryptonets_python_sdk.helper.result_objects.callStatus import ApiReturnStatus
+    from cryptonets_python_sdk.settings.configuration import FACE_VALIDATION_STATUSES
+    from cryptonets_python_sdk.helper.result_objects.ageEstimateResult import FaceTraitObject
+    from typing import List
+    from cryptonets_python_sdk.helper.utils import FaceValidationCode, BoundingBox , Point
 
     # Initialize FaceFactor with the server URL and API key
     face_factor = FaceFactor(server_url=SERVER_URL, api_key=API_KEY)
 
-    # Estimate age
-    age_handle = face_factor.estimate_age(image_path="path_to_the_image")  # Replace with the actual image path
+    # Estimate user's age with strict validation
+    handle = face_factor.estimate_age(image_path="path_to_the_image")  # Replace with the actual image path
 
-    # Accessing results
-    error_code = age_handle.error         # Error code, if any
-    message = age_handle.message          # Operation message
-    face_objects = age_handle.face_objects  # List of detected Face objects
+    # if the call failed 
+    if handle.operation_status_code != ApiReturnStatus.API_NO_ERROR :
+       print("Error:", handle.operation_message)
+       return
+    
+    # no face detected
+    if not handle.face_age_objects or len(handle.face_age_objects) == 0:
+        print("No face detected")    
 
     
 Example Output:
@@ -165,33 +175,47 @@ Example Output:
 .. code-block:: py
 
     # Loop through detected faces and print the results
-    for index, face in enumerate(age_handle.face_objects):
-        print(f"Face: {index + 1}")
-        print(f"Return Code: {face.return_code}")
-        print(f"Message: {face.message}")
-        print(f"Age: {face.age}")
-        print(f"BBox Top Left: {face.bounding_box.top_left_coordinate}")
-        print(f"BBox Bottom Right: {face.bounding_box.bottom_right_coordinate}\n")
+    print(f"Operation Status Code: {handle.operation_status_code.name}")
+    print(f"Message: {handle.operation_message}")
+    
+    face_objects = handle.face_age_objects
+
+    if face_objects:
+        print(f"\nNumber of detected faces: {len(face_objects)}")        
+        for i, face in enumerate(face_objects):
+            print(f"\nFace #{i+1}:")
+            print(f"  Estimated Age: {face.age}")
+            print(f"  Age Confidence Score: {face.age_confidence_score}")
+            print(f"  Face Confidence Score: {face.face_confidence_score}")
+            print(f"  Bounding Box: {face.bounding_box}")
+            
+            if face.face_traits:
+                print(f"  Face Traits:")
+                for j, trait in enumerate(face.face_traits):
+                    print(f"    Trait #{j+1}:")
+                    print(f"      Validation Code(Name: {trait.validation_code}, code: {trait.validation_code.value})")
+                    print(f"      Message: {trait.message}")
+    else:
+        print("\nNo faces detected.") 
 
 Output:
 
 .. code-block:: py
 
-    Face#:1
-    -------
-    Return Code:0
-    Message:ValidBiometric
-    Age:21.47
-    BBox TL:Point(859.0,189.0)
-    BBox BR:Point(1296.0,759.0)
+    Operation Status Code: API_NO_ERROR
+    Message: 
 
-    Face#:2
-    -------
-    Return Code:0
-    Message:ValidBiometric
-    Age:18.19
-    BBox TL:Point(134.0,356.0)
-    BBox BR:Point(580.0,908.0)
+    Number of detected faces: 1
+
+    Face #1:
+    Estimated Age: 51.1969604
+    Age Confidence Score: 2.54153657
+    Face Confidence Score: 0.776028514
+    Bounding Box: BoundingBox(top_left_coordinate=Point(80,147), bottom_right_coordinate=Point(260,315))
+    Face Traits:
+        Trait #1:
+        Validation Code(Name: FaceValidationCode.ValidBiometric, code: 0)
+        Message: Face validation is successful.
 
 
 For a complete list of return and status codes, see :ref:`return codes <return_codes>`.
