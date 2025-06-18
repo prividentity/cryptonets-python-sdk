@@ -190,14 +190,40 @@ you can set the configuration context string to ``enroll`` for tighter control, 
     # Import ConfigObject and PARAMETERS
     from cryptonets_python_sdk.settings.configuration import ConfigObject
     from cryptonets_python_sdk.settings.configuration import PARAMETERS
+    from cryptonets_python_sdk.helper.result_objects.ageEstimateResult import AgeEstimateResult
+    from cryptonets_python_sdk.helper.result_objects.callStatus import ApiReturnStatus
+    from cryptonets_python_sdk.settings.configuration import FACE_VALIDATION_STATUSES
+    from cryptonets_python_sdk.helper.result_objects.ageEstimateResult import FaceTraitObject
+    from typing import List
+    from cryptonets_python_sdk.helper.utils import FaceValidationCode, BoundingBox , Point
 
     # Configure strict validation for age estimation
-    age_config_object = ConfigObject(config_param={PARAMETERS.CONTEXT_STRING: "enroll"})
+    age_config_object = ConfigObject()
 
     # Estimate user's age with strict validation
-    age_handle = face_factor.estimate_age(image_path="path_to_the_image", config=age_config_object)
-
-
+    age_estimate_result = face_factor.estimate_age(image_path="path_to_the_image", config=age_config_object)
+    print(f"Operation Status Code: {age_estimate_result.operation_status_code.name}")
+    print(f"Message: {age_estimate_result.operation_message}")
+    
+    face_objects = age_estimate_result.face_age_objects
+    if face_objects:
+        print(f"\nNumber of detected faces: {len(face_objects)}")
+        
+        for i, face in enumerate(face_objects):
+            print(f"\nFace #{i+1}:")
+            print(f"  Estimated Age: {face.age}")
+            print(f"  Age Confidence Score: {face.age_confidence_score}")
+            print(f"  Face Confidence Score: {face.face_confidence_score}")
+            print(f"  Bounding Box: {face.bounding_box}")
+            
+            if face.face_traits:
+                print(f"  Face Traits:")
+                for j, trait in enumerate(face.face_traits):
+                    print(f"    Trait #{j+1}:")
+                    print(f"      Validation Code(Name: {trait.validation_code}, code: {trait.validation_code.value})")
+                    print(f"      Message: {trait.message}")
+    else:
+        print("\nNo faces detected.") 
 
 Example 2: Increasing the Threshold for Prediction Crop Confidence
 
