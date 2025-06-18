@@ -16,4 +16,5 @@ This section covers how to use the result objects from the operations.
    FaceObjectResult
    FaceValidationResult
    ISOFaceResult
+   AgeEstimateResult
    
