@@ -41,6 +41,8 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     RELAX_FACE_VALIDATION = "relax_face_validation"
     # use only for age predict
     USE_AGE_ESTIMATION_WITH_MODEL_STDD ="use_age_estimate_with_model_stdd"
+    DISABLE_AGE_ESTIMATION_ANTISPOOF = "skip_antispoof"
+
     
 
 
@@ -181,6 +183,9 @@ class ParameterValidator:
 
         self.__parameter[PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD] = self.Parameter(
             name=PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD, _type="BOOL")
+        
+        self.__parameter[PARAMETERS.DISABLE_AGE_ESTIMATION_ANTISPOOF] = self.Parameter(
+            name=PARAMETERS.DISABLE_AGE_ESTIMATION_ANTISPOOF, _type="BOOL")
 
 
     def validate(self, key, value):
@@ -251,6 +256,12 @@ class FACE_VALIDATION_STATUSES   (Enum):
         FV_FACE_WITH_EYEGLASSES_AND_FACEMASK = 24  # The face is wearing eyeglasses and a face mask at the same time.
         FV_FACE_NOT_IN_OVAL = 25     # The face is not in the anti-spoof recommended position (target oval).    
 
+
+class ANTISPOOFING_STATUSES   (Enum):
+  AS_NO_SPOOF_DETECTED = 0  # No spoofing detected.
+  AS_SPOOF_DETECTED = 1 # Spoofing detected in the image.
+  AS_GENERIC_ERROR = -100 # Generic error occurred.
+  AS_NOT_PERFORMED = -6 # Anti-spoofing not performed.
 
 class ConfigObject:
     """Configuration Object class handles the parameters that are required to initialize the server with
