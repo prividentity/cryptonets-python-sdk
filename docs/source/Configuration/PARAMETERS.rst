@@ -85,3 +85,7 @@ Configurable Parameter List and Valid values
    * - FACE_THRESHOLD
      - Threshold for compare operation. If the calculated distance between 2 faces is strictly less than this value, the faces are considered similar.
      - Default value is 1.0 which suitable for most collections (i.e enmbeddings models) , values are  0 to 2
+    * - DISABLE_AGE_ESTIMATION_ANTISPOOF
+     - By default set to `True`. If set to `False`, the age estimation will not perform any anti-spoofing checks. 
+     - True, False
+     

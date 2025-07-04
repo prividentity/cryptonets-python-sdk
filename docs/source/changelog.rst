@@ -1,6 +1,16 @@
 Changelog
 =========
 
+Version 1.3.17 (2025-07-04)
+-----------------------------
+
+Updates:
+
+* Add new field to the result object `AgeEstimateResult` to return the antispoofing status. See `ANTISPOOFING_STATUSES` for possible values. 
+* The antispoof pass is not enabled by default. You need to set the new configuration parameter `DISABLE_AGE_ESTIMATION_ANTISPOOF` to False (default value is `True`) to enable it.
+* The native library points to '25.07.04-b9c50c6'.
+
+
 Version 1.3.16 (2025-06-18)
 -----------------------------
 
