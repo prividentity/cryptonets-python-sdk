@@ -6,6 +6,8 @@ from cryptonets_python_sdk.factor import FaceFactor
 from cryptonets_python_sdk.settings.loggingLevel import LoggingLevel
 import time
 
+from cryptonets_python_sdk.helper.result_objects.ageEstimateResult import AgeEstimateResult
+
 # Initialize images used in the sample methods 
 image_file_path = str(pathlib.Path(__file__).parent / "pic.png")
 tomhanks_2 = str(pathlib.Path(__file__).parent / "tom_hanks_2.jpg")
@@ -19,7 +21,11 @@ api_key = "xxxxxxxxxxxxxxxx"
 print_results=True
 
 
-def create_config_object(collection_name : str ="", relax_face_validation: bool = False):
+def create_config_object(collection_name : str ="", 
+                        relax_face_validation: bool = False,
+                        use_age_estimation_with_model_stdd:bool= False,
+                        estimate_age_face_validations_off:bool = False,
+                        enable_age_estimation_antispoof:bool = False):
     """
     Create a configuration object for FaceFactor operations.
     
@@ -31,16 +37,29 @@ def create_config_object(collection_name : str ="", relax_face_validation: bool 
                                If left empty or not provided the default collection and its
                                embedding model will be used. 
         relax_face_validation (bool): A boolean indicating whether to relax the face validation
-                                     requirements for lower quality images.
+                                     requirements for lower quality images. (by default it is set to False)
+        use_age_estimation_with_model_stdd (bool): A boolean indicating whether to use age estimation
+                                                   with the model standard deviation. (by default it is set to False)
+        estimate_age_face_validations_off (bool): A boolean indicating whether to disable face validation
+                                                  during age estimation. (by default it is set to False)
+        enable_age_estimation_antispoof (bool): A boolean indicating whether to disable antispoofing
+                                                 checks during age estimation. (by default it is set to False)
     
     Returns:
         ConfigObject: A configuration object initialized with the specified parameters.
     """
+
     config_param = { PARAMETERS.INPUT_IMAGE_FORMAT: "rgb" }
     if collection_name!="":
         config_param[PARAMETERS.COLLECTION_NAME] = collection_name
     if relax_face_validation:
         config_param[PARAMETERS.RELAX_FACE_VALIDATION] = True
+    if use_age_estimation_with_model_stdd:
+        config_param[PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD] = True
+    if estimate_age_face_validations_off:   
+        config_param[PARAMETERS.ESTIMATE_AGE_FACE_VALIDATIONS_OFF] = True
+    if enable_age_estimation_antispoof:   
+        config_param[PARAMETERS.DISABLE_AGE_ESTIMATION_ANTISPOOF] = False        
     return ConfigObject(config_param)
 
 # Initialize the FaceFactor object
@@ -218,30 +237,17 @@ def estimate_age():
     
     # Call estimate_age from the face factor object
     start_time = time.time()
-    result = face_factor.estimate_age(image_path=image_file_path,config=create_config_object())
+    result = face_factor.estimate_age(image_path=image_file_path,config=create_config_object(relax_face_validation=True,
+                                                                                          use_age_estimation_with_model_stdd=True,enable_age_estimation_antispoof=True))
     end_time = time.time()
     duration = end_time - start_time
         
     if print_results:
         print(f"Estimate age operation took {duration} seconds")
         # Error code and Message for the performed operation
-        print("Error:{}\nMessage:{}".format(result.error, result.message))
-        # Iterate face objects from the result to see individual results
-        for index, face in enumerate(result.face_objects):
-            print(
-                "Face#:{}\n{}\nReturn Code:{}\nMessage:{}\nAge:{}\nBBox TL:{}\nBBox BR:{}\n".format(
-                    index + 1,
-                    "-" * 7,
-                    face.return_code,
-                    face.message,
-                    face.age,
-                    face.bounding_box.top_left_coordinate.__str__(),
-                    face.bounding_box.bottom_right_coordinate.__str__(),
-                )
-            )
-
+        AgeEstimateResult.print(result)
         # Check if no faces are found in the image
-        if len(result.face_objects) == 0:
+        if len(result.face_age_objects) == 0:
             print("No Faces found!!\n")
     return result
 

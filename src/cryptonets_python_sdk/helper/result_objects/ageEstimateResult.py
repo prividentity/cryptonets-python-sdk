@@ -1,4 +1,6 @@
 from typing import List
+
+from cryptonets_python_sdk.settings.configuration import ANTISPOOFING_STATUSES
 from ..utils import FaceValidationCode, BoundingBox , Point
 from ..messages import Message
 from .callStatus import CallStatus,ApiReturnStatus
@@ -52,7 +54,8 @@ class FaceAgeObjectResult():
         self,
         face_traits=None,
         message=None,
-        age:float=None,                
+        age:float=None,   
+        antispoofing_status: ANTISPOOFING_STATUSES = None,
         age_confidence_score:float=None,
         bounding_box:BoundingBox=None,
         face_confidence_score:float=None
@@ -103,6 +106,13 @@ class FaceAgeObjectResult():
             self._face_confidence_score = float(face_confidence_score)
         else:
             raise TypeError("face_confidence_score must be a float or int")
+        
+        if antispoofing_status is None:
+            self._antispoofing_status = ANTISPOOFING_STATUSES.AS_NOT_PERFORMED
+        elif isinstance(antispoofing_status, ANTISPOOFING_STATUSES):
+            self._antispoofing_status = antispoofing_status
+        else:
+            raise TypeError("antispoofing_status must be an instance of ANTISPOOFING_STATUSES Enum")
 
     @property
     def age(self):
@@ -153,6 +163,17 @@ class FaceAgeObjectResult():
         """Add a trait to the face_traits list."""
         self._face_traits.append(trait)
 
+    @property
+    def antispoofing_status(self) -> ANTISPOOFING_STATUSES:
+        """Get the antispoofing status."""
+        return self._antispoofing_status
+
+    @antispoofing_status.setter
+    def antispoofing_status(self, value: ANTISPOOFING_STATUSES):
+        """Set the antispoofing status."""
+        if not isinstance(value, ANTISPOOFING_STATUSES):
+            raise TypeError("antispoofing_status must be an instance of ANTISPOOFING_STATUSES Enum")
+        self._antispoofing_status = value
 
 class AgeEstimateResult:
     """Age Estimation result class is used to encapsulate the results of the FaceFactory's age estimation operation: 
@@ -172,6 +193,9 @@ class AgeEstimateResult:
     - bounding_box: A BoundingBox object representing the bounding box of the face.
     - face_confidence_score: A float representing the confidence score of the face detection.
     - age_confidence_score: A float representing the confidence score of the age estimation.
+    - antispoofing_status: A string representing the antispoofing status of the face. See ANTISPOOFING_STATUSES for possible values. 
+    The antispoof pass is not enabled by default. You need to set the configuration parameter DISABLE_AGE_ESTIMATION_ANTISPOOF to False to enable it.
+    - age: A float representing the estimated age of the face. If age is not estimated or the face is not valid or not detected, it will be set to -1.0.
     """
     def __init__(self, operation_status_code:ApiReturnStatus=ApiReturnStatus.API_GENERIC_ERROR, operation_message:str=""):
         """Age Estimation result class for handling the detected faces and their estimated ages. 
@@ -295,7 +319,7 @@ class AgeEstimateResult:
                         face_traits=face_trait_with_message,
                         bounding_box=bbox,
                         face_confidence_score=age['face_confidence_score'],
-                        # antispoofing_status=age['antispoofing_status'],
+                        antispoofing_status = ANTISPOOFING_STATUSES(age['antispoofing_status']),                  
                         age_confidence_score=age['age_confidence_score'],
                         age=age['estimated_age']
                     )
@@ -336,6 +360,7 @@ class AgeEstimateResult:
                 print(f"  Estimated Age: {face.age}")
                 print(f"  Age Confidence Score: {face.age_confidence_score}")
                 print(f"  Face Confidence Score: {face.face_confidence_score}")
+                print(f"  Antispoofing Status: {face.antispoofing_status.name}")
                 print(f"  Bounding Box: {face.bounding_box}")
                 
                 if face.face_traits:

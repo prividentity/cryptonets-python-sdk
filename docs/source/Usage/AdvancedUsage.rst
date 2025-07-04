@@ -192,19 +192,54 @@ you can set the configuration context string to ``enroll`` for tighter control, 
     from cryptonets_python_sdk.settings.configuration import PARAMETERS
     from cryptonets_python_sdk.helper.result_objects.ageEstimateResult import AgeEstimateResult
     from cryptonets_python_sdk.helper.result_objects.callStatus import ApiReturnStatus
-    from cryptonets_python_sdk.settings.configuration import FACE_VALIDATION_STATUSES
+    from cryptonets_python_sdk.settings.configuration import ANTISPOOFING_STATUSES , FACE_VALIDATION_STATUSES
     from cryptonets_python_sdk.helper.result_objects.ageEstimateResult import FaceTraitObject
     from typing import List
     from cryptonets_python_sdk.helper.utils import FaceValidationCode, BoundingBox , Point
 
+    def create_config_object(collection_name : str ="", 
+                            use_age_estimation_with_model_stdd:bool= False,
+                            estimate_age_face_validations_off:bool = False,
+                            disable_age_estimation_antispoof:bool = True):
+        """
+        Create a configuration object for FaceFactor operations.
+        
+        This function creates a ConfigObject that can be passed to various FaceFactor methods
+        to customize their behavior.
+        
+        Args:
+            use_age_estimation_with_model_stdd (bool): A boolean indicating whether to use age estimation
+                                                    with the model standard deviation. (by default it is set to False)
+            estimate_age_face_validations_off (bool): A boolean indicating whether to disable face validation
+                                                    during age estimation. (by default it is set to False)
+            disable_age_estimation_antispoof (bool): A boolean indicating whether to disable antispoofing
+                                                    checks during age estimation. (by default it is set to True)
+        
+        Returns:
+            ConfigObject: A configuration object initialized with the specified parameters.
+        """
+
+        config_param = { PARAMETERS.INPUT_IMAGE_FORMAT: "rgb" }
+        if use_age_estimation_with_model_stdd:
+            config_param[PARAMETERS.USE_AGE_ESTIMATION_WITH_MODEL_STDD] = True
+        if estimate_age_face_validations_off:   
+            config_param[PARAMETERS.ESTIMATE_AGE_FACE_VALIDATIONS_OFF] = True
+        if not disable_age_estimation_antispoof:   
+            config_param[PARAMETERS.DISABLE_AGE_ESTIMATION_ANTISPOOF] = disable_age_estimation_antispoof        
+        return ConfigObject(config_param)
+
     # Configure strict validation for age estimation
-    age_config_object = ConfigObject()
+    age_config_object = create_config_object(
+        use_age_estimation_with_model_stdd=True,  # Use model standard deviation for age estimation
+        estimate_age_face_validations_off=True,  # relax face validation during age estimation
+        disable_age_estimation_antispoof=False  # Enable antispoofing checks during age estimation
+    )
 
     # Estimate user's age with strict validation
     age_estimate_result = face_factor.estimate_age(image_path="path_to_the_image", config=age_config_object)
     print(f"Operation Status Code: {age_estimate_result.operation_status_code.name}")
     print(f"Message: {age_estimate_result.operation_message}")
-    
+
     face_objects = age_estimate_result.face_age_objects
     if face_objects:
         print(f"\nNumber of detected faces: {len(face_objects)}")
@@ -215,6 +250,7 @@ you can set the configuration context string to ``enroll`` for tighter control, 
             print(f"  Age Confidence Score: {face.age_confidence_score}")
             print(f"  Face Confidence Score: {face.face_confidence_score}")
             print(f"  Bounding Box: {face.bounding_box}")
+            print(f"  Face Validation Status: {face.face_validation_status.name} (Code: {face.face_validation_status.value})")
             
             if face.face_traits:
                 print(f"  Face Traits:")
