@@ -41,9 +41,11 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     RELAX_FACE_VALIDATION = "relax_face_validation"
     # use only for age predict
     USE_AGE_ESTIMATION_WITH_MODEL_STDD ="use_age_estimate_with_model_stdd"
-    DISABLE_AGE_ESTIMATION_ANTISPOOF = "skip_antispoof"
+    DISABLE_AGE_ESTIMATION_ANTISPOOF = "skip_antispoof",
+    CONSIDER_BIGGEST_FACE = "consider_biggest_face",
+    SINGLE_FACE_VALIDATION_RESULT = "single_face_validation_result" 
+    SINGLE_FACE_AGE_RESULT = "single_face_age_result" 
 
-    
 
 
 class ParameterValidator:
@@ -186,7 +188,17 @@ class ParameterValidator:
         
         self.__parameter[PARAMETERS.DISABLE_AGE_ESTIMATION_ANTISPOOF] = self.Parameter(
             name=PARAMETERS.DISABLE_AGE_ESTIMATION_ANTISPOOF, _type="BOOL")
+        
+        self.__parameter[PARAMETERS.CONSIDER_BIGGEST_FACE] = self.Parameter(
+            name=PARAMETERS.CONSIDER_BIGGEST_FACE, _type="BOOL")
+        
+        self.__parameter[PARAMETERS.SINGLE_FACE_VALIDATION_RESULT] = self.Parameter(
+            name=PARAMETERS.SINGLE_FACE_VALIDATION_RESULT, _type="BOOL",
+        )
 
+        self.__parameter[PARAMETERS.SINGLE_FACE_AGE_RESULT] = self.Parameter(
+            name=PARAMETERS.SINGLE_FACE_AGE_RESULT, _type="BOOL",
+        )
 
     def validate(self, key, value):
         return self.__parameter[key].validate(value)
