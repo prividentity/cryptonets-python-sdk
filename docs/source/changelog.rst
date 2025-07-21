@@ -1,6 +1,18 @@
 Changelog
 =========
 
+Version 1.3.18 (2025-07-21)
+-----------------------------
+
+Updates:
+
+* Fix bug exception : `TypeError: AgeEstimateResult.__init__() got an unexpected keyword argument 'message'` in `estimate_age` method.
+* Add configuration parameter `CONSIDER_BIGGEST_FACE` to change the default behaviour of the face detection.
+* Add configuration parameter `SINGLE_FACE_VALIDATION_RESULT` to change the default behaviour of the face validation result.
+* Add configuration parameter `SINGLE_FACE_AGE_RESULT` to change the default behaviour of the age estimation result.
+* The native library points to '25.07.21-542b11e'.
+
+
 Version 1.3.17 (2025-07-04)
 -----------------------------
 
