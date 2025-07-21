@@ -252,26 +252,26 @@ class FaceFactor(metaclass=Singleton):
                 image_path is None and image_data is None
             ):
                 return AgeEstimateResult(
-                    message="Specify either image_path or image_data"
+                    operation_message="Specify either image_path or image_data"
                 )
             img_data = None
             if image_data is not None:
                 if not isinstance(image_data, np.ndarray):
                     return AgeEstimateResult(
-                        message="Required numpy array in RGB/RGBA/BGR format"
+                        operation_message="Required numpy array in RGB/RGBA/BGR format"
                     )
                 img_data = image_data
             if image_path is not None and len(image_path) > 0:
                 if not os.path.exists(image_path):
-                    return AgeEstimateResult(message=self.message.get_message(101))
+                    return AgeEstimateResult(operation_message=self.message.get_message(101))
                 img_data = image_path_to_array(image_path, input_format=input_format)
             if img_data is None:
-                return AgeEstimateResult(message=self.message.AGE_ESTIMATE_ERROR)
+                return AgeEstimateResult(operation_message=self.message.AGE_ESTIMATE_ERROR)
 
             # Check image dimensions
             if img_data.shape[0] <= 224 or img_data.shape[1] <= 224:
-                return AgeEstimateResult(
-                    message="Image dimensions should be greater than 224x224."
+                 return AgeEstimateResult(
+                    operation_message="Image dimensions should be greater than 224x224."
                 )
 
             return self.face_factor.estimate_age(
@@ -282,7 +282,7 @@ class FaceFactor(metaclass=Singleton):
             print(
                 "Issue Tracker:: \nhttps://github.com/prividentity/cryptonets-python-sdk/issues"
             )
-            return AgeEstimateResult(message=self.message.AGE_ESTIMATE_ERROR)
+            return AgeEstimateResult(operation_message=self.message.AGE_ESTIMATE_ERROR)
 
     def enroll(
         self,
