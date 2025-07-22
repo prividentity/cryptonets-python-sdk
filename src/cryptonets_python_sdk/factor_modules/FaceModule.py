@@ -366,14 +366,14 @@ class Face(metaclass=Singleton):
                 image_data, config_object=config_object
             )
             if not json_data:
-                return AgeEstimateResult(message=self.message.AGE_ESTIMATE_ERROR)
+                return AgeEstimateResult(operation_message=self.message.AGE_ESTIMATE_ERROR)
 
             final_result = AgeEstimateResult.from_json(json_data)
             return final_result
         
         except Exception as e:
             print(e, traceback.format_exc())
-            return AgeEstimateResult(message=self.message.AGE_ESTIMATE_ERROR)
+            return AgeEstimateResult(operation_message = self.message.AGE_ESTIMATE_ERROR)
 
 
     def get_iso_face(
