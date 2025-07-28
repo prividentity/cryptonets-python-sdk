@@ -97,3 +97,6 @@ Configurable Parameter List and Valid values
    * - SINGLE_FACE_AGE_RESULT
      - By default set to `False`. If set to `True`, the age estimation will return a single face age result instead of a list.
      - True, False
+   * - AGE_FACE_LANDMARK_MODEL_ID
+     - This is a model ID value. Use this parameter to the  face landmark model used in age estimation operation. The only possible values are : 6 and 18.
+     - 0 to 1000

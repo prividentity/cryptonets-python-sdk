@@ -45,6 +45,7 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     CONSIDER_BIGGEST_FACE = "consider_biggest_face",
     SINGLE_FACE_VALIDATION_RESULT = "single_face_validation_result" 
     SINGLE_FACE_AGE_RESULT = "single_face_age_result" 
+    AGE_FACE_LANDMARK_MODEL_ID = "age_face_landmarks_model_id"
 
 
 
@@ -198,6 +199,13 @@ class ParameterValidator:
 
         self.__parameter[PARAMETERS.SINGLE_FACE_AGE_RESULT] = self.Parameter(
             name=PARAMETERS.SINGLE_FACE_AGE_RESULT, _type="BOOL",
+        )
+
+        self.__parameter[PARAMETERS.AGE_FACE_LANDMARK_MODEL_ID] = self.Parameter(
+            name=PARAMETERS.AGE_FACE_LANDMARK_MODEL_ID, 
+            _type="NUMBER",
+            min_value=0,
+            max_value=1000,
         )
 
     def validate(self, key, value):
