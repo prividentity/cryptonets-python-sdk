@@ -1033,11 +1033,10 @@ class NativeMethods(object):
                     config_dict = json.loads(config_json)
                     # Disable antispoof by default if not set
                     if "skip_antispoof" not in config_dict:
-                        config_dict["skip_antispoof"] = True
-                    config_dict["conf_score_thr_enroll"]=0.2                    
+                        config_dict["skip_antispoof"] = True                    
                 else:
                     # Create a new config dict with disable_enroll_mf set to True
-                    config_dict = {"skip_antispoof": True,"conf_score_thr_enroll":0.2}         
+                    config_dict = {"skip_antispoof": True}         
 
                 # If skip_antispoof is True, force single_face_age_result to True
                 # as our antispoof is not supported for multiple faces detection                

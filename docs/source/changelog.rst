@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 1.3.19 (2025-07-28)
+-----------------------------
+
+Updates:
+
+* Add configuration parameter `AGE_FACE_LANDMARK_MODEL_ID`: This is a model ID value. Use this parameter to the  face landmark model used in age estimation operation. The only possible values are : 0 (default) ,6 , 18 and 21.
+* The native library points to '25.08.01-721e065'.
+
 Version 1.3.18 (2025-07-21)
 -----------------------------
 

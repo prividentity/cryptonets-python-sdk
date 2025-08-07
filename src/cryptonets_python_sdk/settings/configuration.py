@@ -35,7 +35,7 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     K="neighbors"
     FACE_THRESHOLD="face_thresholds_med"
     DOC_SCAN_FACE_DOC_VALIDATIONS_OFF="doc_scan_face_doc_validations_off"
-    THRESHOLD_HIGH_VERTICAL="threshold_high_vertical_enroll"
+    THRESHOLD_HIGH_VERTICAL="threshold_high_vertical_enroll"    
     DOCUMENT_AUTO_ROTATION = "document_auto_rotation"
     ESTIMATE_AGE_FACE_VALIDATIONS_OFF = "estimate_age_face_validations_off",
     RELAX_FACE_VALIDATION = "relax_face_validation"
@@ -45,6 +45,11 @@ class PARAMETERS(str, Enum, metaclass=__PARAMETERSMETA):
     CONSIDER_BIGGEST_FACE = "consider_biggest_face",
     SINGLE_FACE_VALIDATION_RESULT = "single_face_validation_result" 
     SINGLE_FACE_AGE_RESULT = "single_face_age_result" 
+    AGE_FACE_LANDMARK_MODEL_ID = "age_face_landmarks_model_id"
+    THRESHOLD_DOWN_VERTICAL="threshold_down_vertical_enroll"
+    THRESHOLD_FACE_DOWN="threshold_user_down"
+    THRESHOLD_FACE_UP="threshold_user_up"
+
 
 
 
@@ -199,6 +204,35 @@ class ParameterValidator:
         self.__parameter[PARAMETERS.SINGLE_FACE_AGE_RESULT] = self.Parameter(
             name=PARAMETERS.SINGLE_FACE_AGE_RESULT, _type="BOOL",
         )
+
+        self.__parameter[PARAMETERS.AGE_FACE_LANDMARK_MODEL_ID] = self.Parameter(
+            name=PARAMETERS.AGE_FACE_LANDMARK_MODEL_ID, 
+            _type="NUMBER",
+            min_value=0,
+            max_value=1000,
+        )
+
+        self.__parameter[PARAMETERS.THRESHOLD_DOWN_VERTICAL] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_DOWN_VERTICAL,
+            _type="NUMBER",
+            min_value=-100,
+            max_value=100,
+        ) 
+        
+        self.__parameter[PARAMETERS.THRESHOLD_FACE_DOWN] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_FACE_DOWN,
+            _type="NUMBER",
+            min_value=-100,
+            max_value=100,
+        ) 
+
+        self.__parameter[PARAMETERS.THRESHOLD_FACE_UP] = self.Parameter(
+            name=PARAMETERS.THRESHOLD_FACE_UP,
+            _type="NUMBER",
+            min_value=-100,
+            max_value=100,
+        )     
+
 
     def validate(self, key, value):
         return self.__parameter[key].validate(value)
