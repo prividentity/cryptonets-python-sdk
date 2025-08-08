@@ -1,5 +1,4 @@
 twine 
-sphinx
 Pillow 
 termcolor 
 tqdm 
