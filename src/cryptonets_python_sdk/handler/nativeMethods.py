@@ -100,9 +100,16 @@ class NativeMethods(object):
 
         for file_name in required_files:
             file_path = self._local_lib_path.joinpath(file_name)
-            if not file_path.exists():
+            # check if file size is zero (version 2 will have a manifest with full checksums)
+            downloaded_file = not file_path.exists()
+            if not downloaded_file:
+                downloaded_file = file_path.stat().st_size == 0
+                if downloaded_file:
+                    file_path.unlink()  # Remove the empty file
+            if downloaded_file:
                 print(f"Downloading {file_name}...")
                 self._download_from_s3(s3, bucket_name, file_name, file_path)
+            
         if  system_os == "Darwin":
             self._remove_quarantine_attribute(str(self._local_lib_path.joinpath("libprivid_fhe_universal.dylib").resolve()))
     
