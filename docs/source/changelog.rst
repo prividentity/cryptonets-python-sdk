@@ -1,6 +1,19 @@
 Changelog
 =========
 
+Version 1.3.20 (2025-08-08)
+-----------------------------
+
+Updates:
+
+* For configuration parameter `AGE_FACE_LANDMARK_MODEL_ID`: As we added a new model and removed 6 and 18. The only possible values are : 0 (default) and 22 (the new model).
+* Enhanced libraries download process to force a `redownload file` of the native libraries files if any file is detected empty.
+* More threshold parameters added to the configuration object were added in 1.3.19 and documented in the 1.3.19 PARAMETERS documentation but not highlighted in the change log :
+  - THRESHOLD_DOWN_VERTICAL
+  - THRESHOLD_FACE_DOWN
+  - THRESHOLD_FACE_UP
+* The native library points to '25.08.08-6cae2a0'.
+
 Version 1.3.19 (2025-07-28)
 -----------------------------
 
