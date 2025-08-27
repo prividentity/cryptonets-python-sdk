@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 from enum import Enum, EnumMeta
 
 
@@ -42,7 +42,6 @@ class ApiReturnStatus(Enum, metaclass=ApiReturnStatusMeta):
     API_MAL_FORMED_AP_RESPONSE = 9
     # Authorization error due to wrong API key or wrong token, public key etc.. or a similar error.
     API_AUTHORIZATION_ERROR = 10
-
 
 
 @dataclass
