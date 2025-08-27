@@ -64,9 +64,18 @@ class CallStatus:
             
         Returns:
             CallStatus object
+            
+        Raises:
+            ValueError: If return_status is not a valid ApiReturnStatus value
         """
+        return_status = data.get('return_status', ApiReturnStatus.API_GENERIC_ERROR.value)
+        
+        valid_values = [status.value for status in ApiReturnStatus]
+        if return_status not in valid_values:
+            raise ValueError(f"Invalid return_status: {return_status}. Must be one of {valid_values}")
+        
         return cls(
-            return_status=data.get('return_status', ApiReturnStatus.API_GENERIC_ERROR.value),
+            return_status=return_status,
             operation_tag=data.get('operation_tag', ''),
             return_message=data.get('return_message', ''),
             mf_token=data.get('mf_token', ''),
