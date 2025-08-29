@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 1.3.21 (2025-08-27)
+-----------------------------
+
+Bug Fixes:
+
+* Fix and enhance classes in `ageEstimateResult.py` - improved error handling, validation logic, and code quality.
+* The native library still points to '25.08.08-6cae2a0'.
+
 Version 1.3.20 (2025-08-08)
 -----------------------------
 

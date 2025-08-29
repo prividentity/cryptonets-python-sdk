@@ -1,7 +1,7 @@
 from typing import List
 
 from cryptonets_python_sdk.settings.configuration import ANTISPOOFING_STATUSES
-from ..utils import FaceValidationCode, BoundingBox , Point
+from ..utils import FaceValidationCode, BoundingBox
 from ..messages import Message
 from .callStatus import CallStatus,ApiReturnStatus
 
@@ -16,7 +16,7 @@ class FaceTraitObject:
             raise TypeError("validation_code must be an instance of FaceValidationCode Enum")       
         
         self._validation_code = validation_code
-        if message == None:
+        if message is None:
             self._message = Message().get_message(self.validation_code, prompting_message=False)    
         else:
             if (not isinstance(message, str)):
@@ -63,7 +63,7 @@ class FaceAgeObjectResult():
         """Face Age Object Result class for handling the age estimation results of a face.
         """
 
-        if face_traits == None :
+        if face_traits is None:
             self._face_traits = []
         elif isinstance(face_traits, FaceTraitObject):
             self._face_traits = [face_traits]
@@ -72,7 +72,7 @@ class FaceAgeObjectResult():
         else:
             raise TypeError("face_traits must be an instance of FaceTraitObject or a list of FaceTraitObject")       
 
-        if message == None:
+        if message is None:
             self._message = ""            
         elif isinstance(message, str):
             self._message = message
@@ -122,7 +122,9 @@ class FaceAgeObjectResult():
     @age.setter
     def age(self, value):
         """Set the predicted age."""
-        self._age = value
+        if value is not None and not isinstance(value, (int, float)):
+            raise TypeError("age must be a float, int, or None")
+        self._age = float(value) if value is not None else 0.0
 
     @property
     def age_confidence_score(self)-> float:
@@ -132,7 +134,9 @@ class FaceAgeObjectResult():
     @age_confidence_score.setter
     def age_confidence_score(self, value):
         """Set the age confidence score."""
-        self._age_confidence_score = value
+        if value is not None and not isinstance(value, (int, float)):
+            raise TypeError("age_confidence_score must be a float, int, or None")
+        self._age_confidence_score = float(value) if value is not None else 0.0
 
     @property
     def face_confidence_score(self) -> float:
@@ -142,7 +146,9 @@ class FaceAgeObjectResult():
     @face_confidence_score.setter
     def face_confidence_score(self, value):
         """Set the face confidence score."""
-        self._face_confidence_score = value
+        if value is not None and not isinstance(value, (int, float)):
+            raise TypeError("face_confidence_score must be a float, int, or None")
+        self._face_confidence_score = float(value) if value is not None else 0.0
 
     @property
     def bounding_box(self) -> BoundingBox:
@@ -152,7 +158,9 @@ class FaceAgeObjectResult():
     @bounding_box.setter
     def bounding_box(self, value):
         """Set the bounding box."""
-        self._bounding_box = value
+        if value is not None and not isinstance(value, BoundingBox):
+            raise TypeError("bounding_box must be an instance of BoundingBox or None")
+        self._bounding_box = value if value is not None else BoundingBox()
 
     @property
     def face_traits(self) -> List[FaceTraitObject]:
@@ -265,10 +273,6 @@ class AgeEstimateResult:
         for item in value:
             if not isinstance(item, FaceAgeObjectResult):
                 raise TypeError("item must be an instance of FaceAgeObjectResult")
-        if not value:
-            value = []
-        if not all(isinstance(item, FaceAgeObjectResult) for item in value):
-            raise TypeError("All items in value must be instances of FaceAgeObjectResult")
         self._face_age_objects = value
 
     @staticmethod
@@ -281,8 +285,8 @@ class AgeEstimateResult:
             if not isinstance(data, dict):
                 raise TypeError("data must be a dictionary")
             
-            if 'call_status' not in data or 'ages' not in data:
-                raise ValueError("data must contain 'call_status' and 'ages' keys")
+            if 'call_status' not in data: 
+                raise ValueError("data must contain 'call_status' key")
             
             call_status = CallStatus.from_dict(data['call_status'])  
             returned_code = ApiReturnStatus(call_status.return_status)
@@ -291,12 +295,12 @@ class AgeEstimateResult:
                 result.operation_status_code = returned_code
                 result.operation_message = call_status.return_message
                 result._face_age_objects = []
-                return
-            else:
-                result.operation_status_code = ApiReturnStatus.API_NO_ERROR
-                result.operation_message = ""
-                
-            # should not happen, so raising an errir 
+                return result
+
+            result.operation_status_code = ApiReturnStatus.API_NO_ERROR
+            result.operation_message = ""
+
+            # should not happen, so raising an error
             if not isinstance(data['ages'], dict) or 'ages' not in data['ages']:
                 raise ValueError("data['ages'] must be a dictionary with 'ages' key")
             if not isinstance(data['ages']['ages'], list):
@@ -326,8 +330,8 @@ class AgeEstimateResult:
                 )
             result.face_age_objects = ages_list
         except Exception as e:
-            result.operation_status_code =  ApiReturnStatus.API_UNHANDLED_EXCEPTION.value
-            result.operation_message = f"Error parsing AgeEstimateResult: {str(e)}"
+            result.operation_status_code = ApiReturnStatus.API_UNHANDLED_EXCEPTION
+            result.operation_message = f"Error parsing AgeEstimateResult: {str(e)}  when receiving the JSON response: {str(data)}"
         return result
     
     @staticmethod
