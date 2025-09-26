@@ -59,7 +59,7 @@ class FaceAgeObjectResult():
         age_confidence_score:float=None,
         bounding_box:BoundingBox=None,
         face_confidence_score:float=None,
-        image_quality_metrics:dict[str,any]=None
+        image_quality_metrics:dict=None
     ):
         """Face Age Object Result class for handling the age estimation results of a face.
         """
@@ -117,7 +117,7 @@ class FaceAgeObjectResult():
 
         if image_quality_metrics is None:
             self._image_quality_metrics = {}
-        elif isinstance(image_quality_metrics, dict[str, any]):
+        elif isinstance(image_quality_metrics, dict):
             self._image_quality_metrics = image_quality_metrics
         else:
             raise TypeError("image_quality_metrics must be a dictionary with string keys and any values")
@@ -176,7 +176,7 @@ class FaceAgeObjectResult():
         return self._face_traits
 
     @property
-    def image_quality_metrics(self) -> dict[str, any]:
+    def image_quality_metrics(self) -> dict:
         """Get the image quality metrics."""
         return self._image_quality_metrics
 
@@ -339,7 +339,7 @@ class AgeEstimateResult:
                     )
                 # No need for type checking here because its really an internal data we are returning
                 image_quality_metrics = age.get('image_quality_metrics', None)
-                if image_quality_metrics is None or not isinstance(image_quality_metrics, dict[str, any]):
+                if image_quality_metrics is None or not isinstance(image_quality_metrics, dict):
                     image_quality_metrics = {}
                 else:
                     for k, v in image_quality_metrics.items():
