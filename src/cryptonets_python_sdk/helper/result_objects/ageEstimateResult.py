@@ -58,7 +58,8 @@ class FaceAgeObjectResult():
         antispoofing_status: ANTISPOOFING_STATUSES = None,
         age_confidence_score:float=None,
         bounding_box:BoundingBox=None,
-        face_confidence_score:float=None
+        face_confidence_score:float=None,
+        image_quality_metrics:dict=None
     ):
         """Face Age Object Result class for handling the age estimation results of a face.
         """
@@ -114,6 +115,13 @@ class FaceAgeObjectResult():
         else:
             raise TypeError("antispoofing_status must be an instance of ANTISPOOFING_STATUSES Enum")
 
+        if image_quality_metrics is None:
+            self._image_quality_metrics = {}
+        elif isinstance(image_quality_metrics, dict):
+            self._image_quality_metrics = image_quality_metrics
+        else:
+            raise TypeError("image_quality_metrics must be a dictionary with string keys and any values")
+
     @property
     def age(self):
         """Get the predicted age."""
@@ -167,9 +175,18 @@ class FaceAgeObjectResult():
         """Get the list of face traits."""
         return self._face_traits
 
+    @property
+    def image_quality_metrics(self) -> dict:
+        """Get the image quality metrics."""
+        return self._image_quality_metrics
+
     def add_face_trait(self, trait):
         """Add a trait to the face_traits list."""
         self._face_traits.append(trait)
+
+    def add_image_quality_metric(self, metric_name: str, metric_value: any):
+        """Add a metric to the image_quality_metrics dictionary."""
+        self._image_quality_metrics[metric_name] = metric_value
 
     @property
     def antispoofing_status(self) -> ANTISPOOFING_STATUSES:
@@ -198,6 +215,7 @@ class AgeEstimateResult:
     - face_age_objects: A list of the detected faces with their estimated ages.
     Each FaceAgeObjectResult contains the following attributes:
     - face_traits: A list of FaceTraitObject, each containing a validation code (FaceValidationCode) and a message (non prompting style).
+    - image_quality_metrics: A dictionary containing image quality metrics such as brightness, sharpness, contrast, etc. The keys are the metric names and the values are the corresponding values.
     - bounding_box: A BoundingBox object representing the bounding box of the face.
     - face_confidence_score: A float representing the confidence score of the face detection.
     - age_confidence_score: A float representing the confidence score of the age estimation.
@@ -215,6 +233,7 @@ class AgeEstimateResult:
         self._operation_status_code = operation_status_code
         self._operation_message = operation_message
         self._face_age_objects = []
+        self._image_quality_metrics = {}
 
     @property
     def operation_status_code(self) -> ApiReturnStatus:
@@ -318,6 +337,16 @@ class AgeEstimateResult:
                             message=message_api.get_message(code = trait, prompting_message=False)
                         )
                     )
+                # No need for type checking here because its really an internal data we are returning
+                image_quality_metrics = age.get('image_quality_metrics', None)
+                if image_quality_metrics is None or not isinstance(image_quality_metrics, dict):
+                    image_quality_metrics = {}
+                else:
+                    for k, v in image_quality_metrics.items():
+                        if not isinstance(k, str):
+                            raise TypeError("image_quality_metrics keys must be strings")
+
+
                 ages_list.append(
                     FaceAgeObjectResult(
                         face_traits=face_trait_with_message,
@@ -325,7 +354,8 @@ class AgeEstimateResult:
                         face_confidence_score=age['face_confidence_score'],
                         antispoofing_status = ANTISPOOFING_STATUSES(age['antispoofing_status']),                  
                         age_confidence_score=age['age_confidence_score'],
-                        age=age['estimated_age']
+                        age=age['estimated_age'],
+                        image_quality_metrics=image_quality_metrics
                     )
                 )
             result.face_age_objects = ages_list
@@ -373,6 +403,11 @@ class AgeEstimateResult:
                         print(f"    Trait #{j+1}:")
                         print(f"      Validation Code(Name: {trait.validation_code}, code: {trait.validation_code.value})")
                         print(f"      Message: {trait.message}")
+                if face.image_quality_metrics:
+                    print(f"  Image Quality Metrics:")
+                    for k, v in face.image_quality_metrics.items():
+                        print(f"    Metric Name: {k}")
+                        print(f"      Value: {v}")
         else:
             print("\nNo faces detected.")
 
