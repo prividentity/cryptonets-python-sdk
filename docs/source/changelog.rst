@@ -1,6 +1,142 @@
 Changelog
 =========
 
+Version 1.3.22 (2025-10-16)
+-----------------------------
+
+Features:
+
+* Augment the `FaceAgeObjectResult` with a dictionary of metrics gathered during the age estimation process. 
+The dictionary is accessible through the new property `image_quality_metrics` of the `FaceAgeObjectResult` class.
+The dictionary has the following structure and metrics:
+
+**Anti-Spoofing Metrics**
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 50 20
+
+   * - Metric
+     - Description
+     - Example Value
+   * - ``spoofxmsv1se``
+     - Antispoof value produced by model spoofxmsv1se
+     - 0.998435199
+   * - ``spoofxmsv2``
+     - Antispoof value produced by model spoofxmsv2
+     - 0.97442776
+
+**Image Quality Metrics**
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 50 20
+
+   * - Metric
+     - Description
+     - Example Value
+   * - ``exposure``
+     - Exposure level (detects face too dark or too bright)
+     - 0.474575609
+   * - ``blurLaplacianVariance``
+     - Blur check using Laplacian variance method
+     - 179.99559
+
+**Face Geometry & Position Metrics**
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 50 20
+
+   * - Metric
+     - Description
+     - Example Value
+   * - ``leftProfileVal``
+     - Face profile orientation - looking right (FV_LOOKING_RIGHT)
+     - 0.558104277
+   * - ``rightProfileVal``
+     - Face profile orientation - looking left (FV_LOOKING_LEFT)
+     - 0.441895694
+   * - ``faceRotationAngleVal``
+     - Face rotation angle in degrees (FV_FACE_ROTATED_LEFT/RIGHT)
+     - 4.69743633
+   * - ``closeVal``
+     - Face proximity - too close (FV_FACE_TOO_CLOSE)
+     - 0.535690665
+   * - ``farVal``
+     - Face proximity - too far (FV_FACE_TOO_FAR)
+     - 0.387686908
+   * - ``downVal``
+     - Vertical face position - down (FV_FACE_DOWN)
+     - 0.726332545
+   * - ``upVal``
+     - Vertical face position - up (FV_FACE_UP)
+     - 0.338645667
+   * - ``lookingDownVal``
+     - Gaze direction - looking down (FV_LOOKING_DOWN)
+     - 0.0314642638
+   * - ``lookingUpVal``
+     - Gaze direction - looking up (FV_LOOKING_HIGH)
+     - 0.0314642638
+   * - ``leftVal``
+     - Horizontal face position - left (FV_FACE_LEFT)
+     - 0.238331616
+   * - ``rightVal``
+     - Horizontal face position - right (FV_FACE_RIGHT)
+     - 0.774022281
+   * - ``yawVal``
+     - Yaw angle (calculated but not returned in status)
+     - -4.10503912
+   * - ``pitchVal``
+     - Pitch angle (calculated but not returned in status)
+     - 0.955439091
+
+**Face Features Metrics**
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 50 20
+
+   * - Metric
+     - Description
+     - Example Value
+   * - ``mouthOpenVal``
+     - Mouth open detection (FV_MOUTH_OPENED)
+     - 0.245765194
+   * - ``eyesClosedVal``
+     - Eye blink/closed detection (FV_EYE_BLINK)
+     - 0.567853
+
+**Example JSON Response:**
+
+.. code-block:: json
+
+   {
+     "image_quality_metrics": {
+       "spoofxmsv1se": 0.998435199,
+       "spoofxmsv2": 0.97442776,
+       "exposure": 0.474575609,
+       "blurLaplacianVariance": 179.99559,
+       "leftProfileVal": 0.558104277,
+       "rightProfileVal": 0.441895694,
+       "faceRotationAngleVal": 4.69743633,
+       "closeVal": 0.535690665,
+       "downVal": 0.726332545,
+       "upVal": 0.338645667,
+       "farVal": 0.387686908,
+       "lookingDownVal": 0.0314642638,
+       "lookingUpVal": 0.0314642638,
+       "mouthOpenVal": 0.245765194,
+       "eyesClosedVal": 0.567853,
+       "yawVal": -4.10503912,
+       "pitchVal": 0.955439091,
+       "leftVal": 0.238331616,
+       "rightVal": 0.774022281
+     }
+   }
+
+* The native library still points to `25.09.23-3ecd7a7` except for windows it points to `25.10.16-139d59c.txt`.
+
 Version 1.3.21 (2025-08-27)
 -----------------------------
 
