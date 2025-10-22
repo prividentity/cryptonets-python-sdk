@@ -69,7 +69,7 @@ class Face(metaclass=Singleton):
                 enroll_level=json_data.get("enroll_level", None),
                 puid=api_response.get("puid", None),
                 guid=api_response.get("guid", None),                
-                score=api_response.get("score", None),
+                score=face_validation_data.get("face_confidence_score", None),
                 message=self.message.get_message(int(face_validation_data.get("face_validation_status",0)))
             )
             result.api_message=api_response.get("message", None)
@@ -140,8 +140,8 @@ class Face(metaclass=Singleton):
             api_guid=api_response.get("guid", None)
             res_api_status=api_response.get("status", None)
             res_api_message=api_response.get("message", None)            
-            api_score=api_response.get("score", None)
-            
+            api_score=face_validation_data.get("face_confidence_score", None)
+
             predicted = res_api_status == 0 and self._valid_uuid(api_puid) and self._valid_uuid(api_guid)           
             result_status =  0 if relax_face_validation or predicted else face_validation_data.get("face_validation_status",0)
             if face_validation_data.get("face_validation_status",0)!=0:

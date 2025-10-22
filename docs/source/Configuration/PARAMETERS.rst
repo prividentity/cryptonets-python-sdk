@@ -58,9 +58,11 @@ Configurable Parameter List and Valid values
    * - CONF_SCORE_THR_ENROLL
      - Threshold to reject a face if the crop confidence score is lesser than this value - enroll
      - -0.1 to 2
+     - Default is 0.2
    * - CONF_SCORE_THR_PREDICT
      - Threshold to reject a face if the crop confidence score is lesser than this value - predict
      - -0.1 to 2
+     - Default is 0.2
    * - MIN_DOCUMENT_BORDER
      - Minimum border (in pixels) to be added when padding. typically used for document along with image border
      - 0 to 10% of image size in pixel
