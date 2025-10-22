@@ -7,7 +7,7 @@ Version 1.3.22 (2025-10-23)
 Features:
 
 * Re Expose `PARAMETERS.CONF_SCORE_THR_ENROLL` and `PARAMETERS.CONF_SCORE_THR_PREDICT` to be modifiable through the `ConfigObject` class.
-  and remove hard coded confidence score.Now you can set these parameters to modify the confidence score threshold for enroll and predict operations.  Default value for both is `0.2`.
+  and remove hard coded confidence score. Now you can set these parameters to modify the confidence score threshold for enroll and predict operations.  Default value for both is `0.2`.
   Now the confidence score is available in the `FaceEnrollPredictResult` class as `score` property.
 
 * The native library still points to `25.09.23-3ecd7a7` except for windows it points to `25.10.16-139d59c.txt`.
