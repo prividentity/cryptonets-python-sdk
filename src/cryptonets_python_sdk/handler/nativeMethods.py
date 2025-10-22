@@ -879,7 +879,7 @@ class NativeMethods(object):
                 config_dict["disable_enroll_mf"] = True
             else:
                 # Create a new config dict with disable_enroll_mf set to True
-                config_dict = {"disable_enroll_mf": True,"conf_score_thr_predict":0.2}
+                config_dict = {"disable_enroll_mf": True, "conf_score_thr_predict": 0.2}
 
 
             # Ensure conf_score_thr_predict is set to 0.2 if it is not set already
