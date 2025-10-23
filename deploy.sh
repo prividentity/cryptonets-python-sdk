@@ -60,15 +60,15 @@ source .venv/bin/activate
 echo "Installing deployment requirements..."
 pip install -r deployment_reqs.txt
 
-# # Build documentation
-# echo "Building documentation..."
-# cd docs
-# make html
-# cd ..
+# Build documentation
+echo "Building documentation..."
+cd docs
+make html
+cd ..
 
-# # Create tarball of html documentation
-# echo "Creating documentation tarball..."
-# tar -czf docs/build/html.tar.gz -C docs/build html
+# Create tarball of html documentation
+echo "Creating documentation tarball..."
+tar -czf docs/build/html.tar.gz -C docs/build html
 
 # Build the Python package
 echo "Building Python package..."
