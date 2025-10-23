@@ -102,7 +102,7 @@ class FaceEnrollPredictResult:
     @property
     def score(self) -> str:
         """
-        Returns the score obtained from server
+        Returns the face score calculated during the enroll/predict operation
         """
         return self._score        
     

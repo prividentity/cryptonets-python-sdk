@@ -544,12 +544,15 @@ class NativeMethods(object):
                 # Load existing config from the object
                 config_dict = json.loads(config_object.get_config_param())
                 # Ensure disable_enroll_mf is always added
-                config_dict["disable_enroll_mf"] = True
-                config_dict["conf_score_thr_enroll"]=0.2                
+                config_dict["disable_enroll_mf"] = True                
             else:
                 # Create a new config dict with disable_enroll_mf set to True
                 config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}                
-          
+
+            # Ensure conf_score_thr_enroll is set to 0.2 if it is not set already 
+            if "conf_score_thr_enroll" not in config_dict:
+                config_dict["conf_score_thr_enroll"] = 0.2
+
             config_json = json.dumps(config_dict)
             c_config_param = c_char_p(bytes(config_json, "utf-8"))
             c_config_param_len = c_int(len(config_json))
@@ -810,11 +813,14 @@ class NativeMethods(object):
                 # Load existing config from the object
                 config_dict = json.loads(config_object.get_config_param())
                 # Ensure disable_enroll_mf is always added
-                config_dict["disable_enroll_mf"] = True
-                config_dict["conf_score_thr_enroll"]=0.2
+                config_dict["disable_enroll_mf"] = True                
             else:
                 # Create a new config dict with disable_enroll_mf set to True
                 config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}                
+
+            # Ensure conf_score_thr_enroll is set to 0.2 if it is not set already
+            if "conf_score_thr_enroll" not in config_dict:
+                config_dict["conf_score_thr_enroll"] = 0.2
             
             config_json = json.dumps(config_dict)
             # Common logic for converting the config dict to the required C types
@@ -871,12 +877,15 @@ class NativeMethods(object):
                 config_dict = json.loads(config_object.get_config_param())
                 # Ensure disable_enroll_mf is always added
                 config_dict["disable_enroll_mf"] = True
-                config_dict["conf_score_thr_enroll"]=0.2                
             else:
                 # Create a new config dict with disable_enroll_mf set to True
-                config_dict = {"disable_enroll_mf": True,"conf_score_thr_enroll":0.2}
-            
-            config_json = json.dumps(config_dict)          
+                config_dict = {"disable_enroll_mf": True, "conf_score_thr_predict": 0.2}
+
+            # Ensure conf_score_thr_predict is set to 0.2 if it is not set already
+            if "conf_score_thr_predict" not in config_dict:
+                config_dict["conf_score_thr_predict"] = 0.2
+
+            config_json = json.dumps(config_dict)
             c_config_param = c_char_p(bytes(config_json, "utf-8"))
             c_config_param_len = c_int(len(config_json))
 

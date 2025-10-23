@@ -32,7 +32,7 @@ copyright = "2025, Private Identity LLC"
 author = "Private Identity"
 
 # The full version, including alpha/beta/rc tags
-release = "1.3.22"
+release = "1.3.23"
 
 # -- General configuration ---------------------------------------------------
 
@@ -40,6 +40,9 @@ release = "1.3.22"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ["sphinx.ext.autodoc", "numpydoc"]
+
+# Numpydoc configuration
+numpydoc_show_class_members = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -60,4 +63,4 @@ html_theme = "furo"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# html_static_path = ["_static"]

@@ -228,12 +228,16 @@ class FaceFactor(metaclass=Singleton):
         Returns
         -------
         AgeEstimateResult
-            operation_status_code: ApiReturnStatus [ApiReturnStatus.API_NO_ERROR (0) if successful, failure otherwise].
-                                   if failure, face_age_objects list will be None. 
-                                   The operation is considered successful if no face were detected in the image.
-                                   In his case face_age_objects will be an empty list.
-            operation_message: str [Message explaining the error  if any]
-            face_age_objects: List[FaceAgeObjectResult] 
+            operation_status_code : ApiReturnStatus
+                ApiReturnStatus.API_NO_ERROR (0) if successful, failure otherwise.
+                If failure, face_age_objects list will be None.
+                The operation is considered successful if no face were detected in the image.
+                In this case face_age_objects will be an empty list.
+            operation_message : str
+                Message explaining the error if any
+            face_age_objects : List[FaceAgeObjectResult]
+                List of face age objects detected in the image
+
         """
         try:
             if (

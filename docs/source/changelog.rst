@@ -1,14 +1,24 @@
 Changelog
 =========
 
+Version 1.3.23 (2025-10-23)
+-----------------------------
+
+Features:
+
+* Re Expose `PARAMETERS.CONF_SCORE_THR_ENROLL` and `PARAMETERS.CONF_SCORE_THR_PREDICT` to be modifiable through the `ConfigObject` class.
+  and remove hard coded confidence score. Now you can set these parameters to modify the confidence score threshold for enroll and predict operations.  Default value for both is `0.2`.
+  Now the confidence score is available in the `FaceEnrollPredictResult` class as `score` property.
+
+* The native library still points to `25.09.23-3ecd7a7` except for windows it points to `25.10.16-139d59c.txt`.
+
+
 Version 1.3.22 (2025-10-16)
 -----------------------------
 
 Features:
 
-* Augment the `FaceAgeObjectResult` with a dictionary of metrics gathered during the age estimation process. 
-The dictionary is accessible through the new property `image_quality_metrics` of the `FaceAgeObjectResult` class.
-The dictionary has the following structure and metrics:
+* Augment the `FaceAgeObjectResult` with a dictionary of metrics gathered during the age estimation process. The dictionary is accessible through the new property `image_quality_metrics` of the `FaceAgeObjectResult` class. The dictionary has the following structure and metrics:
 
 **Anti-Spoofing Metrics**
 
@@ -193,7 +203,7 @@ Version 1.3.16 (2025-06-18)
 
 Updates:
 
-* Update message returned in `estimate_age` to include all detected face traits `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/39>`_.
+* Update message returned in `estimate_age` to include all detected face traits `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/39>`__.
 * Add new result object `AgeEstimateResult` to to be used as distinct return type for `estimate_age` operations.
 * The native library points to '25.06.18-d1a2cf0'.
 
@@ -202,7 +212,7 @@ Version 1.3.15 (2025-06-12)
 
 Updates:
 
-* Update message returned in `estimate_age` to be non prompting `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/37>`_.
+* Update message returned in `estimate_age` to be non prompting `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/37>`__.
 * Native library change: Enhancement of `estimate age with stddev` returned stddev. 
 * Native library change: In `estimate age` full face  analysis is done and therefore more possible face statuses can be returned (eye glasses, face mask, blurriness status). 
 * Enhance eyes and mouth statuses detection.
@@ -214,8 +224,8 @@ Version 1.3.14 (2025-06-04)
 
 Updates:
 
-* Solve  `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/32>`_. 
-* Implement  `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/34>`_.
+* Solve  `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/32>`__.
+* Implement  `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/34>`__.
 * Update Updates to face validation error codes to align with the native library status codes.
 * Updated the error messages in messages.py to reflect the new error codes and removed unused messages for image and video spoofing.
 * Age Estimation calls now return a message for face validation even if face validation is relaxed with the parameter: `ESTIMATE_AGE_FACE_VALIDATIONS_OFF`.
@@ -227,14 +237,14 @@ Version 1.3.13 (2025-05-23)
 
 Updates:
 
-* Solve  `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/30>`_. 
+* Solve  `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/30>`__. 
 * Update the semantics and structure of result object `FaceCompareResult`. 
 * The methods `compare` and `compare_doc_with_face` will return the a single `distance` float value. `distance_min/mean|max` are removed.
 * Update the `compare` and `compare_doc_with_face` methods to return the new `FaceCompareResult` object.
 * Update the configuration parameter `FACE_THRESHOLD`.
 * Update default value for `FACE_THRESHOLD` to suit the 3 current embeddings types `1.0`.
 * Remove field legacy `token` from `FaceEnrollPredictResult`.
-* Update docs & samples `FaceCompareResult`  `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/30>`_  
+* Update docs & samples `FaceCompareResult`  `issue <https://github.com/prividentity/cryptonets-python-sdk/issues/30>`__  
 * The native library still points to '25.05.07-6491ced'.
 
 
@@ -243,27 +253,28 @@ Version 1.3.12 (2025-05-07)
 
 Updates:
 
-* Remove all obsolete configuration parameters :
- - CONF_FAST_PROCESS
- - INPUT_TYPE
- - BLUR_THRESHOLD_DOC_LEVEL_1
- - BLUR_THRESHOLD_DOC_LEVEL_2
- - THRESHOLD_VERTICAL_ENROLL
- - THRESHOLD_VERTICAL_PREDICT
- - IMAGE_BORDER
- - IMAGE_PRE_PROC
- - THRESHOLD_GLASS
- - THRESHOLD_MASK
- - FACE_THRESHOLD_RIGHT
- - FACE_THRESHOLD_LEFT
- - FACE_THRESHOLD_VERTICAL
- - DOCUMENT_FACE_CHECK_VALIDITY
- - DOCUMENT_CHECK_VALIDITY
- - DOCUMENT_FACE_PREDICT
- - ENABLE_DOC_PERSPECTIVE_CORRECTION
- - ENROLL_ALLOW_EYE_GLASS
- - FACE_DETECT_PREFERRED_SIZE
- - FACE_DETECT_MAX_OUT_IMAGE_SIZE
+* Remove all obsolete configuration parameters:
+
+  - CONF_FAST_PROCESS
+  - INPUT_TYPE
+  - BLUR_THRESHOLD_DOC_LEVEL_1
+  - BLUR_THRESHOLD_DOC_LEVEL_2
+  - THRESHOLD_VERTICAL_ENROLL
+  - THRESHOLD_VERTICAL_PREDICT
+  - IMAGE_BORDER
+  - IMAGE_PRE_PROC
+  - THRESHOLD_GLASS
+  - THRESHOLD_MASK
+  - FACE_THRESHOLD_RIGHT
+  - FACE_THRESHOLD_LEFT
+  - FACE_THRESHOLD_VERTICAL
+  - DOCUMENT_FACE_CHECK_VALIDITY
+  - DOCUMENT_CHECK_VALIDITY
+  - DOCUMENT_FACE_PREDICT
+  - ENABLE_DOC_PERSPECTIVE_CORRECTION
+  - ENROLL_ALLOW_EYE_GLASS
+  - FACE_DETECT_PREFERRED_SIZE
+  - FACE_DETECT_MAX_OUT_IMAGE_SIZE
 
 * Remove billing methods and related parameters.
 * Remove obsolete caching functionality.

@@ -8,7 +8,8 @@ PARAMETERS
 This section covers the valid values for setting up additional configurations pertaining to face factor.
 
 .. autoclass:: PARAMETERS
-    :members: OFF
+    :noindex:
+    :no-inherited-members:
 
 .. _param_list:
 
@@ -56,10 +57,10 @@ Configurable Parameter List and Valid values
      - Threshold to reject a face if the user face is too close
      - -0.1 to 2
    * - CONF_SCORE_THR_ENROLL
-     - Threshold to reject a face if the crop confidence score is lesser than this value - enroll
+     - Threshold to reject a face if the crop confidence score is lesser than this value - enroll. Default is 0.2
      - -0.1 to 2
    * - CONF_SCORE_THR_PREDICT
-     - Threshold to reject a face if the crop confidence score is lesser than this value - predict
+     - Threshold to reject a face if the crop confidence score is lesser than this value - predict. Default is 0.2
      - -0.1 to 2
    * - MIN_DOCUMENT_BORDER
      - Minimum border (in pixels) to be added when padding. typically used for document along with image border
