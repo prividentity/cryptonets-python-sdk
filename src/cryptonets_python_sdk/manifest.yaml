@@ -1,0 +1,40 @@
+metadata:
+  manifest_version: 2.0.0b1
+  s3_python_sdk_bucket: cryptonets-python-sdk
+  base_path: privModules
+  latest: 25.10.31-91c2d3f
+versions:
+  25.10.31-91c2d3f:
+    upload_date_time: '2025-10-31T17:10:01+01:00'
+    Windows:
+      x86_64:
+      - filename: privid_fhe.dll
+        sha256: 958fc3a93e23a1db22a40963accdb5ff244b081f93bdbef7d675652b965b1577
+    Linux:
+      ubuntu:
+        '24.04':
+          arm64:
+          - filename: libprivid_fhe.so
+            sha256: 112fe25ce45b868bb5e6d4ff43b87cfe465583bb7233ee3e5a01866a2e74d84b
+          - filename: libtensorflow-lite.so
+            sha256: 883dec3287155ad0a12f3178e13554af7c3ffb0853920e43309bd5d21409de63
+          x86_64:
+          - filename: libprivid_fhe.so
+            sha256: 2af6206df2a67e226d4c7a161f506f8ebd3dabc7cad7d599d0a717d647cfb027
+          - filename: libtensorflow-lite.so
+            sha256: 94da77fae8d1b929a8de0eaad0de9b234090b393d50ca5588099ec811e4147ff
+        '22.04':
+          arm64:
+          - filename: libprivid_fhe.so
+            sha256: 97a1b7f1d01397bc3fccb8746007c1897fea7951e655393cde03a71416059348
+          - filename: libtensorflow-lite.so
+            sha256: 647c9cc8d6cc0614174a941be8209bb2a3f7d052c21a14a1124827fbc430a118
+          x86_64:
+          - filename: libprivid_fhe.so
+            sha256: 786e773515efeb800452b8947f8bfb7672cd7d9d6ff325ab3101e96889f6698b
+          - filename: libtensorflow-lite.so
+            sha256: a91ce7dbeb8f411f3b66856f7770a53972144650f705f352e58252dd5d55fa27
+    Darwin:
+      universal:
+      - filename: libprivid_fhe.dylib
+        sha256: 6f82f945f0426a26ce4ed3f3a069fe087d0eba97c79add7e874a32f2d4405d17
