@@ -1,0 +1,21 @@
+-e .
+twine 
+sphinx
+Pillow 
+termcolor 
+tqdm 
+pandas 
+matplotlib 
+memray 
+boto3
+exifread
+setuptools
+build 
+sphinx
+furo
+numpydoc
+doc8
+rstcheck
+psutil
+cffi
+msgspec

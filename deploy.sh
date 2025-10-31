@@ -27,19 +27,7 @@ echo "Starting deployment process for version: $VERSION"
 # Delete folders if they exist
 echo "Cleaning up old build files..."
 [ -d ".venv" ] && rm -rf .venv && echo "Deleted .venv folder"
-[ -d "dist" ] && rm -rf dist && echo "Deleted dist folder" 
-[ -d "docs/build" ] && rm -rf docs/build && echo "Deleted docs/build folder"
 
-
-# Update version in conf.py
-echo "Updating version in conf.py..."
-sed -i "s/^release = \".*\"/release = \"$VERSION\"/" docs/source/conf.py
-if grep -q "release = \"$VERSION\"" docs/source/conf.py; then
-    echo "Successfully updated version in conf.py"
-else
-    echo "Failed to update version in conf.py"
-    exit 1
-fi
 
 # Update version in setup.py
 echo "Updating version in setup.py..."
@@ -59,16 +47,6 @@ source .venv/bin/activate
 # Install deployment requirements
 echo "Installing deployment requirements..."
 pip install -r deployment_reqs.txt
-
-# Build documentation
-echo "Building documentation..."
-cd docs
-make html
-cd ..
-
-# Create tarball of html documentation
-echo "Creating documentation tarball..."
-tar -czf docs/build/html.tar.gz -C docs/build html
 
 # Build the Python package
 echo "Building Python package..."
