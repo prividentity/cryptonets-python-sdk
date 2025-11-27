@@ -89,18 +89,12 @@ class Session:
         
         # Store the session pointer
         self._session = session_ptr[0]
-    
+
     def __del__(self):
         """Cleanup when session is destroyed"""
         if self._session:
             self._lib.privid_deinitialize_session(self._session)
             self._session = None
-     
-            
-    def set_configuration(self, config: str) -> bool:
-        """Set custom configuration for the session"""
-        config_bytes = config.encode('utf-8')
-        return self._lib.privid_set_configuration(self._session, config_bytes, len(config_bytes))
 
     def _validate(self, image_bytes: bytes, image_width: int, image_height: int, user_config: str = "") -> tuple[int, str]:
         """Internal method to validate a face image"""
@@ -109,8 +103,10 @@ class Session:
         result_len = self._ffibuilder.new('int *')
 
         op_id = self._lib.privid_validate(
-            self._session, image_bytes, image_width, image_height,
-            config_bytes, len(config_bytes), result_ptr, result_len
+            self._session,
+            config_bytes, len(config_bytes),
+            image_bytes, image_width, image_height,
+            result_ptr, result_len
         )
 
         result = self._ffibuilder.string(result_ptr[0], result_len[0]).decode('utf-8')
@@ -129,15 +125,12 @@ class Session:
         iso_image_ptr = self._ffibuilder.new('uint8_t **')
         iso_image_len = self._ffibuilder.new('int *')
 
-        # API signature: privid_face_iso(session_ptr, image_bytes, width, height,
-        #                                 user_config, user_config_length,
-        #                                 result_out, result_out_length,
-        #                                 output_iso_image_bytes, output_iso_image_bytes_length)
         op_id = self._lib.privid_face_iso(
-            self._session, image_bytes, width, height,
+            self._session,
             config_bytes, len(config_bytes),
-            result_ptr, result_len,
-            iso_image_ptr, iso_image_len
+            image_bytes, width, height,
+            iso_image_ptr, iso_image_len,
+            result_ptr, result_len
         )
 
         result = self._ffibuilder.string(result_ptr[0], result_len[0]).decode('utf-8')
@@ -152,39 +145,35 @@ class Session:
         """Process face image according to ISO standards using ImageInputArg"""
         return self._face_iso(image_input.image_data, image_input.width, image_input.height, user_config)
     
-    def _anti_spoofing(self, image_bytes: bytes, width: int, height: int, user_config: str = "") -> tuple[int, str]:
+    def _anti_spoofing(self, image_bytes: bytes, width: int, height: int, user_config: str = "") -> int:
         """Internal method for anti-spoofing detection on a face image"""
         config_bytes = user_config.encode('utf-8')
-        result_ptr = self._ffibuilder.new('char **')
-        result_len = self._ffibuilder.new('int *')
-        
-        op_id = self._lib.privid_anti_spoofing(
-            self._session, image_bytes, width, height,
-            config_bytes, len(config_bytes),
-            result_ptr, result_len
-        )
-        
-        result = self._ffibuilder.string(result_ptr[0], result_len[0]).decode('utf-8')
-        self._lib.privid_free_char_buffer(result_ptr[0])
-        return op_id, result
 
-    def anti_spoofing(self, image_input: ImageInputArg, user_config: str = "") -> tuple[int, str]:
+        result = self._lib.privid_anti_spoofing(
+            self._session,
+            config_bytes, len(config_bytes),
+            image_bytes, width, height
+        )
+
+        return result
+
+    def anti_spoofing(self, image_input: ImageInputArg, user_config: str = "") -> int:
         """Perform anti-spoofing detection on a face image using ImageInputArg"""
         return self._anti_spoofing(image_input.image_data, image_input.width, image_input.height, user_config)
     
-    def _face_compare_files(self, fudge_factor: float, user_config: str,
+    def _face_compare_files(self, user_config: str,
                            image_a: bytes, image_a_width: int, image_a_height: int,
                            image_b: bytes, image_b_width: int, image_b_height: int) -> tuple[int, str]:
-        """Internal method to compare two face images with a fudge factor"""
+        """Internal method to compare two face images"""
         config_bytes = user_config.encode('utf-8')
         result_ptr = self._ffibuilder.new('char **')
         result_len = self._ffibuilder.new('int *')
 
         op_id = self._lib.privid_face_compare_files(
-            self._session, fudge_factor,
+            self._session,
             config_bytes, len(config_bytes),
-            image_a, len(image_a), image_a_width, image_a_height,
-            image_b, len(image_b), image_b_width, image_b_height,
+            image_a, image_a_width, image_a_height,
+            image_b, image_b_width, image_b_height,
             result_ptr, result_len
         )
 
@@ -193,12 +182,11 @@ class Session:
 
         return op_id, result
 
-    def face_compare_files(self, fudge_factor: float, user_config: str,
+    def face_compare_files(self, user_config: str,
                           image_a: ImageInputArg, image_b: ImageInputArg) -> tuple[int, str]:
-        """Compare two face images with a fudge factor using ImageInputArg
+        """Compare two face images using ImageInputArg
 
         Args:
-            fudge_factor: Comparison tolerance/threshold factor
             user_config: JSON configuration string
             image_a: First face image to compare
             image_b: Second face image to compare
@@ -207,7 +195,7 @@ class Session:
             tuple[int, str]: Status code and JSON result containing comparison data
         """
         return self._face_compare_files(
-            fudge_factor, user_config,
+            user_config,
             image_a.image_data, image_a.width, image_a.height,
             image_b.image_data, image_b.width, image_b.height
         )
@@ -221,19 +209,20 @@ class Session:
         doc_len = self._ffibuilder.new('int *')
         face_ptr = self._ffibuilder.new('uint8_t **')
         face_len = self._ffibuilder.new('int *')
-        
+
         op_id = self._lib.privid_doc_scan_face(
-            self._session, config_bytes, len(config_bytes),
+            self._session,
+            config_bytes, len(config_bytes),
             image, width, height,
             doc_ptr, doc_len,
             face_ptr, face_len,
             result_ptr, result_len
         )
-        
+
         result = self._ffibuilder.string(result_ptr[0], result_len[0]).decode('utf-8')
         doc = self._ffibuilder.buffer(doc_ptr[0], doc_len[0])
         face = self._ffibuilder.buffer(face_ptr[0], face_len[0])
-        
+
         self._lib.privid_free_char_buffer(result_ptr[0])
         self._lib.privid_free_buffer(doc_ptr[0])
         self._lib.privid_free_buffer(face_ptr[0])
@@ -251,8 +240,9 @@ class Session:
         result_len = self._ffibuilder.new('int *')
 
         op_id = self._lib.privid_estimate_age(
-            self._session, image_bytes, width, height,
+            self._session,
             config_bytes, len(config_bytes),
+            image_bytes, width, height,
             result_ptr, result_len
         )
 
@@ -264,36 +254,6 @@ class Session:
         """Estimate age from a face image using ImageInputArg"""
         return self._estimate_age(image_input.image_data, image_input.width, image_input.height, user_config)
 
-    def _estimate_age_with_stdd(self, image_bytes: bytes, width: int, height: int, user_config: str = "") -> tuple[int, str]:
-        """Internal method to estimate age with standard deviation from a face image"""
-        config_bytes = user_config.encode('utf-8')
-        result_ptr = self._ffibuilder.new('char **')
-        result_len = self._ffibuilder.new('int *')
-
-        op_id = self._lib.privid_estimate_age_with_stdd(
-            self._session, image_bytes, width, height,
-            config_bytes, len(config_bytes),
-            result_ptr, result_len
-        )
-
-        result = self._ffibuilder.string(result_ptr[0], result_len[0]).decode('utf-8')
-        self._lib.privid_free_char_buffer(result_ptr[0])
-        return op_id, result
-
-    def estimate_age_with_stdd(self, image_input: ImageInputArg, user_config: str = "") -> tuple[int, str]:
-        """Estimate age with standard deviation from a face image using ImageInputArg
-
-        This method provides age estimation along with standard deviation metrics.
-
-        Args:
-            image_input: ImageInputArg containing the face image
-            user_config: Optional JSON configuration string
-
-        Returns:
-            tuple[int, str]: Status code and JSON result containing age and standard deviation
-        """
-        return self._estimate_age_with_stdd(image_input.image_data, image_input.width, image_input.height, user_config)
-    
     def _enroll_onefa(self, user_config: str, images: bytes,
                      image_width: int, image_height: int) -> tuple[int, str]:
         """Internal method to enroll one or more face images
@@ -307,8 +267,7 @@ class Session:
         op_id = self._lib.privid_enroll_onefa(
             self._session,
             config_bytes, len(config_bytes),
-            images,
-            image_width, image_height,
+            images, image_width, image_height,
             result_ptr, result_len
         )
 
@@ -329,7 +288,7 @@ class Session:
         """
         return self._enroll_onefa(user_config, image_input.image_data, image_input.width, image_input.height)
     
-    def _face_predict_onefa(self, user_config: str, images: bytes, image_size: int,
+    def _face_predict_onefa(self, user_config: str, images: bytes,
                           image_width: int, image_height: int) -> tuple[int, str]:
         """Internal method to predict using enrolled face images"""
         config_bytes = user_config.encode('utf-8')
@@ -339,8 +298,7 @@ class Session:
         op_id = self._lib.privid_face_predict_onefa(
             self._session,
             config_bytes, len(config_bytes),
-            images, image_size,
-            image_width, image_height,
+            images, image_width, image_height,
             result_ptr, result_len
         )
 
@@ -358,8 +316,7 @@ class Session:
         Returns:
             tuple[int, str]: Status code and JSON result containing prediction data
         """
-        image_data = image_input.image_data
-        return self._face_predict_onefa(user_config, image_data, len(image_data), image_input.width, image_input.height)
+        return self._face_predict_onefa(user_config, image_input.image_data, image_input.width, image_input.height)
     
     def user_delete(self, user_config: str, puid: str) -> tuple[int, str]:
         """Delete a user by PUID"""
@@ -395,7 +352,7 @@ class PrivIDFaceLib:
 
         Args:
             load_strategy: Optional custom library loading strategy
-            log_level: Logging level (0=off, 1=error, 2=warning, 3=info, 4=debug)
+            log_level: Logging level (0=error, 1=warn, 2=info, 3=debug)
 
         Raises:
             LibraryLoadError: If library loading or initialization fails
@@ -467,7 +424,7 @@ class PrivIDFaceLib:
         """Set the logging level for the library.
 
         Args:
-            level: Logging level (0=off, 1=error, 2=warning, 3=info, 4=debug)
+            level: Logging level (0=error, 1=warn, 2=info, 3=debug)
 
         Returns:
             bool: True if successful, False otherwise
