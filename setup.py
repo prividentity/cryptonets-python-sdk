@@ -21,37 +21,76 @@
 """
 
 import os
-
-from setuptools import setup, find_packages
+import sys
+import platform
+from setuptools import setup, find_packages, Extension
+from setuptools.command.build_py import build_py
+from setuptools.command.install import install
+import subprocess
 
 """
 Setup module for cryptonets python sdk.
-
-Created on April 04th - 2025
-
 @author: Private Identity
 """
 NAME = "cryptonets_python_sdk"
 DESCRIPTION = "Cryptonets SDK Library for Python"
 AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
-URL = "https://privateid.com/"
-VERSION = "1.3.23"
+URL = "https://private.id/"
+VERSION = "2.0.0b1"
 REQUIRES = [
     "numpy >= 1.21.0", 
     "pillow >= 9.1.0",
     "boto3 >= 1.24.0",
     "tqdm >= 4.64.0",
     "exifread >= 3.0.0",
+    "cffi >= 1.15.0",
     # Note: importlib.metadata is part of stdlib in Python 3.8+
     # For older Python versions, add the backport
-    "importlib-metadata >= 4.0.0; python_version < '3.8'",    
+    "importlib-metadata >= 4.0.0; python_version < '3.8'",
+    "betterproto >= 1.2.5",
+    "pyyaml >= 6.0.2"
+]
+
+# Additional packages for development and testing
+DEV_REQUIRES = [    
+    "betterproto[compiler] >= 1.2.5"
 ]
 
 LONG_DESCRIPTION = ""
 if os.path.exists("./README.md"):
     with open("README.md", encoding="utf-8") as fp:
         LONG_DESCRIPTION = fp.read()
+
+# Custom commands
+class CustomBuildCommand(build_py):
+    """Custom build command to handle API header generation and other preprocessing steps."""
+    
+    def run(self):
+        # Generate the API header from the function declarations
+        self.generate_api_header()
+        
+        # Generate Python code for API Resut
+        # self.generate_proto_code()
+        
+        # Run the standard build_py command
+        build_py.run(self)
+ 
+    def generate_api_header(self):
+            # This should call a script inside native subfolder
+            # TODO add prividModule as git submodule
+            pass
+
+class CustomInstallCommand(install):
+    """Custom install command to ensure proper binary installation."""
+    
+    def run(self):
+        # Run the standard install
+        install.run(self)
+        
+        # Additional post-install steps
+        print("Running post-installation steps for Cryptonets SDK...")
+
 setup(
     name=NAME,
     version=VERSION,
@@ -60,35 +99,50 @@ setup(
     long_description_content_type="text/markdown",
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
-    license="",
+    license="Proprietary",
     url=URL,
-    keywords=["privateid", "cryptonets", "face identification"],
-    packages=find_packages(where="src", exclude=["tests*"]),
+    keywords=["privateid", "cryptonets", "face identification", "biometrics", "privacy"],
+    packages=find_packages(where="src", exclude=["tests*","idl*","protoc*","protoc"]),
     include_package_data=True,
     platforms="any",
     install_requires=REQUIRES,
+    extras_require={
+        "dev": DEV_REQUIRES,
+    },
     python_requires=">=3.6",
     package_dir={"": "src"},
+    cmdclass={
+        'build_py': CustomBuildCommand,
+        'install': CustomInstallCommand,
+    },
     project_urls={
         "Bug Reports": "https://github.com/prividentity/cryptonets-python-sdk/issues",
         "Source": "https://github.com/prividentity/cryptonets-python-sdk",
-        "Documentation": "https://docs.private.id/cryptonets-python-sdk/{}/index.html".format(VERSION),
-        "Release Notes": "https://docs.private.id/cryptonets-python-sdk/{}/changelog.html".format(VERSION),
+        "Documentation": f"https://github.com/prividentity/cryptonets-python-sdk/tree/{VERSION}/docs",
+        "Release Notes": "https://github.com/prividentity/cryptonets-python-sdk",
     },
     classifiers=[
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "License :: Other/Proprietary License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
+        "Operating System :: OS Independent",
         "Topic :: Software Development",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        "Topic :: Security :: Cryptography",
     ],
-    py_modules=[NAME],
+    # Entry points for CLI tools if any
+    entry_points={
+        "console_scripts": [
+            # "cryptonets-cli=cryptonets_python_sdk.cli:main",
+        ],
+    },
     package_data={
-        "cryptonets_python_sdk": [          
+        "cryptonets_python_sdk": [
+            "api_h.h",           # Specifically include the CFFI header
+            "*.py",              # Python modules
+            "LICENSE",           # License file
+            "README.md",         # README file
         ]
     },
 )

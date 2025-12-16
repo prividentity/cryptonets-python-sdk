@@ -1,0 +1,1033 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "All Type Schemas",
+  "description": "Schemas for privid_fhe data types.",
+  "$defs": {
+    "AgeData": {
+  "type": "object",
+  "properties": {
+    "age_confidence_score": {
+      "type": "number",
+      "format": "float"
+    },
+    "estimated_age": {
+      "type": "number",
+      "format": "float"
+    }
+  },
+  "required": ["age_confidence_score", "estimated_age"]
+    },
+    "AntispoofingHint": {
+  "type": "object",
+  "properties": {
+    "face_oval_template": {
+      "$ref": "#/$defs/OvalF"
+    },
+    "face_oval": {
+      "$ref": "#/$defs/OvalF"
+    },
+    "is_ok": {
+      "type": "boolean"
+    }
+  },
+  "required": ["face_oval_template", "face_oval", "is_ok"]
+    },
+    "BarCodeData": {
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string"
+    },
+    "format": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "first_name": {
+      "type": "string"
+    },
+    "last_name": {
+      "type": "string"
+    },
+    "middle_name": {
+      "type": "string"
+    },
+    "expiration_date": {
+      "type": "string"
+    },
+    "issue_date": {
+      "type": "string"
+    },
+    "date_of_birth": {
+      "type": "string"
+    },
+    "gender": {
+      "type": "string"
+    },
+    "eye_color": {
+      "type": "string"
+    },
+    "hair_color": {
+      "type": "string"
+    },
+    "height": {
+      "type": "string"
+    },
+    "street_address1": {
+      "type": "string"
+    },
+    "street_address2": {
+      "type": "string"
+    },
+    "res_street_address1": {
+      "type": "string"
+    },
+    "res_street_address2": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "postal_code": {
+      "type": "string"
+    },
+    "customer_id": {
+      "type": "string"
+    },
+    "document_id": {
+      "type": "string"
+    },
+    "issuing_country": {
+      "type": "string"
+    },
+    "middle_name_truncation": {
+      "type": "string"
+    },
+    "first_name_truncation": {
+      "type": "string"
+    },
+    "last_name_truncation": {
+      "type": "string"
+    },
+    "place_of_birth": {
+      "type": "string"
+    },
+    "audit_information": {
+      "type": "string"
+    },
+    "inventory_control_number": {
+      "type": "string"
+    },
+    "last_name_alias": {
+      "type": "string"
+    },
+    "first_name_alias": {
+      "type": "string"
+    },
+    "suffix_alias": {
+      "type": "string"
+    },
+    "name_suffix": {
+      "type": "string"
+    },
+    "barcode_key": {
+      "type": "string"
+    },
+    "barcode_key_encoding": {
+      "type": "string"
+    },
+    "barcode_hash64": {
+      "type": "string"
+    },
+    "barcode_hash128": {
+      "type": "string"
+    },
+    "document_type": {
+      "type": "string"
+    }
+  },
+  "required": ["type", "format", "text", "first_name", "last_name", "middle_name", "expiration_date", "issue_date", "date_of_birth", "gender", "eye_color", "hair_color", "height", "street_address1", "street_address2", "res_street_address1", "res_street_address2", "city", "state", "postal_code", "customer_id", "document_id", "issuing_country", "middle_name_truncation", "first_name_truncation", "last_name_truncation", "place_of_birth", "audit_information", "inventory_control_number", "last_name_alias", "first_name_alias", "suffix_alias", "name_suffix", "barcode_key", "barcode_key_encoding", "barcode_hash64", "barcode_hash128", "document_type"]
+    },
+    "BarcodeDetectionResult": {
+  "type": "object",
+  "properties": {
+    "confidence_score": {
+      "type": "number",
+      "format": "float"
+    },
+    "barcode_box_center": {
+      "$ref": "#/$defs/PointF"
+    },
+    "non_cropped_barcode_box": {
+      "$ref": "#/$defs/TrapezeF"
+    },
+    "cropped_barcode_box": {
+      "$ref": "#/$defs/TrapezeF"
+    },
+    "bar_code_detection_status": {
+      "type": "integer",
+      "enum": [-1, 0, 3, 4],
+      "x-enum-varnames": ["BS_NO_VALID_BARCODE_FOUND", "BS_SUCCESS", "BS_UNSUPPORTED_BARCODE_DETECTED", "BS_UNABLE_TO_PARSE_BARCODE"],
+      "description": "Enum value serialized as integer"
+    },
+    "barcode_data": {
+      "$ref": "#/$defs/BarCodeData"
+    }
+  },
+  "required": ["confidence_score", "barcode_box_center", "non_cropped_barcode_box", "cropped_barcode_box", "bar_code_detection_status", "barcode_data"]
+    },
+    "BoxF": {
+  "type": "object",
+  "properties": {
+    "top_left": {
+      "$ref": "#/$defs/PointF"
+    },
+    "bottom_right": {
+      "$ref": "#/$defs/PointF"
+    }
+  },
+  "required": ["top_left", "bottom_right"]
+    },
+    "CallResult": {
+  "type": "object",
+  "properties": {
+    "call_status": {
+      "$ref": "#/$defs/CallResultHeader"
+    },
+    "faces": {
+      "type": ["array", "null"],
+      "items": {
+        "$ref": "#/$defs/FaceResult"
+      }
+    },
+    "document": {
+      "anyOf": [
+        { "$ref": "#/$defs/DocumentResult" },
+        { "type": "null" }
+      ]
+    },
+    "barcode": {
+      "anyOf": [
+        { "$ref": "#/$defs/BarcodeDetectionResult" },
+        { "type": "null" }
+      ]
+    },
+    "compare": {
+      "anyOf": [
+        { "$ref": "#/$defs/CompareResult" },
+        { "type": "null" }
+      ]
+    },
+    "iso_image": {
+      "anyOf": [
+        { "$ref": "#/$defs/IsoImageResult" },
+        { "type": "null" }
+      ]
+    },
+    "enroll": {
+      "anyOf": [
+        { "$ref": "#/$defs/EnrollData" },
+        { "type": "null" }
+      ]
+    },
+    "predict": {
+      "anyOf": [
+        { "$ref": "#/$defs/PredictData" },
+        { "type": "null" }
+      ]
+    },
+    "user_delete": {
+      "anyOf": [
+        { "$ref": "#/$defs/UserDeleteResponse" },
+        { "type": "null" }
+      ]
+    },
+    "user_feedback_message": {
+      "type": ["string", "null"]
+    }
+  },
+  "required": ["call_status"]
+    },
+    "CallResultHeader": {
+  "type": "object",
+  "properties": {
+    "return_status": {
+      "type": "integer",
+      "enum": [-7, -6, -5, -4, -3, -2, -1, 0],
+      "x-enum-varnames": ["API_MAL_FORMED_AP_RESPONSE", "API_NETWORK_ERROR", "API_INVALID_ARGUMENT", "API_INVALID_CONFIGURATION", "API_AUTHORIZATION_ERROR", "API_INVALID_SESSION_HANDLER", "API_GENERIC_ERROR", "API_NO_ERROR"],
+      "description": "Enum value serialized as integer"
+    },
+    "return_message": {
+      "type": ["string", "null"]
+    },
+    "mf_token": {
+      "type": ["string", "null"]
+    },
+    "operation_id": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "operation_type_id": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 0
+    },
+    "operation_tag": {
+      "type": ["string", "null"]
+    }
+  },
+  "required": ["return_status", "operation_id", "operation_type_id"]
+    },
+    "Collection": {
+  "type": "object",
+  "properties": {
+    "named_urls": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "embedding_model_id": {
+      "type": ["integer", "null"],
+      "format": "int32",
+      "minimum": 0
+    }
+  },
+  "required": ["named_urls"]
+    },
+    "CompareResult": {
+  "type": "object",
+  "properties": {
+    "face_detected_a": {
+      "type": "boolean"
+    },
+    "face_detected_b": {
+      "type": "boolean"
+    },
+    "similarity_score": {
+      "type": "number",
+      "format": "float"
+    },
+    "is_match": {
+      "type": "boolean"
+    },
+    "confidence": {
+      "type": "number",
+      "format": "float"
+    },
+    "distance_max": {
+      "type": "number",
+      "format": "float"
+    },
+    "distance_mean": {
+      "type": "number",
+      "format": "float"
+    },
+    "distance_min": {
+      "type": "number",
+      "format": "float"
+    },
+    "face_thresholds": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "format": "float"
+      }
+    }
+  },
+  "required": ["face_detected_a", "face_detected_b", "similarity_score", "is_match", "confidence", "distance_max", "distance_mean", "distance_min", "face_thresholds"]
+    },
+    "DocumentData": {
+  "type": "object",
+  "properties": {
+    "document_box": {
+      "$ref": "#/$defs/TrapezeF"
+    },
+    "document_box_center": {
+      "$ref": "#/$defs/PointF"
+    },
+    "confidence_score": {
+      "type": "number",
+      "format": "float"
+    },
+    "document_traits": {
+      "type": "integer",
+      "enum": [0, 1, 2, 4, 8, 16, 32, 64, 128, 256],
+      "x-enum-varnames": ["DT_DOC_NO_TRAIT", "DT_DOCUMENT_WITH_LOW_CONFIDENCE_SCORE", "DT_DOCUMENT_IS_BLURRY", "DT_DOCUMENT_IS_CLOSE", "DT_DOCUMENT_IS_FAR", "DT_DOCUMENT_IS_LEFT", "DT_DOCUMENT_IS_RIGHT", "DT_DOCUMENT_IS_UP", "DT_DOCUMENT_IS_DOWN", "DT_FINGERS_DETECTED"],
+      "description": "Flags type - bitwise OR of enum values"
+    },
+    "mrz_data": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ocr_age_data": {
+      "$ref": "#/$defs/DocumentOcrAgeData"
+    }
+  },
+  "required": ["document_box", "document_box_center", "confidence_score", "document_traits", "mrz_data", "ocr_age_data"]
+    },
+    "DocumentOcrAgeData": {
+  "type": "object",
+  "properties": {
+    "dob": {
+      "type": "string"
+    },
+    "age": {
+      "type": "integer",
+      "format": "int32"
+    }
+  },
+  "required": ["dob", "age"]
+    },
+    "DocumentResult": {
+  "type": "object",
+  "properties": {
+    "detected_document": {
+      "$ref": "#/$defs/DocumentData"
+    },
+    "cropped_document_image_info": {
+      "$ref": "#/$defs/Image"
+    }
+  },
+  "required": ["detected_document", "cropped_document_image_info"]
+    },
+    "EnrollData": {
+  "type": "object",
+  "properties": {
+    "enroll_performed": {
+      "type": "boolean"
+    },
+    "message": {
+      "type": "string"
+    },
+    "api_response": {
+      "anyOf": [
+        { "$ref": "#/$defs/EnrollResponse" },
+        { "type": "null" }
+      ]
+    }
+  },
+  "required": ["enroll_performed", "message"]
+    },
+    "EnrollResponse": {
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "enroll_level": {
+      "type": ["integer", "null"],
+      "format": "int32"
+    },
+    "guid": {
+      "type": ["string", "null"]
+    },
+    "puid": {
+      "type": ["string", "null"]
+    },
+    "message": {
+      "type": ["string", "null"]
+    },
+    "score": {
+      "type": ["number", "null"],
+      "format": "float"
+    }
+  },
+  "required": ["status"]
+    },
+    "FaceDetectionData": {
+  "type": "object",
+  "properties": {
+    "geometry": {
+      "$ref": "#/$defs/FaceGeometry"
+    }
+  },
+  "required": ["geometry"]
+    },
+    "FaceGeometry": {
+  "type": "object",
+  "properties": {
+    "bounding_box": {
+      "$ref": "#/$defs/BoxF"
+    },
+    "eye_left": {
+      "$ref": "#/$defs/PointF"
+    },
+    "eye_right": {
+      "$ref": "#/$defs/PointF"
+    },
+    "face_confidence_score": {
+      "type": "number",
+      "format": "float"
+    }
+  },
+  "required": ["bounding_box", "eye_left", "eye_right", "face_confidence_score"]
+    },
+    "FaceId": {
+  "type": "object",
+  "properties": {
+    "puid": {
+      "type": "string"
+    },
+    "guid": {
+      "type": "string"
+    }
+  },
+  "required": ["puid", "guid"]
+    },
+    "FaceMetric": {
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "value": {
+      "type": "number",
+      "format": "float"
+    }
+  },
+  "required": ["name", "value"]
+    },
+    "FaceResult": {
+  "type": "object",
+  "properties": {
+    "ids": {
+      "anyOf": [
+        { "$ref": "#/$defs/FaceId" },
+        { "type": "null" }
+      ]
+    },
+    "geometry": {
+      "$ref": "#/$defs/FaceGeometry"
+    },
+    "face_traits_flags": {
+      "type": "integer",
+      "enum": [0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152],
+      "x-enum-varnames": ["FT_FACE_NO_TRAIT", "FT_FACE_TOO_CLOSE", "FT_FACE_TOO_FAR", "FT_FACE_RIGHT", "FT_FACE_LEFT", "FT_FACE_UP", "FT_FACE_DOWN", "FT_IMAGE_BLURR", "FT_FACE_WITH_GLASS", "FT_FACE_WITH_MASK", "FT_LOOKING_LEFT", "FT_LOOKING_RIGHT", "FT_LOOKING_HIGH", "FT_LOOKING_DOWN", "FT_FACE_TOO_DARK", "FT_FACE_TOO_BRIGHT", "FT_FACE_LOW_VAL_CONF", "FT_INVALID_FACE_BACKGROUND", "FT_EYE_BLINK", "FT_MOUTH_OPENED", "FT_FACE_ROTATED_RIGHT", "FT_FACE_ROTATED_LEFT", "FT_FACE_NOT_IN_OVAL"],
+      "description": "Flags type - bitwise OR of enum values"
+    },
+    "scores": {
+      "type": ["array", "null"],
+      "items": {
+        "$ref": "#/$defs/FaceMetric"
+      }
+    },
+    "spoof_status": {
+      "type": "integer",
+      "enum": [0, 1, 2, 3, 4],
+      "x-enum-varnames": ["AS_NO_SPOOF_DETECTED", "AS_GENERIC_ERROR", "AS_NOT_PERFORMED", "AS_INVALID_FACE", "AS_SPOOF_DETECTED"],
+      "description": "Enum value serialized as integer"
+    },
+    "age_data": {
+      "anyOf": [
+        { "$ref": "#/$defs/AgeData" },
+        { "type": "null" }
+      ]
+    },
+    "cropped_image_info": {
+      "anyOf": [
+        { "$ref": "#/$defs/Image" },
+        { "type": "null" }
+      ]
+    }
+  },
+  "required": ["geometry", "face_traits_flags", "spoof_status"]
+    },
+    "Image": {
+  "type": "object",
+  "properties": {
+    "info": {
+      "$ref": "#/$defs/ImageInfo"
+    }
+  },
+  "required": ["info"]
+    },
+    "ImageInfo": {
+  "type": "object",
+  "properties": {
+    "width": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 0
+    },
+    "height": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 0
+    },
+    "channels": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 0
+    },
+    "depth": {
+      "type": "integer",
+      "enum": [0, 1, 2, 3, 4, 5, 6, 7],
+      "x-enum-varnames": ["P_CV_8U", "P_CV_8S", "P_CV_16U", "P_CV_16S", "P_CV_32S", "P_CV_32F", "P_CV_64F", "P_CV_16F"],
+      "description": "Enum value serialized as integer"
+    },
+    "color": {
+      "type": "integer",
+      "enum": [0, 1, 2, 3, 4],
+      "x-enum-varnames": ["P_MONO", "P_BGR", "P_RGB", "P_BGRA", "P_RGBA"],
+      "description": "Enum value serialized as integer"
+    }
+  },
+  "required": ["width", "height", "channels", "depth", "color"]
+    },
+    "IsoImageResult": {
+  "type": "object",
+  "properties": {
+    "success": {
+      "type": "boolean"
+    },
+    "image": {
+      "anyOf": [
+        { "$ref": "#/$defs/Image" },
+        { "type": "null" }
+      ]
+    }
+  },
+  "required": ["success"]
+    },
+    "NamedUrl": {
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    }
+  },
+  "required": ["name", "url"]
+    },
+    "OperationConfig": {
+  "type": "object",
+  "properties": {
+    "input_image_format": {
+      "type": "string"
+    },
+    "context_string": {
+      "type": "string"
+    },
+    "identifier": {
+      "type": "string"
+    },
+    "conf_score_thr_barcode": {
+      "type": "number",
+      "format": "float"
+    },
+    "conf_score_thr_doc": {
+      "type": "number",
+      "format": "float"
+    },
+    "blur_threshold_doc": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_doc_too_close": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_doc_too_far": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_doc_x": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_doc_y": {
+      "type": "number",
+      "format": "float"
+    },
+    "landmark_confidence_score_threshold": {
+      "type": "number",
+      "format": "float"
+    },
+    "conf_score_thr_enroll": {
+      "type": "number",
+      "format": "float"
+    },
+    "conf_score_thr_predict": {
+      "type": "number",
+      "format": "float"
+    },
+    "blur_threshold_enroll_pred": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_profile_enroll": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_profile_predict": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_high_vertical_enroll": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_high_vertical_predict": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_down_vertical_enroll": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_down_vertical_predict": {
+      "type": "number",
+      "format": "float"
+    },
+    "eyes_blinking_threshold": {
+      "type": "number",
+      "format": "float"
+    },
+    "mouth_opened_threshold": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_user_right": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_user_left": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_user_up": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_user_down": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_user_too_far": {
+      "type": "number",
+      "format": "float"
+    },
+    "threshold_user_too_close": {
+      "type": "number",
+      "format": "float"
+    },
+    "document_scan_barcode_only": {
+      "type": "boolean"
+    },
+    "document_auto_rotation": {
+      "type": "boolean"
+    },
+    "send_original_images": {
+      "type": "boolean"
+    },
+    "anti_spoofing_threshold": {
+      "type": "number",
+      "format": "float"
+    },
+    "angle_rotation_left_threshold": {
+      "type": "number",
+      "format": "float"
+    },
+    "angle_rotation_right_threshold": {
+      "type": "number",
+      "format": "float"
+    },
+    "barcode_margin": {
+      "type": "number",
+      "format": "float"
+    },
+    "skip_antispoof": {
+      "type": "boolean"
+    },
+    "fingers_over_document_threshold": {
+      "type": "number",
+      "format": "float"
+    },
+    "use_age_stddev": {
+      "type": "boolean"
+    },
+    "anti_spoofing_detect_document": {
+      "type": "boolean"
+    },
+    "fetch_timeout_ms": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "face_too_bright": {
+      "type": "number",
+      "format": "float"
+    },
+    "face_too_dark": {
+      "type": "number",
+      "format": "float"
+    },
+    "disable_enroll_mf": {
+      "type": "boolean"
+    },
+    "disable_predict_mf": {
+      "type": "boolean"
+    },
+    "disable_validate_mf": {
+      "type": "boolean"
+    },
+    "disable_estimate_age_mf": {
+      "type": "boolean"
+    },
+    "encrypt_compare_result": {
+      "type": "boolean"
+    },
+    "check_fingers_over_document": {
+      "type": "boolean"
+    },
+    "detect_barcode_without_parsing": {
+      "type": "boolean"
+    },
+    "use_predict_cache": {
+      "type": "boolean"
+    },
+    "get_smile_intensity": {
+      "type": "boolean"
+    },
+    "process_best_image_on_enroll": {
+      "type": "boolean"
+    },
+    "detect_and_recognize_mrz_code": {
+      "type": "boolean"
+    },
+    "calculate_age_from_ocr_text": {
+      "type": "boolean"
+    },
+    "detect_document_only": {
+      "type": "boolean"
+    },
+    "single_face": {
+      "type": "boolean"
+    },
+    "background_color_rgb": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 0
+    },
+    "face_thresholds_min": {
+      "type": "number",
+      "format": "float"
+    },
+    "face_thresholds_med": {
+      "type": "number",
+      "format": "float"
+    },
+    "face_thresholds_max": {
+      "type": "number",
+      "format": "float"
+    },
+    "collection_name": {
+      "type": "string"
+    },
+    "neighbors": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "doc_validations_off": {
+      "type": "boolean"
+    },
+    "face_validations_off": {
+      "type": "boolean"
+    },
+    "validate_face_position_oval": {
+      "type": "boolean"
+    },
+    "age_face_landmarks_model_id": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "consider_biggest_face": {
+      "type": "boolean"
+    },
+    "https_verify_peer_cert": {
+      "type": "boolean"
+    },
+    "allowed_face_traits_flags": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 0
+    }
+  }
+    },
+    "OvalF": {
+  "type": "object",
+  "properties": {
+    "cx": {
+      "type": "number",
+      "format": "float"
+    },
+    "cy": {
+      "type": "number",
+      "format": "float"
+    },
+    "rx": {
+      "type": "number",
+      "format": "float"
+    },
+    "ry": {
+      "type": "number",
+      "format": "float"
+    }
+  },
+  "required": ["cx", "cy", "rx", "ry"]
+    },
+    "PointF": {
+  "type": "object",
+  "properties": {
+    "x": {
+      "type": "number",
+      "format": "float"
+    },
+    "y": {
+      "type": "number",
+      "format": "float"
+    }
+  },
+  "required": ["x", "y"]
+    },
+    "PredictData": {
+  "type": "object",
+  "properties": {
+    "predict_performed": {
+      "type": "boolean"
+    },
+    "message": {
+      "type": "string"
+    },
+    "api_response": {
+      "anyOf": [
+        { "$ref": "#/$defs/PredictResponse" },
+        { "type": "null" }
+      ]
+    }
+  },
+  "required": ["predict_performed", "message"]
+    },
+    "PredictResponse": {
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "enroll_level": {
+      "type": ["integer", "null"],
+      "format": "int32"
+    },
+    "guid": {
+      "type": ["string", "null"]
+    },
+    "puid": {
+      "type": ["string", "null"]
+    },
+    "message": {
+      "type": ["string", "null"]
+    },
+    "score": {
+      "type": ["number", "null"],
+      "format": "float"
+    },
+    "PI_list": {
+      "type": ["array", "null"],
+      "items": {
+        "$ref": "#/$defs/PredictUserInformation"
+      }
+    }
+  },
+  "required": ["status"]
+    },
+    "PredictUserInformation": {
+  "type": "object",
+  "properties": {
+    "enroll_level": {
+      "type": ["integer", "null"],
+      "format": "int32"
+    },
+    "guid": {
+      "type": "string"
+    },
+    "puid": {
+      "type": "string"
+    },
+    "score": {
+      "type": "number",
+      "format": "float"
+    }
+  },
+  "required": ["guid", "puid", "score"]
+    },
+    "SessionSettings": {
+  "type": "object",
+  "properties": {
+    "collections": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/Collection"
+      }
+    },
+    "public_key": {
+      "type": ["string", "null"]
+    },
+    "session_token": {
+      "type": "string"
+    },
+    "request_timeout_ms": {
+      "type": ["integer", "null"],
+      "format": "int32",
+      "minimum": 0
+    }
+  },
+  "required": ["collections", "session_token"]
+    },
+    "TrapezeF": {
+  "type": "object",
+  "properties": {
+    "top_left": {
+      "$ref": "#/$defs/PointF"
+    },
+    "top_right": {
+      "$ref": "#/$defs/PointF"
+    },
+    "bottom_right": {
+      "$ref": "#/$defs/PointF"
+    },
+    "bottom_lef": {
+      "$ref": "#/$defs/PointF"
+    }
+  },
+  "required": ["top_left", "top_right", "bottom_right", "bottom_lef"]
+    },
+    "UserDeleteResponse": {
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "uuid_count": {
+      "type": ["integer", "null"],
+      "format": "int32",
+      "minimum": 0
+    },
+    "message": {
+      "type": ["string", "null"]
+    }
+  },
+  "required": ["status"]
+    }
+  }
+}

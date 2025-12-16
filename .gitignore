@@ -4,15 +4,6 @@
 build
 dist
 **.egg-info
-
 **/.venv/
-tests/example/*
-src/cryptonets_python_sdk/handler/lib/*
-src/privateid_local_storage/uuids
-.DS_Store
-docs/.DS_Store
-src/cryptonets_python_sdk/.DS_Store
-src/cryptonets_python_sdk/handler/.DS_Store
-.DS_Store
-**/acc/30-images/*.jpg
-**/acc/samples
+native-artifacts/*
+
