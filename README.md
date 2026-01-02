@@ -879,7 +879,7 @@ from cryptonets_python_sdk import SpoofStatus
 
 image = ImageInputArg("selfie.jpg", "rgb")
 config = OperationConfig(
-    skip_antispoof=False,
+    anti_spoofing_mode=1,  # 1 = XMS mode (default), 0 = Off, 2 = JPD, 3 = Recognito Android
     anti_spoofing_threshold=0.9
 )
 
@@ -898,11 +898,52 @@ if result.faces is not UNSET and len(result.faces) > 0:
       print("Spoof detected - not a live face")
 ```
 
-### 7.7 Working with Face and Document Traits
+### 7.7 Face Detection Strategies
+
+The SDK provides multiple strategies for detecting and selecting faces when processing images. Use the `face_detection_strategy` parameter to control this behavior.
+
+```python
+from msgspec import UNSET
+
+# Strategy 0: Multiple faces - returns all detected faces
+image = ImageInputArg("group_photo.jpg", "rgb")
+config = OperationConfig(
+    face_detection_strategy=0  # Return all detected faces
+)
+op_id, result = session.validate(image, config)
+
+if result.faces is not UNSET:
+    print(f"Detected {len(result.faces)} faces")
+    for i, face in enumerate(result.faces):
+        print(f"Face {i+1} confidence: {face.geometry.face_confidence_score}")
+
+# Strategy 1: Best confidence score (default) - single face with highest confidence
+config = OperationConfig(
+    face_detection_strategy=1  # Best confidence score (default)
+)
+op_id, result = session.validate(image, config)
+
+if result.faces is not UNSET and len(result.faces) > 0:
+    print(f"Best confidence face: {result.faces[0].geometry.face_confidence_score}")
+
+# Strategy 2: Biggest face - single face with largest area
+config = OperationConfig(
+    face_detection_strategy=2  # Biggest face by area
+)
+op_id, result = session.validate(image, config)
+
+# Strategy 3: Hybrid - best score of (area × confidence)
+config = OperationConfig(
+    face_detection_strategy=3  # Hybrid scoring
+)
+op_id, result = session.validate(image, config)
+```
+
+### 7.8 Working with Face and Document Traits
 
 Face and document trait flags provide detailed quality and validation information about detected faces and documents. These flags are returned as bitmasks that can contain multiple active traits simultaneously.
 
-#### 7.7.1 Face Trait Flags
+#### 7.8.1 Face Trait Flags
 
 Face traits indicate quality issues, pose problems, or detected attributes of a face. The SDK provides the `FaceTraitsFlags` enum with the following flags:
 
@@ -938,7 +979,7 @@ Face traits indicate quality issues, pose problems, or detected attributes of a 
 - `FT_EYE_BLINK` - Eyes are closed or blinking
 - `FT_MOUTH_OPENED` - Mouth is open
 
-#### 7.7.2 Document Trait Flags
+#### 7.8.2 Document Trait Flags
 
 Document traits indicate quality or positioning issues with detected ID documents. The SDK provides the `DocumentTraits` enum:
 
@@ -961,7 +1002,7 @@ Document traits indicate quality or positioning issues with detected ID document
 
 - `DT_FINGERS_DETECTED` - Fingers covering part of document
 
-#### 7.7.3 Working with Trait Flags
+#### 7.8.3 Working with Trait Flags
 
 The `FlagUtil` helper class provides methods to work with these bitmask flags:
 
@@ -1007,7 +1048,7 @@ if result.document is not UNSET:
         print("Fingers detected - please don't cover the document")
 ```
 
-#### 7.7.4 Using Traits for Validation
+#### 7.8.4 Using Traits for Validation
 
 Trait flags are useful for providing user feedback during capture:
 
@@ -1064,7 +1105,16 @@ config = OperationConfig(
 
     # Collection for enrollment/prediction
     collection_name="employees",
-    
+
+    # Face detection strategy
+    face_detection_strategy=1,  # 0=Multiple faces, 1=Best confidence (default), 2=Biggest face, 3=Hybrid
+
+    # Anti-spoofing mode
+    anti_spoofing_mode=1,  # 0=Off, 1=XMS (default), 2=JPD, 3=Recognito Android
+    anti_spoofing_threshold=0.9,
+
+    # Face landmarks model
+    base_landmarks_model_id=0,  # 0=Head pose model (default), 22=Yolov5n05
 )
 ```
 
@@ -1104,6 +1154,7 @@ config = OperationConfig(
 |-----|------|---------|-------------|
 | `conf_score_thr_enroll` | float | `0.5` | Face detection confidence threshold for enrollment operations |
 | `conf_score_thr_predict` | float | `0.12` | Face detection confidence threshold for prediction operations |
+| `landmark_confidence_score_threshold` | float | `0.5` | Confidence threshold for face landmarks detection |
 
 
 #### 9.4.2 Face Quality Thresholds
@@ -1125,12 +1176,17 @@ config = OperationConfig(
 | `neighbors` | int | `1` | Number of neighbors to consider in face matching algorithms |
 | `fudge_factor` | float | `1.0` | Adjustment factor for matching thresholds |
 
-#### 9.4.4 Face Selection
+#### 9.4.4 Base Face Landmarks Model
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `single_face` | bool | `true` | Expect and process only a single face in the image |
-| `consider_biggest_face` | bool | `false` | When multiple faces detected, only process the largest face |
+| `base_landmarks_model_id` | int | `0` | Identifier of the face landmark model to use. `0` = Head pose model (default), `22` = Yolov5n05 model |
+
+#### 9.4.5 Face Selection Strategy
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `face_detection_strategy` | int | `1` | Face selection strategy: `0` = Multiple faces (all detected faces returned), `1` = Best confidence score (single face with highest confidence), `2` = Biggest face (single face with largest area), `3` = Hybrid (best score of area × confidence) |
 | `face_validations_off` | bool | `false` | Disable face traits extraction and validation checks |
 
 ---
@@ -1197,10 +1253,9 @@ config = OperationConfig(
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `skip_antispoof` | bool | `false` | Disable liveness detection entirely |
+| `anti_spoofing_mode` | int | `1` | Anti-spoofing mode: `0` = Off (no anti-spoofing), `1` = XMS (dual XMS models, works with head pose landmarks), `2` = JPD (JPD model, works with yolov5n_05_float16 landmarks), `3` = Recognito Android (for Android, works with yolov5n_05_float16 landmarks) |
 | `anti_spoofing_threshold` | float | `0.9` | Liveness confidence threshold (0.0-1.0). Higher = stricter liveness requirement |
 | `anti_spoofing_detect_document` | bool | `false` | Enable detection of ID document spoofing (photo of document) |
-| `use_jdb_antispoof` | bool | `false` | Use alternative JDB anti-spoofing model |
 
 ---
 
@@ -1252,15 +1307,15 @@ config = OperationConfig(
 
 ---
 
-### 9.9 Age Estimation (for future versions when we add more age estimation models with face detection)
+### 9.9 Face Landmark Model Configuration
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `age_face_landmarks_model_id` | int | `-1` | Model ID to use for age estimation (-1 = default) |
+| `base_face_landmarks_model_id` | int | `-1` | Model ID to use for face landmarks (-1 = default, 0 = head pose model, 22 = yolov5n_05) |
 
 ---
 
-### 9.10 Iso Image background color 
+### 9.10 ISO Image Background Color 
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
