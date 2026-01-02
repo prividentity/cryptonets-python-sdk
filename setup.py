@@ -119,7 +119,7 @@ setup(
         "Bug Reports": "https://github.com/prividentity/cryptonets-python-sdk/issues",
         "Source": "https://github.com/prividentity/cryptonets-python-sdk",
         "Documentation": f"https://github.com/prividentity/cryptonets-python-sdk/tree/{VERSION}/README.md",
-        "Release Notes": f"https://github.com/prividentity/cryptonets-python-sdk/{VERSION}/CHANGELOG.md",
+        "Release Notes": f"https://github.com/prividentity/cryptonets-python-sdk/blob/{VERSION}/CHANGELOG.md",
     },
     classifiers=[
         "Development Status :: 5 - Production/Stable",
