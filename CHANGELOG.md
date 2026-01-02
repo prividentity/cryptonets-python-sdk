@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 This release updates the SDK to align with the Generic V2 native library. Several configuration parameters have been modernized and enhanced:
 
 **Face Detection and Selection**
+
 - **BREAKING**: Replaced `single_face` and `consider_biggest_face` boolean parameters with unified `face_detection_strategy` integer parameter
   - `0` = Multiple faces (all detected faces returned)
   - `1` = Best confidence score (single face with highest confidence) - default
@@ -21,6 +22,7 @@ This release updates the SDK to align with the Generic V2 native library. Severa
   - `3` = Hybrid (best score of area × confidence)
 
 **Anti-Spoofing Configuration**
+
 - **BREAKING**: Replaced `skip_antispoof` and `use_jdb_antispoof` boolean parameters with unified `anti_spoofing_mode` integer parameter
   - `0` = Off (no anti-spoofing)
   - `1` = XMS (dual XMS models, works with head pose landmarks) - default
@@ -28,7 +30,8 @@ This release updates the SDK to align with the Generic V2 native library. Severa
   - `3` = Recognito Android (for Android platforms)
 
 **Face Landmarks Configuration**
-- Renamed `age_face_landmarks_model_id` to `base_face_landmarks_model_id` for clarity
+
+- Generalized the facelanmark selection for age to all operations to be configured via `base_face_landmarks_model_id` and `age_face_landmarks_model_id` was removed.
 - Added `base_landmarks_model_id` parameter for selecting face landmark detection model
   - `0` = Head pose model (default)
   - `22` = Yolov5n05 model
@@ -51,6 +54,7 @@ This release updates the SDK to align with the Generic V2 native library. Severa
 If you're upgrading from 2.0.0b1:
 
 **Face Selection Migration:**
+
 ```python
 # Old (2.0.0b1)
 config = OperationConfig(
@@ -70,6 +74,7 @@ config = OperationConfig(
 ```
 
 **Anti-Spoofing Migration:**
+
 ```python
 # Old (2.0.0b1)
 config = OperationConfig(
@@ -104,9 +109,10 @@ config = OperationConfig(
 )
 ```
 
-## [2.0.0b1] - 2024
+## [2.0.0b1] - 2025-12-16
 
 ### Added
+
 - Initial beta release of version 2.0.0
 - Support for Generic V2 native library features
 
