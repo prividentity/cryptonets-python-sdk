@@ -31,7 +31,7 @@ This release updates the SDK to align with the Generic V2 native library. Severa
 
 **Face Landmarks Configuration**
 
-- Generalized the facelanmark selection for age to all operations to be configured via `base_face_landmarks_model_id` and `age_face_landmarks_model_id` was removed.
+- Generalized the face landmark selection for age to all operations to be configured via `base_face_landmarks_model_id` and `age_face_landmarks_model_id` was removed.
 - Added `base_landmarks_model_id` parameter for selecting face landmark detection model
   - `0` = Head pose model (default)
   - `22` = Yolov5n05 model
