@@ -746,9 +746,6 @@
       "type": "number",
       "format": "float"
     },
-    "skip_antispoof": {
-      "type": "boolean"
-    },
     "fingers_over_document_threshold": {
       "type": "number",
       "format": "float"
@@ -810,9 +807,6 @@
     "detect_document_only": {
       "type": "boolean"
     },
-    "single_face": {
-      "type": "boolean"
-    },
     "background_color_rgb": {
       "type": "integer",
       "format": "int32",
@@ -846,15 +840,26 @@
     "validate_face_position_oval": {
       "type": "boolean"
     },
-    "age_face_landmarks_model_id": {
+    "base_landmarks_model_id": {
       "type": "integer",
-      "format": "int32"
-    },
-    "consider_biggest_face": {
-      "type": "boolean"
+      "enum": [0, 22],
+      "x-enum-varnames": ["HEAD_POSE", "YOLOV5_XN5_V2_1"],
+      "description": "Enum value serialized as integer"
     },
     "https_verify_peer_cert": {
       "type": "boolean"
+    },
+    "face_detection_strategy": {
+      "type": "integer",
+      "enum": [0, 1, 2, 3],
+      "x-enum-varnames": ["FDS_MULTIPLE_FACES", "FDS_BEST_CONFIDENCE_SCORE_FACE", "FDS_BIGGEST_FACE", "FDS_SINGLE_FACE_HYBRID"],
+      "description": "Enum value serialized as integer"
+    },
+    "anti_spoofing_mode": {
+      "type": "integer",
+      "enum": [0, 1, 2, 3],
+      "x-enum-varnames": ["ASM_OFF", "ASM_XMS", "ASM_JPD", "ASM_RECOGNITO_AND"],
+      "description": "Enum value serialized as integer"
     },
     "allowed_face_traits_flags": {
       "type": "integer",

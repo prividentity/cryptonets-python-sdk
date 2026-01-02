@@ -7,3 +7,5 @@ dist
 **/.venv/
 native-artifacts/*
 
+
+examples/output/
