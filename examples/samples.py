@@ -505,7 +505,7 @@ def sample_anti_spoofing(session: Session, image_path: str = FACE_IMAGE):
 
         # Configure anti-spoofing thresholds
         config = OperationConfig(
-            skip_antispoof=False,
+            anti_spoofing_mode=1,  # 1 = XMS mode (default), 0 = Off, 2 = JPD, 3 = Recognito Android
             anti_spoofing_threshold=0.9,
             angle_rotation_left_threshold=6.0,
             angle_rotation_right_threshold=5.0,
@@ -522,6 +522,86 @@ def sample_anti_spoofing(session: Session, image_path: str = FACE_IMAGE):
         if result.faces is not UNSET:
             display_faces_collection(result.faces)
 
+        return result
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
+def sample_face_detection_strategies(session: Session, image_path: str = CONSIDER_BIG_FACE):
+    """Sample: Demonstrate different face detection strategies.
+
+    Shows how to use the face_detection_strategy parameter to control
+    which faces are detected and returned when multiple faces are present.
+    """
+
+    try:
+        print("\n" + "="*80)
+        print("Testing Face Detection Strategies")
+        print("="*80)
+
+        # Load the image (use image with multiple faces for better demonstration)
+        image = ImageInputArg(image_path, "rgb")
+
+        # Strategy 0: Multiple faces - returns all detected faces
+        print("\n[Strategy 0] Multiple Faces - Return all detected faces")
+        config = OperationConfig(
+            face_detection_strategy=0,  # Return all detected faces
+            angle_rotation_left_threshold=20.0,
+            angle_rotation_right_threshold=20.0,
+            anti_spoofing_mode=0,  # Disable anti-spoofing for faster processing
+        )
+        _, result = session.validate(image, config)
+        if result.faces is not UNSET and result.faces:
+            print(f"  → Detected {len(result.faces)} face(s)")
+            for i, face in enumerate(result.faces):
+                if face.geometry:
+                    print(f"    Face {i+1}: Confidence = {face.geometry.face_confidence_score:.4f}")
+
+        # Strategy 1: Best confidence score (default)
+        print("\n[Strategy 1] Best Confidence Score - Single face with highest confidence")
+        config = OperationConfig(
+            face_detection_strategy=1,  # Best confidence score (default)
+            angle_rotation_left_threshold=20.0,
+            angle_rotation_right_threshold=20.0,
+            anti_spoofing_mode=0,
+        )
+        _, result = session.validate(image, config)
+        if result.faces is not UNSET and result.faces:
+            print(f"  → Returned {len(result.faces)} face(s)")
+            if result.faces[0].geometry:
+                print(f"    Best confidence: {result.faces[0].geometry.face_confidence_score:.4f}")
+
+        # Strategy 2: Biggest face
+        print("\n[Strategy 2] Biggest Face - Single face with largest area")
+        config = OperationConfig(
+            face_detection_strategy=2,  # Biggest face by area
+            angle_rotation_left_threshold=20.0,
+            angle_rotation_right_threshold=20.0,
+            anti_spoofing_mode=0,
+        )
+        _, result = session.validate(image, config)
+        if result.faces is not UNSET and result.faces:
+            print(f"  → Returned {len(result.faces)} face(s)")
+            if result.faces[0].geometry:
+                print(f"    Face confidence: {result.faces[0].geometry.face_confidence_score:.4f}")
+
+        # Strategy 3: Hybrid - best score of (area × confidence)
+        print("\n[Strategy 3] Hybrid - Best score of (area × confidence)")
+        config = OperationConfig(
+            face_detection_strategy=3,  # Hybrid scoring
+            angle_rotation_left_threshold=20.0,
+            angle_rotation_right_threshold=20.0,
+            anti_spoofing_mode=0,
+        )
+        _, result = session.validate(image, config)
+        if result.faces is not UNSET and result.faces:
+            print(f"  → Returned {len(result.faces)} face(s)")
+            if result.faces[0].geometry:
+                print(f"    Hybrid score confidence: {result.faces[0].geometry.face_confidence_score:.4f}")
+
+        print("\n" + "="*80)
         return result
 
     except Exception as e:
@@ -777,12 +857,13 @@ def display_menu():
     print("  2. Estimate Age - Estimate age from face image")
     print("  3. Face ISO - Generate ISO-compliant face image")
     print("  4. Anti-Spoofing - Detect liveness and spoofing")
-    print("  5. Face Compare - Compare two face images (1:1)")
-    print("  6. Document Scan - Scan document and extract face")
-    print("  7. Enroll (1FA) - Enroll a face for authentication")
-    print("  8. Predict (1FA) - Authenticate using enrolled face")
-    print("  9. User Delete - Delete enrolled user by PUID")
-    print(" 10. Complete Workflow - Enroll, Predict, and Delete")
+    print("  5. Face Detection Strategies - Test different face selection strategies")
+    print("  6. Face Compare - Compare two face images (1:1)")
+    print("  7. Document Scan - Scan document and extract face")
+    print("  8. Enroll (1FA) - Enroll a face for authentication")
+    print("  9. Predict (1FA) - Authenticate using enrolled face")
+    print(" 10. User Delete - Delete enrolled user by PUID")
+    print(" 11. Complete Workflow - Enroll, Predict, and Delete")
     print("  0. Run All Samples")
     print("\n  Q. Quit")
     print("\n" + "=" * 70)
@@ -808,23 +889,25 @@ def run_selected_sample(session: Session, choice: str) -> bool:
     elif choice == '4':
         sample_anti_spoofing(session)
     elif choice == '5':
-        sample_face_compare_files(session)
+        sample_face_detection_strategies(session)
     elif choice == '6':
-        sample_doc_scan_face(session)
+        sample_face_compare_files(session)
     elif choice == '7':
-        collection = input("\nEnter collection name (default: 'default'): ").strip() or "default"
-        sample_enroll_onefa(session, FACE_IMAGE, collection)
+        sample_doc_scan_face(session)
     elif choice == '8':
         collection = input("\nEnter collection name (default: 'default'): ").strip() or "default"
-        sample_face_predict_onefa(session, FACE_IMAGE, collection)
+        sample_enroll_onefa(session, FACE_IMAGE, collection)
     elif choice == '9':
+        collection = input("\nEnter collection name (default: 'default'): ").strip() or "default"
+        sample_face_predict_onefa(session, FACE_IMAGE, collection)
+    elif choice == '10':
         puid = input("\nEnter PUID to delete: ").strip()
         if puid:
             collection = input("Enter collection name (default: 'default'): ").strip() or "default"
             sample_user_delete(session, puid, collection)
         else:
             print("Error: PUID is required")
-    elif choice == '10':
+    elif choice == '11':
         collection = input("\nEnter collection name (default: 'default'): ").strip() or "default"
         sample_enroll_predict_delete_workflow(session, collection)
     elif choice == '0':
@@ -836,6 +919,7 @@ def run_selected_sample(session: Session, choice: str) -> bool:
         sample_estimate_age(session)
         sample_face_iso(session)
         sample_anti_spoofing(session)
+        sample_face_detection_strategies(session)
         sample_face_compare_files(session)
         sample_doc_scan_face(session)
 
