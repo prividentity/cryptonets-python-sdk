@@ -5,7 +5,7 @@ All notable changes to the CryptoNets Python SDK will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2026-01-02
+## [2.0.0 (removed)-2.0.1] - 2026-01-05
 
 ### Changed
 
@@ -62,7 +62,7 @@ config = OperationConfig(
     consider_biggest_face=False
 )
 
-# New (2.0.0)
+# New (2.0.1)
 config = OperationConfig(
     face_detection_strategy=1  # Best confidence score
 )
@@ -82,7 +82,7 @@ config = OperationConfig(
     use_jdb_antispoof=False
 )
 
-# New (2.0.0)
+# New (2.0.1)
 config = OperationConfig(
     anti_spoofing_mode=1  # XMS mode (default)
 )
@@ -100,7 +100,7 @@ config = OperationConfig(
     age_face_landmarks_model_id=-1
 )
 
-# New (2.0.0)
+# New (2.0.1)
 config = OperationConfig(
     base_face_landmarks_model_id=-1  # Use default model
     # OR explicitly set:

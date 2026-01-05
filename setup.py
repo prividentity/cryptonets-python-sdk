@@ -23,7 +23,7 @@
 import os
 import sys
 import platform
-from setuptools import setup, find_packages, Extension
+from setuptools import setup
 from setuptools.command.build_py import build_py
 from setuptools.command.install import install
 import subprocess
@@ -37,7 +37,7 @@ DESCRIPTION = "Cryptonets SDK Library for Python"
 AUTHOR = "Private Identity"
 AUTHOR_EMAIL = "support@private.id"
 URL = "https://private.id/"
-VERSION = "2.0.0"
+VERSION = "2.0.1"
 REQUIRES = [
     "numpy >= 1.21.0", 
     "pillow >= 9.1.0",
@@ -47,14 +47,16 @@ REQUIRES = [
     "cffi >= 1.15.0",
     # Note: importlib.metadata is part of stdlib in Python 3.8+
     # For older Python versions, add the backport
-    "importlib-metadata >= 4.0.0; python_version < '3.8'",
-    "betterproto >= 1.2.5",
+    "importlib-metadata >= 4.0.0; python_version < '3.8'",    
+    "msgspec >= 0.20.0",    
     "pyyaml >= 6.0.2"
 ]
 
 # Additional packages for development and testing
 DEV_REQUIRES = [    
-    "betterproto[compiler] >= 1.2.5"
+    "pytest >= 6.2.0",
+    "matplotlib >= 3.5.0",
+    "datamodel-code-generator >= 0.52.0",
 ]
 
 LONG_DESCRIPTION = ""
@@ -102,7 +104,11 @@ setup(
     license="Proprietary",
     url=URL,
     keywords=["privateid", "cryptonets", "face identification", "biometrics", "privacy"],
-    packages=find_packages(where="src", exclude=["tests*","idl*","protoc*","protoc"]),
+    packages=[
+        "cryptonets_python_sdk",
+        "cryptonets_python_sdk.idl",
+        "cryptonets_python_sdk.idl.gen",
+    ],
     include_package_data=True,
     platforms="any",
     install_requires=REQUIRES,
@@ -143,6 +149,7 @@ setup(
             "*.py",              # Python modules
             "LICENSE",           # License file
             "README.md",         # README file
+            "CHANGELOG.md",      # Changelog file  
         ]
     },
 )
