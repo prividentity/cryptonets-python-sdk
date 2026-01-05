@@ -6,6 +6,7 @@ termcolor
 tqdm 
 pandas 
 matplotlib 
+datamodel-code-generator
 memray 
 boto3
 exifread

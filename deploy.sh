@@ -14,10 +14,10 @@ fi
 
 VERSION=$1
 
-# Validate version format (should be 1.number.number)
-if ! [[ $VERSION =~ ^1\.[0-9]+\.[0-9]+$ ]]; then
-    echo "Error: Version format must be 1.x.y where x and y are numbers"
-    echo "Example: 1.3.20"
+# Validate version format (should be 2.number.number)
+if ! [[ $VERSION =~ ^2\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Error: Version format must be 2.x.y where x and y are numbers"
+    echo "Example: 2.3.20"
     exit 1
 fi
 
@@ -27,7 +27,7 @@ echo "Starting deployment process for version: $VERSION"
 # Delete folders if they exist
 echo "Cleaning up old build files..."
 [ -d ".venv" ] && rm -rf .venv && echo "Deleted .venv folder"
-
+[ -d "dist" ] && rm -rf dist && echo "Deleted dist folder"
 
 # Update version in setup.py
 echo "Updating version in setup.py..."
