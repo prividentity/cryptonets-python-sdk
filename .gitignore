@@ -9,3 +9,5 @@ native-artifacts/*
 
 
 examples/output/
+
+examples/.env

@@ -6,6 +6,7 @@ Sample file demonstrating all public methods of the Session class.
 This script shows how to use the cryptonets_python_sdk with type-safe Session API.
 """
 from ast import List
+import os
 import sys
 import pathlib
 from typing import List, Optional, Union
@@ -28,14 +29,14 @@ from cryptonets_python_sdk.idl.gen.privateid_types import (
     CallResult,
 )
 import numpy as np
- 
+
+
 
 
 # Global configuration
-BASE_URL = "https://xxxxxxxxxxxxxxxxxxx"  # Replace with your actual base URL
-API_KEY = "xxxxxxxxxxxxxxxx"  # Replace with your actual API key
 
 # Image paths
+SCRIPT_DIR = pathlib.Path(__file__).parent
 IMAGE_DIR = pathlib.Path(__file__).parent / "images"
 OUTPUT_DIR = pathlib.Path(__file__).parent / "output"
 FACE_IMAGE = str(IMAGE_DIR / "tom_hanks_1.png")
@@ -47,6 +48,18 @@ SPOOF_IMAGE = str(IMAGE_DIR / "spoof.png")
 CONSIDER_BIG_FACE = str(IMAGE_DIR / "consider_big_face.png")
 INVALID_FACE = str(IMAGE_DIR / "invalid_face.png")
 NO_FACE = str(IMAGE_DIR / "no_face.png")
+
+ENV_FILE = SCRIPT_DIR / ".env"
+
+# try to load CRYPTONETS_BASE_URL and CRYPTONETS_API_KEY from .env file if available
+# useful for local testing
+if ENV_FILE.exists():
+    from dotenv import load_dotenv
+    load_dotenv(dotenv_path=ENV_FILE)
+
+# Test configuration - can be overridden via environment variables
+BASE_URL = os.getenv("CRYPTONETS_BASE_URL", "https://xxxxxxxxxxxxxxxxxxx")
+API_KEY = os.getenv("CRYPTONETS_API_KEY", "xxxxxxxxxxxxxxxx")
 
 
 def ensure_output_dir() -> pathlib.Path:
@@ -945,6 +958,8 @@ def run_selected_sample(session: Session, choice: str) -> bool:
 
 def main():
     """Main function with interactive sample selection."""
+    # Check if running in non-interactive mode
+    non_interactive =True # len(sys.argv) > 1 and sys.argv[1] == '--all'
 
     try:
         # Initialize the library
@@ -959,25 +974,36 @@ def main():
         print("\nCreating session...")
         settings = create_session_settings(API_KEY, BASE_URL)
         session = Session(settings)
-        print("✓ Session created successfully!")        
-        # Interactive menu loop
-        while True:
-            display_menu()
-            choice = input("\nEnter your choice: ").strip()
+        print("✓ Session created successfully!")
 
-            if not run_selected_sample(session, choice):
-                break
+        if non_interactive:
+            # Run all samples automatically
+            print("\n" + "=" * 70)
+            print("RUNNING ALL SAMPLES (NON-INTERACTIVE MODE)")
+            print("=" * 70)
 
-            # Prompt to continue
-            if choice.upper() != 'Q':
-                input("\nPress Enter to continue...")
-         
-        
-        PrivIDFaceLib.shutdown()
-        return 0
+            run_selected_sample(session, '0')  # Choice '0' runs all samples
+
+            PrivIDFaceLib.shutdown()
+            return 0
+        else:
+            # Interactive menu loop
+            while True:
+                display_menu()
+                choice = input("\nEnter your choice: ").strip()
+
+                if not run_selected_sample(session, choice):
+                    break
+
+                # Prompt to continue
+                if choice.upper() != 'Q':
+                    input("\nPress Enter to continue...")
+
+            PrivIDFaceLib.shutdown()
+            return 0
 
     except LibraryLoadError as e:
-        print(f"\n✗ Library load error: {e}")        
+        print(f"\n✗ Library load error: {e}")
         PrivIDFaceLib.shutdown()
         return 1
     except SessionError as e:
