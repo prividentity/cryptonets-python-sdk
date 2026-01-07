@@ -21,6 +21,26 @@ if ! [[ $VERSION =~ ^2\.[0-9]+\.[0-9]+$ ]]; then
     exit 1
 fi
 
+# Function to check if manifest.yaml exists in S3
+check_manifest_exists() {
+    local version=$1
+    local manifest_url="https://cryptonets-python-sdk.s3.us-east-1.amazonaws.com/${version}/manifest.yaml"
+
+    echo "Checking if manifest.yaml exists for version ${version}..."
+
+    # Use curl to check if the file exists (HTTP HEAD request)
+    if curl --head --silent --fail "$manifest_url" > /dev/null 2>&1; then
+        echo "✓ Manifest file found at: $manifest_url"
+        return 0
+    else
+        echo "✗ Error: Manifest file not found at: $manifest_url"
+        echo "Please ensure the manifest.yaml file exists in S3 before deploying this version."
+        exit 1
+    fi
+}
+
+# Check if manifest.yaml exists for this version
+check_manifest_exists "$VERSION"
 
 echo "Starting deployment process for version: $VERSION"
 
