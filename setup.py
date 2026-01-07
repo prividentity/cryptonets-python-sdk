@@ -45,9 +45,6 @@ REQUIRES = [
     "tqdm >= 4.64.0",
     "exifread >= 3.0.0",
     "cffi >= 1.15.0",
-    # Note: importlib.metadata is part of stdlib in Python 3.8+
-    # For older Python versions, add the backport
-    "importlib-metadata >= 4.0.0; python_version < '3.8'",    
     "msgspec >= 0.20.0",    
     "pyyaml >= 6.0.2"
 ]
@@ -115,7 +112,7 @@ setup(
     extras_require={
         "dev": DEV_REQUIRES,
     },
-    python_requires=">=3.6",
+    python_requires=">=3.10",
     package_dir={"": "src"},
     cmdclass={
         'build_py': CustomBuildCommand,
