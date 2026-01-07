@@ -930,7 +930,7 @@ def run_selected_sample(session: Session, choice: str) -> bool:
 
         sample_validate(session)
         sample_estimate_age(session)
-        sample_face_iso(session)
+        # sample_face_iso(session) investigating a ransomn crash issue
         sample_anti_spoofing(session)
         sample_face_detection_strategies(session)
         sample_face_compare_files(session)
