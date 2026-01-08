@@ -166,11 +166,12 @@ class SessionNative:
 
         result = self._ffibuilder.string(result_ptr[0], result_len[0]).decode('utf-8')
         iso_image = self._ffibuilder.buffer(iso_image_ptr[0], iso_image_len[0])
+        iso_bytes = bytes(iso_image)
 
         self._lib.privid_free_char_buffer(result_ptr[0])
         self._lib.privid_free_buffer(iso_image_ptr[0])
 
-        return op_id, result, bytes(iso_image)
+        return op_id, result, iso_bytes
 
     def face_iso(self, image_input: ImageInputArg, user_config: str = "") -> tuple[int, str, bytes]:
         """Process face image according to ISO standards using ImageInputArg"""
@@ -284,13 +285,15 @@ class SessionNative:
 
         result = self._ffibuilder.string(result_ptr[0], result_len[0]).decode('utf-8')
         doc = self._ffibuilder.buffer(doc_ptr[0], doc_len[0])
+        doc_bytes = bytes(doc)
         face = self._ffibuilder.buffer(face_ptr[0], face_len[0])
+        face_bytes = bytes(face)
 
         self._lib.privid_free_char_buffer(result_ptr[0])
         self._lib.privid_free_buffer(doc_ptr[0])
         self._lib.privid_free_buffer(face_ptr[0])
 
-        return op_id, result, bytes(doc), bytes(face)
+        return op_id, result, doc_bytes, face_bytes
 
     def doc_scan_face(self, user_config: str, image: ImageInputArg) -> tuple[int, str, bytes, bytes]:
         """Scan a document for face and extract it using ImageInputArg"""

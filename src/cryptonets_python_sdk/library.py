@@ -45,7 +45,7 @@ class PrivIDFaceLib:
                         break
                     time.sleep(0.1)
                 version_ptr = cls._lib.privid_get_version()
-                cls._native_version = cls._ffibuilder.string(version_ptr).decode('utf-8')
+                cls._native_sdk_version = cls._ffibuilder.string(version_ptr).decode('utf-8')
                 if not cls._lib.privid_is_library_initialized():
                     cls._initialized = False    
                 cls._initialized = True

@@ -442,7 +442,7 @@ Checks if the library wrapper is currently initialized.
 Gets the version string of the native library.
 
 **Returns:**
-- `str`: Version string (e.g., "1.3.23")
+- `str`: Version string (e.g., "26.01.02-193aa89")
 
 **Raises:**
 - `PrivIDError`: If library not initialized

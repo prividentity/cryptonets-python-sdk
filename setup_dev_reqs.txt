@@ -1,12 +1,10 @@
 -e .
 twine 
-sphinx
 Pillow 
 termcolor 
 tqdm 
 pandas 
 matplotlib 
-datamodel-code-generator
 memray 
 boto3
 exifread
@@ -22,3 +20,4 @@ cffi
 msgspec
 datamodel-code-generator
 pytest
+dotenv
